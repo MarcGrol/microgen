@@ -18,11 +18,11 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) ([]*events.Envelope, error) {
+func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) error {
 	// get gambler based on uid
 	_, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == true {
-		return nil, errors.New(fmt.Sprintf("gambler %s already exists", command.GamblerUid))
+		return errors.New(fmt.Sprintf("gambler %s already exists", command.GamblerUid))
 	}
 
 	// apply business logic
@@ -34,14 +34,14 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 	gambler.ApplyGamblerCreated(gamblerCreatedEvent)
 
 	// store and emit resulting event
-	return []*events.Envelope{gamblerCreatedEvent.Wrap()}, nil
+	return gch.publishAndStore([]*events.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) ([]*events.Envelope, error) {
+func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
 	// get gambler based on uid
 	gambler, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == false {
-		return nil, errors.New(fmt.Sprintf("gambler %s does not exist", command.GamblerUid))
+		return errors.New(fmt.Sprintf("gambler %s does not exist", command.GamblerUid))
 	}
 
 	// apply business logic
@@ -51,7 +51,11 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateG
 		GamblerCyclists: command.CyclistIds}
 	gambler.ApplyGamblerTeamCreated(gamblerTeamCreatedEvent)
 
-	return []*events.Envelope{gamblerTeamCreatedEvent.Wrap()}, nil
+	return gch.publishAndStore([]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
+}
+
+func (tch *GamblerCommandHandler) publishAndStore([]*events.Envelope) error {
+	return errors.New("publishAndStore not implemented")
 }
 
 func getGamblerOnUid(store events.Store, uid string) (*Gambler, bool) {

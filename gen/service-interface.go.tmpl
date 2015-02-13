@@ -18,14 +18,14 @@ type {{.NameToFirstUpper}}Command struct {
 
 type CommandHandler interface {
     {{range .Commands}}
-        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) ([]*events.Envelope,error)
+        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
     {{end}}
 }
 
 // events
 
 type EventHandler interface {
-    {{range .GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) ([]*events.Envelope,error)
+    {{range .GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
     {{end}}
 }
 

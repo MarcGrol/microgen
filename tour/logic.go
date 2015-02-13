@@ -19,11 +19,11 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 	return handler
 }
 
-func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) ([]*events.Envelope, error) {
+func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) error {
 	// get tour based on year
 	_, found := getTourOnYear(tch.store, command.Year)
 	if found == true {
-		return nil, errors.New(fmt.Sprintf("Tour %d already exists", command.Year))
+		return errors.New(fmt.Sprintf("Tour %d already exists", command.Year))
 	}
 
 	// apply business logic
@@ -32,14 +32,14 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	tour.ApplyTourCreated(tourCreatedEvent)
 
 	// store and emit resulting event
-	return []*events.Envelope{tourCreatedEvent.Wrap()}, nil
+	return tch.publishAndStore([]*events.Envelope{tourCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) ([]*events.Envelope, error) {
+func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) error {
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
-		return nil, errors.New(fmt.Sprintf("Tour %d does not exists", command.Year))
+		return errors.New(fmt.Sprintf("Tour %d does not exists", command.Year))
 	}
 
 	// apply business logic
@@ -50,14 +50,14 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 	tour.ApplyCyclistCreated(cyclistCreatedEvent)
 
 	// store and emit resulting event
-	return []*events.Envelope{cyclistCreatedEvent.Wrap()}, nil
+	return tch.publishAndStore([]*events.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) ([]*events.Envelope, error) {
+func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) error {
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
-		return nil, errors.New(fmt.Sprintf("Tour %d does not exists", command.Year))
+		return errors.New(fmt.Sprintf("Tour %d does not exists", command.Year))
 	}
 
 	// apply business logic
@@ -71,7 +71,11 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
 	// store and emit resulting event
-	return []*events.Envelope{etappeCreatedEvent.Wrap()}, nil
+	return tch.publishAndStore([]*events.Envelope{etappeCreatedEvent.Wrap()})
+}
+
+func (tch *TourCommandHandler) publishAndStore([]*events.Envelope) error {
+	return errors.New("publishAndStore not implemented")
 }
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {

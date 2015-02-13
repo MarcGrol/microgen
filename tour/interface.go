@@ -31,11 +31,11 @@ type CreateEtappeCommand struct {
 }
 
 type CommandHandler interface {
-	HandleCreateTourCommand(command CreateTourCommand) ([]*events.Envelope, error)
+	HandleCreateTourCommand(command CreateTourCommand) error
 
-	HandleCreateCyclistCommand(command CreateCyclistCommand) ([]*events.Envelope, error)
+	HandleCreateCyclistCommand(command CreateCyclistCommand) error
 
-	HandleCreateEtappeCommand(command CreateEtappeCommand) ([]*events.Envelope, error)
+	HandleCreateEtappeCommand(command CreateEtappeCommand) error
 }
 
 // events

@@ -21,19 +21,19 @@ type CreateGamblerTeamCommand struct {
 }
 
 type CommandHandler interface {
-	HandleCreateGamblerCommand(command CreateGamblerCommand) ([]*events.Envelope, error)
+	HandleCreateGamblerCommand(command CreateGamblerCommand) error
 
-	HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) ([]*events.Envelope, error)
+	HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error
 }
 
 // events
 
 type EventHandler interface {
-	OnTourCreated(event events.TourCreated) ([]*events.Envelope, error)
+	OnTourCreated(event events.TourCreated) error
 }
 
 type EventApplier interface {
+	ApplyGamblerCreated(event events.GamblerCreated) error
 	ApplyTourCreated(event events.TourCreated) error
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error
-	ApplyGamblerCreated(event events.GamblerCreated) error
 }

@@ -6,17 +6,6 @@ import (
 	"time"
 )
 
-type TourCreated struct {
-	Year int `json:"year"`
-}
-
-func (event *TourCreated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeTourCreated
-	envelope.TourCreated = event
-	return envelope
-}
-
 type CyclistCreated struct {
 	Year        int    `json:"year"`
 	CyclistId   int    `json:"cyclistId"`
@@ -119,24 +108,33 @@ func (event *GamblerScoreCalculated) Wrap() *Envelope {
 	return envelope
 }
 
+type TourCreated struct {
+	Year int `json:"year"`
+}
+
+func (event *TourCreated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeTourCreated
+	envelope.TourCreated = event
+	return envelope
+}
+
 type Type int
 
 const (
 	TypeUnknown Type = iota
-	TypeCyclistCreated
-	TypeEtappeCreated
-	TypeGamblerCreated
-	TypeGamblerTeamCreated
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
 	TypeTourCreated
+	TypeCyclistCreated
+	TypeEtappeCreated
+	TypeGamblerCreated
+	TypeGamblerTeamCreated
 )
 
 func (t Type) String() string {
 	switch t {
-	case TypeGamblerCreated:
-		return "GamblerCreated"
 	case TypeGamblerTeamCreated:
 		return "GamblerTeamCreated"
 	case TypeEtappeResultsAvailable:
@@ -151,6 +149,8 @@ func (t Type) String() string {
 		return "CyclistCreated"
 	case TypeEtappeCreated:
 		return "EtappeCreated"
+	case TypeGamblerCreated:
+		return "GamblerCreated"
 
 	}
 	return "unknown"
@@ -158,14 +158,14 @@ func (t Type) String() string {
 
 type Envelope struct {
 	Type                   Type                    `json:"type"`
+	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
+	TourCreated            *TourCreated            `json:"tourCreated"`
+	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
 	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
 	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
 	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
 	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
-	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
-	TourCreated            *TourCreated            `json:"tourCreated"`
-	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 }
 
 type EventHandlerFunc func(Envelope *Envelope) error
