@@ -1,0 +1,36 @@
+package {{.NameToLower}}
+
+// Generated automatically by microgen: do not edit manually
+
+import (
+    {{if .HasDateField}}"time"{{end}}
+    "github.com/xebia/microgen/events"
+)
+
+// commands
+
+{{range .Commands}}
+type {{.NameToFirstUpper}}Command struct {
+{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
+{{end}}
+}
+{{end}}
+
+type CommandHandler interface {
+    {{range .Commands}}
+        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) ([]*events.Envelope,error)
+    {{end}}
+}
+
+// events
+
+type EventHandler interface {
+    {{range .GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) ([]*events.Envelope,error)
+    {{end}}
+}
+
+type EventApplier interface {
+    {{range .GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{end}}
+}
+

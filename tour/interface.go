@@ -1,18 +1,23 @@
 package tour
 
-// Generated automatically: do not edit manually
+// Generated automatically by microgen: do not edit manually
 
 import (
-"time"
-"github.com/xebia/microgen/events"
+    "time"
+    "github.com/xebia/microgen/events"
 )
+
+func StartApplication( bus events.PublishSubscriber, store events.Store, commandHandler CommandHandler, eventHandler EventHandler, model interface{}  ) error {
+    return nil
+}
+
+// commands
 
 
 type CreateTourCommand struct {
  Year  int `json:"year"`
 
 }
-
 
 type CreateCyclistCommand struct {
  Year  int `json:"year"`
@@ -21,7 +26,6 @@ type CreateCyclistCommand struct {
  Team  string `json:"team"`
 
 }
-
 
 type CreateEtappeCommand struct {
  Year  int `json:"year"`
@@ -35,7 +39,6 @@ type CreateEtappeCommand struct {
 }
 
 
-
 type CommandHandler interface {
     
         HandleCreateTourCommand ( command CreateTourCommand ) ([]*events.Envelope,error)
@@ -43,6 +46,19 @@ type CommandHandler interface {
         HandleCreateCyclistCommand ( command CreateCyclistCommand ) ([]*events.Envelope,error)
     
         HandleCreateEtappeCommand ( command CreateEtappeCommand ) ([]*events.Envelope,error)
+    
+}
+
+// events
+
+type EventHandler interface {
+    
+}
+
+type EventApplier interface {
+     ApplyTourCreated ( event events.TourCreated ) error
+     ApplyCyclistCreated ( event events.CyclistCreated ) error
+     ApplyEtappeCreated ( event events.EtappeCreated ) error
     
 }
 

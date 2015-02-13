@@ -1,11 +1,13 @@
 package gambler
 
-// Generated automatically: do not edit manually
+// Generated automatically by microgen: do not edit manually
 
 import (
-
-"github.com/xebia/microgen/events"
+    
+    "github.com/xebia/microgen/events"
 )
+
+// commands
 
 
 type CreateGamblerCommand struct {
@@ -15,7 +17,6 @@ type CreateGamblerCommand struct {
 
 }
 
-
 type CreateGamblerTeamCommand struct {
  GamblerUid  string `json:"gamblerUid"`
  Year  int `json:"year"`
@@ -24,12 +25,25 @@ type CreateGamblerTeamCommand struct {
 }
 
 
-
 type CommandHandler interface {
     
         HandleCreateGamblerCommand ( command CreateGamblerCommand ) ([]*events.Envelope,error)
     
         HandleCreateGamblerTeamCommand ( command CreateGamblerTeamCommand ) ([]*events.Envelope,error)
+    
+}
+
+// events
+
+type EventHandler interface {
+     OnTourCreated ( event events.TourCreated ) ([]*events.Envelope,error)
+    
+}
+
+type EventApplier interface {
+     ApplyTourCreated ( event events.TourCreated ) error
+     ApplyGamblerTeamCreated ( event events.GamblerTeamCreated ) error
+     ApplyGamblerCreated ( event events.GamblerCreated ) error
     
 }
 
