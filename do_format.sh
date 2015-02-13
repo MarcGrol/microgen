@@ -1,9 +1,9 @@
 #!/bin/sh
 
+go fmt
 for i in events tour gambler results
 do
-    echo "$i"
     cd ${i}
-    go fmt -n
+    go fmt 
     cd ..
 done
