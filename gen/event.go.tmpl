@@ -26,8 +26,8 @@ const (
 )
 
 type Envelope struct {
-    Type Type
-{{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}}
+    Type Type `json:"type"`
+{{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
 {{end}}
 }
 

@@ -2,6 +2,7 @@ package spec
 
 import (
 	"strings"
+	"fmt"
 )
 
 type Type int
@@ -90,6 +91,10 @@ func (e Entity) NameToFirstUpper() string {
 
 func (e Event) NameToFirstUpper() string {
 	return strings.Title(e.Name)
+}
+
+func (e Event) NameToFirstLower() string {
+	return strings.ToLower(fmt.Sprintf("%c", e.Name[0])) + e.Name[1:]
 }
 
 func (c Command) NameToFirstUpper() string {
