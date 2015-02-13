@@ -23,10 +23,6 @@ func GenerateApplication(application spec.Application, baseDir string) error {
 	if err != nil {
 		return err
 	}
-	err = generateRun(application, baseDir)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
