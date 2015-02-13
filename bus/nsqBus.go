@@ -2,31 +2,32 @@ package bus
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bitly/go-nsq"
 	"github.com/xebia/microgen/events"
 	"log"
 )
 
 type NsqBus struct {
-	address      string
+    applicationName string
 	consumerName string
+	address      string
 	config       *nsq.Config
 	producer     *nsq.Producer
 	consumers    []*nsq.Consumer
 }
 
-func NewNsqBus(address string, consumerName string) *NsqBus {
+func NewNsqBus(applicationName string, consumerName string, address string ) *NsqBus {
 	bus := new(NsqBus)
-	bus.address = address
+	bus.applicationName = applicationName
 	bus.consumerName = consumerName
+	bus.address = address
 	bus.config = nsq.NewConfig()
 	bus.consumers = make([]*nsq.Consumer, 0, 10)
 	return bus
 }
 
 func (bus *NsqBus) Subscribe(eventType events.Type, callback events.EventHandlerFunc) error {
-	return bus.startConsumer(fmt.Sprintf("topic_%d", eventType), callback)
+	return bus.startConsumer(bus.getTopicName(eventType), callback)
 }
 
 func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerFunc) error {
@@ -59,7 +60,7 @@ func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerF
 
 	bus.consumers = append(bus.consumers, consumer)
 
-	//log.Printf("Started consumer %s/%s", topic, channel)
+	//log.Printf("Started consumer %s/%s", topic, bus.consumerName)
 
 	return nil
 }
@@ -78,7 +79,7 @@ func (bus *NsqBus) Publish(envelope *events.Envelope) error {
 	}
 	//log.Printf("Marshalled event of type %d (%s)", envelope.Type, jsonBlob)
 
-	err = bus.producer.Publish(fmt.Sprintf("topic_%d", envelope.Type), jsonBlob)
+	err = bus.producer.Publish(bus.getTopicName(envelope.Type), jsonBlob)
 	if err != nil {
 		log.Printf("Error publishing event-envelope (%v)", err)
 		return err
@@ -99,4 +100,8 @@ func (bus *NsqBus) startProducer() error {
 	//log.Printf("Started producer")
 
 	return nil
+}
+
+func (bus *NsqBus) getTopicName( eventType events.Type ) string {
+	return bus.applicationName+"_"+eventType.String()
 }

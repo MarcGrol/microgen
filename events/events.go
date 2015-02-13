@@ -1,5 +1,7 @@
 package events
 
+// Generated automatically by microgen: do not edit manually
+
 import (
 	"time"
 )
@@ -121,7 +123,6 @@ type Type int
 
 const (
 	TypeUnknown Type = iota
-	TypeTourCreated
 	TypeCyclistCreated
 	TypeEtappeCreated
 	TypeGamblerCreated
@@ -129,18 +130,42 @@ const (
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
+	TypeTourCreated
 )
+
+func (t Type) String() string {
+	switch t {
+	case TypeGamblerCreated:
+		return "GamblerCreated"
+	case TypeGamblerTeamCreated:
+		return "GamblerTeamCreated"
+	case TypeEtappeResultsAvailable:
+		return "EtappeResultsAvailable"
+	case TypeCyclistScoreCalculated:
+		return "CyclistScoreCalculated"
+	case TypeGamblerScoreCalculated:
+		return "GamblerScoreCalculated"
+	case TypeTourCreated:
+		return "TourCreated"
+	case TypeCyclistCreated:
+		return "CyclistCreated"
+	case TypeEtappeCreated:
+		return "EtappeCreated"
+
+	}
+	return "unknown"
+}
 
 type Envelope struct {
 	Type                   Type                    `json:"type"`
-	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
-	TourCreated            *TourCreated            `json:"tourCreated"`
-	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
 	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
 	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
 	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
 	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
+	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
+	TourCreated            *TourCreated            `json:"tourCreated"`
+	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 }
 
 type EventHandlerFunc func(Envelope *Envelope) error

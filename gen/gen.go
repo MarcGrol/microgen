@@ -50,50 +50,12 @@ func generateEvents(application spec.Application, baseDir string) error {
 
 func generateServices(application spec.Application, baseDir string) error {
 	for _, service := range application.Services {
-		/*
-		{
-			src := fmt.Sprintf("%s/gen/service-commands.go.tmpl", baseDir)
-			target := fmt.Sprintf("%s/%s/commands.go", baseDir, strings.ToLower(service.Name))
-
-			err := generateFileFromTemplate(service, src, target)
-			if err != nil {
-				log.Fatalf("Error generating for service-commands %s (%s)", service.Name, err)
-				return err
-			}
-		}
-		{
-			src := fmt.Sprintf("%s/gen/service-events.go.tmpl", baseDir)
-			target := fmt.Sprintf("%s/%s/events.go", baseDir, strings.ToLower(service.Name))
-
-			err := generateFileFromTemplate(service, src, target)
-			if err != nil {
-				log.Fatalf("Error generating for service-event %s (%s)", err)
-				return err
-			}
-		}
-		*/
-		{
-			src := fmt.Sprintf("%s/gen/service-interface.go.tmpl", baseDir)
-			target := fmt.Sprintf("%s/%s/interface.go", baseDir, strings.ToLower(service.Name))
-
-			err := generateFileFromTemplate(service, src, target)
-			if err != nil {
-				log.Fatalf("Error generating for service-commands %s (%s)", service.Name, err)
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-func generateRun(application spec.Application, baseDir string) error {
-	for _, service := range application.Services {
-		src := fmt.Sprintf("%s/gen/service-application.go.tmpl", baseDir)
-		target := fmt.Sprintf("%s/%s/application.go", baseDir, strings.ToLower(service.Name))
+		src := fmt.Sprintf("%s/gen/service-interface.go.tmpl", baseDir)
+		target := fmt.Sprintf("%s/%s/interface.go", baseDir, strings.ToLower(service.Name))
 
 		err := generateFileFromTemplate(service, src, target)
 		if err != nil {
-			log.Fatalf("Error generating for service-appplication %s (%s)", service.Name, err)
+			log.Fatalf("Error generating for service-commands %s (%s)", service.Name, err)
 			return err
 		}
 	}

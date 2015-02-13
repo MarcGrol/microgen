@@ -6,10 +6,6 @@ import (
 	"github.com/xebia/microgen/events"
 )
 
-func StartApplication(bus events.PublishSubscriber, store events.Store, commandHandler CommandHandler, eventHandler EventHandler, model interface{}) error {
-	return nil
-}
-
 // commands
 
 type CreateDayResultsCommand struct {
@@ -28,14 +24,15 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
+	OnGamblerCreated(event events.GamblerCreated) ([]*events.Envelope, error)
+	OnGamblerTeamCreated(event events.GamblerTeamCreated) ([]*events.Envelope, error)
 	OnTourCreated(event events.TourCreated) ([]*events.Envelope, error)
 	OnEtappeCreated(event events.EtappeCreated) ([]*events.Envelope, error)
 	OnCyclistCreated(event events.CyclistCreated) ([]*events.Envelope, error)
-	OnGamblerCreated(event events.GamblerCreated) ([]*events.Envelope, error)
-	OnGamblerTeamCreated(event events.GamblerTeamCreated) ([]*events.Envelope, error)
 }
 
 type EventApplier interface {
+	ApplyGamblerCreated(event events.GamblerCreated) error
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error
 	ApplyEtappeResultsAvailable(event events.EtappeResultsAvailable) error
 	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) error
@@ -43,5 +40,4 @@ type EventApplier interface {
 	ApplyTourCreated(event events.TourCreated) error
 	ApplyEtappeCreated(event events.EtappeCreated) error
 	ApplyCyclistCreated(event events.CyclistCreated) error
-	ApplyGamblerCreated(event events.GamblerCreated) error
 }

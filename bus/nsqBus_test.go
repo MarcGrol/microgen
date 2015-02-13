@@ -8,7 +8,7 @@ import (
 )
 
 func TestPublishSubscribe(t *testing.T) {
-	bus := NewNsqBus("127.0.0.1", "testingPurposes")
+	bus := NewNsqBus("tourdefrance", "unittest", "127.0.0.1" )
 
 	// publish events
 	bus.Publish((&events.TourCreated{Year: 2015}).Wrap())
@@ -17,6 +17,10 @@ func TestPublishSubscribe(t *testing.T) {
 		CyclistId:   42,
 		CyclistName: "Lance",
 		CyclistTeam: "Rabo"}).Wrap())
+	bus.Publish((&events.GamblerCreated{
+		GamblerUid:   "myuid",
+		GamblerName:  "myname",
+		GamblerEmail: "myname@domain.com"}).Wrap())
 
 	wg := &sync.WaitGroup{}
 	wg.Add(2)

@@ -27,6 +27,14 @@ const (
 {{end}}
 )
 
+func (t Type) String() string {
+	switch( t ) {
+	{{range .GetEvents}}case Type{{.NameToFirstUpper}}: return "{{.NameToFirstUpper}}"
+	{{end}}
+	}
+	return "unknown"
+}
+
 type Envelope struct {
     Type Type `json:"type"`
 {{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`

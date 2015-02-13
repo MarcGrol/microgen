@@ -26,3 +26,4 @@ nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > /tmp/nsqadmin.log &
 # nsq_to_file --topic=test --output-dir=. --lookupd-http-address=127.0.0.1:4161
 
 
+# webinterface see http://localhost:4171/

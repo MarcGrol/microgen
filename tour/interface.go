@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-func StartApplication(bus events.PublishSubscriber, store events.Store, commandHandler CommandHandler, eventHandler EventHandler, model interface{}) error {
-	return nil
-}
-
 // commands
 
 type CreateTourCommand struct {
