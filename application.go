@@ -115,47 +115,47 @@ var (
 				Name: "Tour",
 				Commands: []spec.Command{
 					{
-						Name: "CreateTour",
-                        Method: spec.Post,
-						Url:  "/tour",
-                        Input: spec.Entity {
-                            Attributes: []spec.Attribute{
-							    {Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-						    },
-                        },
+						Name:   "CreateTour",
+						Method: spec.Post,
+						Url:    "/tour",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+							},
+						},
 						ConsumesEvents: []spec.Event{},
 						ProducesEvents: []spec.Event{tourCreated},
 					},
 					{
-						Name: "CreateCyclist",
-                        Method: spec.Post,
-                        Url:  "/tour/:year/cyclist",
-                        Input: spec.Entity {
-						    Attributes: []spec.Attribute{
-                                {Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "team", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                            },
-                        },
+						Name:   "CreateCyclist",
+						Method: spec.Post,
+						Url:    "/tour/:year/cyclist",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "team", Type: spec.TypeString, Cardinality: spec.Mandatory},
+							},
+						},
 						ConsumesEvents: []spec.Event{},
 						ProducesEvents: []spec.Event{cyclistCreated},
 					},
 					{
-						Name: "CreateEtappe",
-                        Method: spec.Post,
-                        Url:  "/tour/:year/etappe",
-                        Input: spec.Entity {
-                            Attributes: []spec.Attribute{
-                                {Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "date", Type: spec.TypeTimestamp, Cardinality: spec.Mandatory},
-                                {Name: "startLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "finishLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "length", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "kind", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                            },
-                        },
+						Name:   "CreateEtappe",
+						Method: spec.Post,
+						Url:    "/tour/:year/etappe",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "date", Type: spec.TypeTimestamp, Cardinality: spec.Mandatory},
+								{Name: "startLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "finishLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "length", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "kind", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+							},
+						},
 						ConsumesEvents: []spec.Event{},
 						ProducesEvents: []spec.Event{etappeCreated},
 					},
@@ -165,30 +165,30 @@ var (
 				Name: "Gambler",
 				Commands: []spec.Command{
 					{
-						Name: "CreateGambler",
-                        Method: spec.Post,
-						Url:  "/gambler",
-                        Input: spec.Entity {
-                            Attributes: []spec.Attribute{
-                                {Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "email", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                            },
-                        },
+						Name:   "CreateGambler",
+						Method: spec.Post,
+						Url:    "/gambler",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "email", Type: spec.TypeString, Cardinality: spec.Mandatory},
+							},
+						},
 						ConsumesEvents: []spec.Event{},
 						ProducesEvents: []spec.Event{gamblerCreated},
 					},
 					{
-						Name: "CreateGamblerTeam",
-                        Method: spec.Post,
-                        Url:  "/gambler/:gamblerUid/team",
-                        Input: spec.Entity {
-                            Attributes: []spec.Attribute{
-                                {Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-                                {Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "cyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-                            },
-                        },
+						Name:   "CreateGamblerTeam",
+						Method: spec.Post,
+						Url:    "/gambler/:gamblerUid/team",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "cyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+							},
+						},
 						ConsumesEvents: []spec.Event{tourCreated},
 						ProducesEvents: []spec.Event{gamblerTeamCreated},
 					},
@@ -198,20 +198,20 @@ var (
 				Name: "Results",
 				Commands: []spec.Command{
 					{
-						Name: "CreateDayResults",
-                        Method: spec.Post,
-                        Url:  "/tour/:year/etappe/:etappeId/results",
-                        Input: spec.Entity {
-                            Attributes: []spec.Attribute{
-                                {Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-                                {Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-                                {Name: "bestAllroundCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-                                {Name: "bestClimbCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-                                {Name: "bestSprintCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-                            },
-                        },
-						ConsumesEvents: []spec.Event{tourCreated,etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
+						Name:   "CreateDayResults",
+						Method: spec.Post,
+						Url:    "/tour/:year/etappe/:etappeId/results",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+								{Name: "bestAllroundCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+								{Name: "bestClimbCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+								{Name: "bestSprintCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+							},
+						},
+						ConsumesEvents: []spec.Event{tourCreated, etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
 						ProducesEvents: []spec.Event{etappeResultsCreated, cyclistScoreCalculated, gamblerScoreCalculated},
 					},
 				},

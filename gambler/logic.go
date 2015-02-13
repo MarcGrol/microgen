@@ -88,7 +88,7 @@ type Cyclist struct {
 	Team string
 }
 
-func NewGambler( uid string, name string, email string) *Gambler {
+func NewGambler(uid string, name string, email string) *Gambler {
 	gambler := new(Gambler)
 	gambler.Uid = uid
 	gambler.Name = name

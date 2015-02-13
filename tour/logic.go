@@ -76,8 +76,8 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {
 	var tourCreatedEvent *events.TourCreated = nil
-	
-	callback := func ( envelope *events.Envelope) bool {
+
+	callback := func(envelope *events.Envelope) bool {
 		if envelope.Type == events.TypeTourCreated && envelope.TourCreated != nil && envelope.TourCreated.Year == year {
 			tourCreatedEvent = envelope.TourCreated
 			return true
