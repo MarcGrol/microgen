@@ -9,28 +9,30 @@ import (
 )
 
 type NsqBus struct {
-	address   string
-	config    *nsq.Config
-	producer  *nsq.Producer
-	consumers []*nsq.Consumer
+	address      string
+	consumerName string
+	config       *nsq.Config
+	producer     *nsq.Producer
+	consumers    []*nsq.Consumer
 }
 
-func NewNsqBus(address string) *NsqBus {
+func NewNsqBus(address string, consumerName string) *NsqBus {
 	bus := new(NsqBus)
 	bus.address = address
+	bus.consumerName = consumerName
 	bus.config = nsq.NewConfig()
 	bus.consumers = make([]*nsq.Consumer, 0, 10)
 	return bus
 }
 
 func (bus *NsqBus) Subscribe(eventType events.Type, callback events.EventHandlerFunc) error {
-	return bus.startConsumer(fmt.Sprintf("topic_%d", eventType), fmt.Sprintf("channel_%d", eventType), callback)
+	return bus.startConsumer(fmt.Sprintf("topic_%d", eventType), callback)
 }
 
-func (bus *NsqBus) startConsumer(topic string, channel string, userCallback events.EventHandlerFunc) error {
-	consumer, err := nsq.NewConsumer(topic, channel, bus.config)
+func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerFunc) error {
+	consumer, err := nsq.NewConsumer(topic, bus.consumerName, bus.config)
 	if err != nil {
-		log.Printf("Error creating nsq consumer (%v)", err)
+		log.Printf("Error creating nsq consumer %s/%s (%v)", topic, bus.consumerName, err)
 		return err
 	}
 
@@ -41,7 +43,11 @@ func (bus *NsqBus) startConsumer(topic string, channel string, userCallback even
 			log.Printf("Error unmarshalling event-envelope (%v)", err)
 			return nil
 		}
-		return userCallback(&envelope)
+		err = userCallback(&envelope)
+		if err != nil {
+			log.Printf("Error handling event-envelope (%v)", err)
+		}
+		return err
 	}
 	consumer.AddHandler(nsq.HandlerFunc(callback))
 
