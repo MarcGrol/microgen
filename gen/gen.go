@@ -1,0 +1,112 @@
+package gen
+
+import (
+    "os"
+    "log"
+    "fmt"
+    "strings"
+    "path/filepath"
+    "text/template"
+	"github.com/xebia/microgen/spec"
+)
+
+func GenerateApplication(application spec.Application, baseDir string) error {
+    err := validate( application )
+    if err != nil {
+        return err
+    }
+    err = generateEvents( application, baseDir )
+    if err != nil {
+        return err
+    }
+    err = generateServices( application, baseDir )
+    if err != nil {
+        return err
+    }
+    err = generateRun( application, baseDir )
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
+func validate(  application spec.Application ) error {
+    // TODO detect collisions with golang
+    // TODO detect duplicate names etc
+    return nil
+}
+
+func generateEvents( application spec.Application, baseDir string ) error {
+    src := fmt.Sprintf("%s/gen/event.go.tmpl", baseDir)
+    target := fmt.Sprintf("%s/events/events.go", baseDir)
+
+    err := generateFileFromTemplate( application, src, target)
+    if err != nil {
+        log.Fatalf("Error generating for events (%s)", err )
+        return err
+    }
+    return nil
+}
+
+func generateServices( application spec.Application, baseDir string ) error {
+    for _,service := range application.Services {
+        {
+            src :=  fmt.Sprintf("%s/gen/service-commands.go.tmpl",baseDir)
+            target := fmt.Sprintf("%s/%s/commands.go", baseDir, strings.ToLower(service.Name))
+
+            err := generateFileFromTemplate( service, src, target)
+            if err != nil {
+                log.Fatalf("Error generating for service-commands %s (%s)", service.Name, err )
+                return err
+            }
+        }
+        {
+            src :=   fmt.Sprintf("%s/gen/service-events.go.tmpl", baseDir)
+            target := fmt.Sprintf("%s/%s/events.go", baseDir, strings.ToLower(service.Name))
+
+            err := generateFileFromTemplate( service, src, target )
+            if err != nil {
+                log.Fatalf("Error generating for service-event %s (%s)", err )
+                return err
+            }
+        }
+    }
+    return nil
+}
+
+
+func generateRun( application spec.Application, baseDir string ) error {
+    for _,service := range application.Services {
+        src :=  fmt.Sprintf("%s/gen/service-application.go.tmpl",baseDir)
+        target := fmt.Sprintf("%s/%s/application.go", baseDir, strings.ToLower(service.Name))
+
+        err := generateFileFromTemplate( service, src, target)
+        if err != nil {
+            log.Fatalf("Error generating for service-appplication %s (%s)", service.Name, err )
+            return err
+        }
+    }
+    return nil
+}
+
+func generateFileFromTemplate(data interface{}, templateFileName string,  targetFileName string) error {
+    log.Printf("Using template %s to generate target %s\n", templateFileName, targetFileName )
+    t, err := template.ParseFiles(templateFileName)
+    if err != nil {
+        return err
+    }
+    err = os.MkdirAll(filepath.Dir(targetFileName), 0777)
+    if err != nil {
+        return err
+    }
+    w, err := os.Create(targetFileName)
+    if err != nil {
+        return err
+    }
+    defer w.Close()
+    if err := t.Execute(w, data); err != nil {
+        return err
+    }
+    return nil
+}
+

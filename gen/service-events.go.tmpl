@@ -1,0 +1,18 @@
+package {{.NameToLower}};
+
+// Generated automatically: do not edit manually
+
+import (
+    "github.com/xebia/microgen/events"
+)
+
+type EventHandler interface {
+    {{range .GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) ([]*events.Envelope,error)
+    {{end}}
+}
+
+type EventApplier interface {
+    {{range .GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{end}}
+}
+

@@ -1,0 +1,46 @@
+package events
+
+import (
+{{if .HasDateField}}"time"{{end}}
+)
+
+{{range .GetEvents}}
+type {{.NameToFirstUpper}} struct {
+    {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
+    {{end}}
+}
+
+func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
+    envelope := new(Envelope)
+    envelope.Type = Type{{.NameToFirstUpper}}
+    envelope.{{.NameToFirstUpper}} = event
+    return envelope
+}
+{{end}}
+
+type Type int
+const (
+   TypeUnknown Type = iota
+{{range .GetEvents}} Type{{.NameToFirstUpper}}
+{{end}}
+)
+
+type Envelope struct {
+    Type Type
+{{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}}
+{{end}}
+}
+
+type EventHandlerFunc func( Envelope *Envelope ) error
+
+type PublishSubscriber interface {
+    Subscribe( eventType Type, f EventHandlerFunc ) error
+    Publish( Envelope *Envelope ) error
+}
+
+type StoredItemHandlerFunc func( envelope *Envelope ) bool
+
+type Store interface {
+    Store( envelope *Envelope ) error
+    Iterate( StoredItemHandlerFunc ) error
+}
