@@ -13,9 +13,10 @@ import (
 )
 
 type SimpleEventStore struct {
-	mutex    sync.RWMutex
-	filename string
-	fio      *os.File
+	mutex              sync.RWMutex
+	filename           string
+	fio                *os.File
+	lastSequenceNumber uint64
 }
 
 func NewSimpleEventStore() *SimpleEventStore {
@@ -35,6 +36,7 @@ func (store *SimpleEventStore) Open(filename string) error {
 		return err
 	}
 	//log.Printf("Opened file %s", store.filename)
+	store.lastSequenceNumber = store.getLastSequenceNumber()
 	return nil
 }
 
@@ -51,6 +53,11 @@ func (store *SimpleEventStore) writeEvent(envelope *events.Envelope) error {
 		log.Printf("Error going to end of file (%v)", err)
 		return err
 	}
+
+    // assign incementing sequence number to determines order of events
+    store.assignSequenceNumber(envelope)
+
+    //log.Printf("write event: %v\n", envelope )
 
 	// serialize event to json
 	jsonBlob, err := json.Marshal(envelope)
@@ -88,6 +95,10 @@ func (store *SimpleEventStore) Iterate(handlerFunc events.StoredItemHandlerFunc)
 	store.mutex.RLock()
 	defer store.mutex.RUnlock()
 
+    return store.iterate( handlerFunc)
+}
+
+func (store *SimpleEventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
 	_, err := store.fio.Seek(0, os.SEEK_SET)
 	if err != nil {
 		log.Printf("Error going to start of file (%v)", err)
@@ -139,8 +150,26 @@ func (store *SimpleEventStore) readNextEvent() (*events.Envelope, error) {
 		return nil, err
 	}
 	//log.Printf("Unmarshalled blob of type %d", envelope.Type)
+    //log.Printf("read event: %v\n", envelope )
 
 	return &envelope, nil
+}
+
+func (store *SimpleEventStore) assignSequenceNumber( envelope *events.Envelope) {
+    store.lastSequenceNumber = store.lastSequenceNumber+1
+    envelope.SequenceNumber = store.lastSequenceNumber
+}
+
+func (store *SimpleEventStore) getLastSequenceNumber() uint64 {
+	var lastIndex uint64 = 0
+
+	callback := func(envelope *events.Envelope) bool {
+		lastIndex++
+		return false
+	}
+	store.iterate(callback)
+
+	return lastIndex
 }
 
 func (store *SimpleEventStore) Close() {

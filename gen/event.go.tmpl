@@ -3,7 +3,7 @@ package events
 // Generated automatically by microgen: do not edit manually
 
 import (
-{{if .HasDateField}}"time"{{end}}
+    "time"
     "strconv"
 )
 
@@ -18,7 +18,9 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
     envelope.Type = Type{{.NameToFirstUpper}}
     envelope.{{.NameToFirstUpper}} = event
     envelope.AggregateName = "{{.AggregateName}}"
-	    nvelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
+	envelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
+    envelope.SequenceNumber = 0 // TODO
+    envelope.Timestamp = time.Now()
     return envelope
 }
 {{end}}
@@ -39,9 +41,10 @@ func (t Type) String() string {
 }
 
 type Envelope struct {
-    SequenceNumber int64 `json:"sequenceNumber"`
+    SequenceNumber uint64 `json:"sequenceNumber"`
     AggregateName string `json:"aggregateName"`
     AggregateUid string `json:"aggregateUid"`
+    Timestamp time.Time `json:"timestamp"`
     Type Type `json:"type"`
 {{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
 {{end}}

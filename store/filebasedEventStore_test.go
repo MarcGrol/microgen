@@ -37,8 +37,16 @@ func TestStore(t *testing.T) {
 		}
 		store.Iterate(cb)
 		assert.Equal(t, 2, len(envelopes))
+
+		assert.Equal(t, uint64(1), envelopes[0].SequenceNumber)
+		assert.Equal(t, "tour", envelopes[0].AggregateName)
+		assert.Equal(t, "2015", envelopes[0].AggregateUid)
 		assert.Equal(t, events.TypeTourCreated, envelopes[0].Type)
 		assert.Equal(t, 2015, envelopes[0].TourCreated.Year)
+
+		assert.Equal(t, uint64(2), envelopes[1].SequenceNumber)
+		assert.Equal(t, "tour", envelopes[0].AggregateName)
+		assert.Equal(t, "2015", envelopes[0].AggregateUid)
 		assert.Equal(t, events.TypeCyclistCreated, envelopes[1].Type)
 		assert.Equal(t, 42, envelopes[1].CyclistCreated.CyclistId)
 		assert.Equal(t, "Lance", envelopes[1].CyclistCreated.CyclistName)
