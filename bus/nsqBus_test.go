@@ -8,7 +8,7 @@ import (
 )
 
 func TestPublishSubscribe(t *testing.T) {
-	bus := NewNsqBus("tourdefrance", "unittest", "127.0.0.1" )
+	bus := NewNsqBus("tourdefrance", "unittest", "127.0.0.1")
 
 	// publish events
 	bus.Publish((&events.TourCreated{Year: 2015}).Wrap())

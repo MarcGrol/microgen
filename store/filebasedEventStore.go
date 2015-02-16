@@ -54,10 +54,10 @@ func (store *SimpleEventStore) writeEvent(envelope *events.Envelope) error {
 		return err
 	}
 
-    // assign incementing sequence number to determines order of events
-    store.assignSequenceNumber(envelope)
+	// assign incementing sequence number to determines order of events
+	store.assignSequenceNumber(envelope)
 
-    //log.Printf("write event: %v\n", envelope )
+	//log.Printf("write event: %v\n", envelope )
 
 	// serialize event to json
 	jsonBlob, err := json.Marshal(envelope)
@@ -95,7 +95,7 @@ func (store *SimpleEventStore) Iterate(handlerFunc events.StoredItemHandlerFunc)
 	store.mutex.RLock()
 	defer store.mutex.RUnlock()
 
-    return store.iterate( handlerFunc)
+	return store.iterate(handlerFunc)
 }
 
 func (store *SimpleEventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
@@ -150,14 +150,14 @@ func (store *SimpleEventStore) readNextEvent() (*events.Envelope, error) {
 		return nil, err
 	}
 	//log.Printf("Unmarshalled blob of type %d", envelope.Type)
-    //log.Printf("read event: %v\n", envelope )
+	//log.Printf("read event: %v\n", envelope )
 
 	return &envelope, nil
 }
 
-func (store *SimpleEventStore) assignSequenceNumber( envelope *events.Envelope) {
-    store.lastSequenceNumber = store.lastSequenceNumber+1
-    envelope.SequenceNumber = store.lastSequenceNumber
+func (store *SimpleEventStore) assignSequenceNumber(envelope *events.Envelope) {
+	store.lastSequenceNumber = store.lastSequenceNumber + 1
+	envelope.SequenceNumber = store.lastSequenceNumber
 }
 
 func (store *SimpleEventStore) getLastSequenceNumber() uint64 {

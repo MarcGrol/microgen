@@ -18,39 +18,39 @@ func TestStore(t *testing.T) {
 	store := NewSimpleEventStore()
 
 	{
-        // write and close
-	    err := store.Open(FILENAME)
-	    assert.Nil(t, err)
+		// write and close
+		err := store.Open(FILENAME)
+		assert.Nil(t, err)
 		tourCreatedEvent := events.TourCreated{Year: 2015}
 		store.Store(tourCreatedEvent.Wrap())
-	    store.Close()
-    }
+		store.Close()
+	}
 
-    {
-        // write and close
-	    err := store.Open(FILENAME)
-	    assert.Nil(t, err)
+	{
+		// write and close
+		err := store.Open(FILENAME)
+		assert.Nil(t, err)
 		cyclistCreatedEvent := events.CyclistCreated{
 			Year:        2015,
 			CyclistId:   42,
 			CyclistName: "Lance",
 			CyclistTeam: "Rabo"}
 		err = store.Store(cyclistCreatedEvent.Wrap())
-	    assert.Nil(t, err)
+		assert.Nil(t, err)
 		cyclistCreatedEvent2 := events.CyclistCreated{
 			Year:        2016,
 			CyclistId:   43,
 			CyclistName: "Michael Boogerd",
 			CyclistTeam: "Rabo"}
 		err = store.Store(cyclistCreatedEvent2.Wrap())
-	    assert.Nil(t, err)
-	    store.Close()
-    }
+		assert.Nil(t, err)
+		store.Close()
+	}
 
-    {
-        // read all and close
-	    err := store.Open(FILENAME)
-	    assert.Nil(t, err)
+	{
+		// read all and close
+		err := store.Open(FILENAME)
+		assert.Nil(t, err)
 		envelopes := make([]*events.Envelope, 0, 2)
 		cb := func(envelope *events.Envelope) bool {
 			envelopes = append(envelopes, envelope)
@@ -81,16 +81,16 @@ func TestStore(t *testing.T) {
 		assert.Equal(t, "Michael Boogerd", envelopes[2].CyclistCreated.CyclistName)
 		assert.Equal(t, "Rabo", envelopes[2].CyclistCreated.CyclistTeam)
 
-        // quit when found
-        counter := 0
+		// quit when found
+		counter := 0
 		countCb := func(envelope *events.Envelope) bool {
-            counter++
+			counter++
 			return true
 		}
 		store.Iterate(countCb)
 		assert.Equal(t, 1, counter)
 
-	    store.Close()
+		store.Close()
 	}
 
 	store.Close()

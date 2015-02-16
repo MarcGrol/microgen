@@ -131,7 +131,7 @@ var (
 	}
 
 	application = spec.Application{
-		Name: "Tour de france",
+		Name: "tourApp",
 		Services: []spec.Service{
 			{
 				Name: "Tour",

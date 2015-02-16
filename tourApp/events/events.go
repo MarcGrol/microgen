@@ -156,20 +156,18 @@ type Type int
 
 const (
 	TypeUnknown Type = iota
+	TypeGamblerScoreCalculated
+	TypeTourCreated
 	TypeCyclistCreated
 	TypeEtappeCreated
 	TypeGamblerCreated
 	TypeGamblerTeamCreated
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
-	TypeGamblerScoreCalculated
-	TypeTourCreated
 )
 
 func (t Type) String() string {
 	switch t {
-	case TypeGamblerCreated:
-		return "GamblerCreated"
 	case TypeGamblerTeamCreated:
 		return "GamblerTeamCreated"
 	case TypeEtappeResultsAvailable:
@@ -184,6 +182,8 @@ func (t Type) String() string {
 		return "CyclistCreated"
 	case TypeEtappeCreated:
 		return "EtappeCreated"
+	case TypeGamblerCreated:
+		return "GamblerCreated"
 
 	}
 	return "unknown"
@@ -195,14 +195,14 @@ type Envelope struct {
 	AggregateUid           string                  `json:"aggregateUid"`
 	Timestamp              time.Time               `json:"timestamp"`
 	Type                   Type                    `json:"type"`
-	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
-	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
 	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
 	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
 	TourCreated            *TourCreated            `json:"tourCreated"`
 	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
 	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
+	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
+	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
 }
 
 type EventHandlerFunc func(Envelope *Envelope) error

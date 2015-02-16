@@ -34,7 +34,7 @@ func validate(application spec.Application) error {
 
 func generateEvents(application spec.Application, baseDir string) error {
 	src := fmt.Sprintf("%s/gen/event.go.tmpl", baseDir)
-	target := fmt.Sprintf("%s/events/events.go", baseDir)
+	target := fmt.Sprintf("%s/%s/events/events.go", baseDir, application.Name)
 
 	err := generateFileFromTemplate(application, src, target)
 	if err != nil {
@@ -47,7 +47,7 @@ func generateEvents(application spec.Application, baseDir string) error {
 func generateServices(application spec.Application, baseDir string) error {
 	for _, service := range application.Services {
 		src := fmt.Sprintf("%s/gen/service-interface.go.tmpl", baseDir)
-		target := fmt.Sprintf("%s/%s/interface.go", baseDir, strings.ToLower(service.Name))
+		target := fmt.Sprintf("%s/%s/%s/interface.go", baseDir, application.Name, strings.ToLower(service.Name))
 
 		err := generateFileFromTemplate(service, src, target)
 		if err != nil {

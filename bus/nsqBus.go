@@ -8,15 +8,15 @@ import (
 )
 
 type NsqBus struct {
-    applicationName string
-	consumerName string
-	address      string
-	config       *nsq.Config
-	producer     *nsq.Producer
-	consumers    []*nsq.Consumer
+	applicationName string
+	consumerName    string
+	address         string
+	config          *nsq.Config
+	producer        *nsq.Producer
+	consumers       []*nsq.Consumer
 }
 
-func NewNsqBus(applicationName string, consumerName string, address string ) *NsqBus {
+func NewNsqBus(applicationName string, consumerName string, address string) *NsqBus {
 	bus := new(NsqBus)
 	bus.applicationName = applicationName
 	bus.consumerName = consumerName
@@ -102,6 +102,6 @@ func (bus *NsqBus) startProducer() error {
 	return nil
 }
 
-func (bus *NsqBus) getTopicName( eventType events.Type ) string {
-	return bus.applicationName+"_"+eventType.String()
+func (bus *NsqBus) getTopicName(eventType events.Type) string {
+	return bus.applicationName + "_" + eventType.String()
 }
