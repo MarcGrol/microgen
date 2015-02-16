@@ -57,7 +57,7 @@ type PublishSubscriber interface {
     Publish( Envelope *Envelope ) error
 }
 
-type StoredItemHandlerFunc func( envelope *Envelope ) bool
+type StoredItemHandlerFunc func( envelope *Envelope )
 
 type Store interface {
     Store( envelope *Envelope ) error

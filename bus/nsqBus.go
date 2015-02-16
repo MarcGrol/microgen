@@ -3,7 +3,7 @@ package bus
 import (
 	"encoding/json"
 	"github.com/bitly/go-nsq"
-	"github.com/xebia/microgen/events"
+	"github.com/xebia/microgen/tourApp/events"
 	"log"
 )
 

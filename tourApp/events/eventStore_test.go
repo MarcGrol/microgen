@@ -1,8 +1,7 @@
-package store
+package events
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/xebia/microgen/events"
 	"os"
 	"testing"
 )
@@ -15,13 +14,13 @@ func TestStore(t *testing.T) {
 
 	os.Remove(FILENAME)
 
-	store := NewSimpleEventStore()
+	store := NewEventStore()
 
 	{
 		// write and close
 		err := store.Open(FILENAME)
 		assert.Nil(t, err)
-		tourCreatedEvent := events.TourCreated{Year: 2015}
+		tourCreatedEvent := TourCreated{Year: 2015}
 		store.Store(tourCreatedEvent.Wrap())
 		store.Close()
 	}
@@ -30,14 +29,14 @@ func TestStore(t *testing.T) {
 		// write and close
 		err := store.Open(FILENAME)
 		assert.Nil(t, err)
-		cyclistCreatedEvent := events.CyclistCreated{
+		cyclistCreatedEvent := CyclistCreated{
 			Year:        2015,
 			CyclistId:   42,
 			CyclistName: "Lance",
 			CyclistTeam: "Rabo"}
 		err = store.Store(cyclistCreatedEvent.Wrap())
 		assert.Nil(t, err)
-		cyclistCreatedEvent2 := events.CyclistCreated{
+		cyclistCreatedEvent2 := CyclistCreated{
 			Year:        2016,
 			CyclistId:   43,
 			CyclistName: "Michael Boogerd",
@@ -51,10 +50,9 @@ func TestStore(t *testing.T) {
 		// read all and close
 		err := store.Open(FILENAME)
 		assert.Nil(t, err)
-		envelopes := make([]*events.Envelope, 0, 2)
-		cb := func(envelope *events.Envelope) bool {
+		envelopes := make([]*Envelope, 0, 2)
+		cb := func(envelope *Envelope) {
 			envelopes = append(envelopes, envelope)
-			return false
 		}
 		store.Iterate(cb)
 		assert.Equal(t, 3, len(envelopes))
@@ -62,13 +60,13 @@ func TestStore(t *testing.T) {
 		assert.Equal(t, uint64(1), envelopes[0].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[0].AggregateName)
 		assert.Equal(t, "2015", envelopes[0].AggregateUid)
-		assert.Equal(t, events.TypeTourCreated, envelopes[0].Type)
+		assert.Equal(t, TypeTourCreated, envelopes[0].Type)
 		assert.Equal(t, 2015, envelopes[0].TourCreated.Year)
 
 		assert.Equal(t, uint64(2), envelopes[1].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[1].AggregateName)
 		assert.Equal(t, "2015", envelopes[1].AggregateUid)
-		assert.Equal(t, events.TypeCyclistCreated, envelopes[1].Type)
+		assert.Equal(t, TypeCyclistCreated, envelopes[1].Type)
 		assert.Equal(t, 42, envelopes[1].CyclistCreated.CyclistId)
 		assert.Equal(t, "Lance", envelopes[1].CyclistCreated.CyclistName)
 		assert.Equal(t, "Rabo", envelopes[1].CyclistCreated.CyclistTeam)
@@ -76,19 +74,10 @@ func TestStore(t *testing.T) {
 		assert.Equal(t, uint64(3), envelopes[2].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[2].AggregateName)
 		assert.Equal(t, "2016", envelopes[2].AggregateUid)
-		assert.Equal(t, events.TypeCyclistCreated, envelopes[2].Type)
+		assert.Equal(t, TypeCyclistCreated, envelopes[2].Type)
 		assert.Equal(t, 43, envelopes[2].CyclistCreated.CyclistId)
 		assert.Equal(t, "Michael Boogerd", envelopes[2].CyclistCreated.CyclistName)
 		assert.Equal(t, "Rabo", envelopes[2].CyclistCreated.CyclistTeam)
-
-		// quit when found
-		counter := 0
-		countCb := func(envelope *events.Envelope) bool {
-			counter++
-			return true
-		}
-		store.Iterate(countCb)
-		assert.Equal(t, 1, counter)
 
 		store.Close()
 	}
@@ -99,10 +88,10 @@ func TestStore(t *testing.T) {
 func BenchmarkWrite(b *testing.B) {
 	os.Remove(FILENAME)
 
-	store := NewSimpleEventStore()
+	store := NewEventStore()
 	store.Open(FILENAME)
 
-	envelope := (&events.CyclistCreated{
+	envelope := (&CyclistCreated{
 		Year:        2015,
 		CyclistId:   42,
 		CyclistName: "Lance",
@@ -110,8 +99,7 @@ func BenchmarkWrite(b *testing.B) {
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		store.Store(envelope)
-		reader := func(envelope *events.Envelope) bool {
-			return false
+		reader := func(envelope *Envelope) {
 		}
 		store.Iterate(reader)
 	}
