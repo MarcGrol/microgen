@@ -1,14 +1,11 @@
 package bus
 
 import (
-	"encoding/json"
 	"github.com/bitly/go-nsq"
-	"github.com/xebia/microgen/tourApp/events"
 	"log"
 )
 
 type NsqBus struct {
-	applicationName string
 	consumerName    string
 	address         string
 	config          *nsq.Config
@@ -16,9 +13,8 @@ type NsqBus struct {
 	consumers       []*nsq.Consumer
 }
 
-func NewNsqBus(applicationName string, consumerName string, address string) *NsqBus {
+func NewNsqBus(consumerName string, address string) *NsqBus {
 	bus := new(NsqBus)
-	bus.applicationName = applicationName
 	bus.consumerName = consumerName
 	bus.address = address
 	bus.config = nsq.NewConfig()
@@ -26,11 +22,13 @@ func NewNsqBus(applicationName string, consumerName string, address string) *Nsq
 	return bus
 }
 
-func (bus *NsqBus) Subscribe(eventType events.Type, callback events.EventHandlerFunc) error {
-	return bus.startConsumer(bus.getTopicName(eventType), callback)
+type BlobHandlerFunc func(blob []byte) error
+
+func (bus *NsqBus) Subscribe(topic string, callback BlobHandlerFunc) error {
+	return bus.startConsumer(topic, callback)
 }
 
-func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerFunc) error {
+func (bus *NsqBus) startConsumer(topic string, userCallback BlobHandlerFunc) error {
 	consumer, err := nsq.NewConsumer(topic, bus.consumerName, bus.config)
 	if err != nil {
 		log.Printf("Error creating nsq consumer %s/%s (%v)", topic, bus.consumerName, err)
@@ -38,13 +36,7 @@ func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerF
 	}
 
 	callback := func(message *nsq.Message) error {
-		envelope := events.Envelope{Type: events.TypeUnknown}
-		err := json.Unmarshal(message.Body, &envelope)
-		if err != nil {
-			log.Printf("Error unmarshalling event-envelope (%v)", err)
-			return nil
-		}
-		err = userCallback(&envelope)
+		err := userCallback(message.Body)
 		if err != nil {
 			log.Printf("Error handling event-envelope (%v)", err)
 		}
@@ -65,21 +57,15 @@ func (bus *NsqBus) startConsumer(topic string, userCallback events.EventHandlerF
 	return nil
 }
 
-func (bus *NsqBus) Publish(envelope *events.Envelope) error {
+func (bus *NsqBus) Publish(topic string, blob []byte) error {
 	if bus.producer == nil {
 		err := bus.startProducer()
 		if err != nil {
 			return err
 		}
 	}
-	jsonBlob, err := json.Marshal(envelope)
-	if err != nil {
-		log.Printf("Error marshalling event-envelope (%v)", err)
-		return err
-	}
-	//log.Printf("Marshalled event of type %d (%s)", envelope.Type, jsonBlob)
 
-	err = bus.producer.Publish(bus.getTopicName(envelope.Type), jsonBlob)
+	err := bus.producer.Publish(topic, blob)
 	if err != nil {
 		log.Printf("Error publishing event-envelope (%v)", err)
 		return err
@@ -100,8 +86,4 @@ func (bus *NsqBus) startProducer() error {
 	//log.Printf("Started producer")
 
 	return nil
-}
-
-func (bus *NsqBus) getTopicName(eventType events.Type) string {
-	return bus.applicationName + "_" + eventType.String()
 }
