@@ -3,7 +3,7 @@ package gambler
 import (
 	"errors"
 	"fmt"
-	"github.com/xebia/microgen/events"
+	"github.com/xebia/microgen/tourApp/events"
 )
 
 type GamblerCommandHandler struct {
@@ -61,12 +61,10 @@ func (tch *GamblerCommandHandler) publishAndStore([]*events.Envelope) error {
 func getGamblerOnUid(store events.Store, uid string) (*Gambler, bool) {
 	var gamblerCreatedEvent *events.GamblerCreated = nil
 
-	calllback := func(envelope *events.Envelope) bool {
+	calllback := func(envelope *events.Envelope) {
 		if envelope.Type == events.TypeGamblerCreated && envelope.GamblerCreated != nil && envelope.GamblerCreated.GamblerUid == uid {
 			gamblerCreatedEvent = envelope.GamblerCreated
-			return true
 		}
-		return false
 	}
 	store.Iterate(calllback)
 

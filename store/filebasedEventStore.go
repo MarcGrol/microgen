@@ -100,7 +100,7 @@ func (store *SimpleEventStore) readNextEvent() ([]byte, error) {
 	blob := make([]byte, jsonLength)
 	_, err = io.ReadFull(store.fio, blob)
 	if err != nil {
-		log.Printf("Error reading json blob (%v)", err)
+		log.Printf("Error reading blob of length %d (%v)", jsonLength, err)
 		return nil, err
 	}
 	//log.Printf("Read blob with length %d (%s)", read, blob)
