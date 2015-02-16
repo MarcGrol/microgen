@@ -3,7 +3,7 @@ package gambler
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"github.com/xebia/microgen/events"
+	"github.com/xebia/microgen/tourApp/events"
 )
 
 // commands

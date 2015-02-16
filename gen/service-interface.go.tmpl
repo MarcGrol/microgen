@@ -1,15 +1,15 @@
-package {{.NameToLower}}
+package {{.Service.NameToLower}}
 
 // Generated automatically by microgen: do not edit manually
 
 import (
-    {{if .HasDateField}}"time"{{end}}
-    "github.com/xebia/microgen/events"
+    {{if .Service.HasDateField}}"time"{{end}}
+    "github.com/xebia/microgen/{{.Application.Name}}/events"
 )
 
 // commands
 
-{{range .Commands}}
+{{range .Service.Commands}}
 type {{.NameToFirstUpper}}Command struct {
 {{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
 {{end}}
@@ -17,7 +17,7 @@ type {{.NameToFirstUpper}}Command struct {
 {{end}}
 
 type CommandHandler interface {
-    {{range .Commands}}
+    {{range .Service.Commands}}
         Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
     {{end}}
 }
@@ -25,12 +25,12 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-    {{range .GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
     {{end}}
 }
 
 type EventApplier interface {
-    {{range .GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
     {{end}}
 }
 

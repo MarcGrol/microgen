@@ -38,7 +38,7 @@ func generateEvents(application spec.Application, baseDir string) error {
 
 	err := generateFileFromTemplate(application, src, target)
 	if err != nil {
-		log.Fatalf("Error generating for events (%s)", err)
+		log.Fatalf("Error generating application-events (%s)", err)
 		return err
 	}
 	return nil
@@ -49,15 +49,41 @@ func generateServices(application spec.Application, baseDir string) error {
 		src := fmt.Sprintf("%s/gen/service-interface.go.tmpl", baseDir)
 		target := fmt.Sprintf("%s/%s/%s/interface.go", baseDir, application.Name, strings.ToLower(service.Name))
 
-		err := generateFileFromTemplate(service, src, target)
+		err := serviceGenerateFileFromTemplate(application, service, src, target)
 		if err != nil {
-			log.Fatalf("Error generating for service-commands %s (%s)", service.Name, err)
+			log.Fatalf("Error generating for service-interface %s (%s)", service.Name, err)
 			return err
 		}
 	}
 	return nil
 }
 
+type ApplicationAndService struct {
+	Application spec.Application
+	Service     spec.Service
+}
+
+func serviceGenerateFileFromTemplate(application spec.Application, service spec.Service, templateFileName string, targetFileName string) error {
+	log.Printf("Using template %s to generate service target %s\n", templateFileName, targetFileName)
+	t, err := template.ParseFiles(templateFileName)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(filepath.Dir(targetFileName), 0777)
+	if err != nil {
+		return err
+	}
+	w, err := os.Create(targetFileName)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	as := ApplicationAndService{Application: application, Service: service}
+	if err := t.Execute(w, as); err != nil {
+		return err
+	}
+	return nil
+}
 func generateFileFromTemplate(data interface{}, templateFileName string, targetFileName string) error {
 	log.Printf("Using template %s to generate target %s\n", templateFileName, targetFileName)
 	t, err := template.ParseFiles(templateFileName)

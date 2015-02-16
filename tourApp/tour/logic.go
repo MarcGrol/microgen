@@ -3,7 +3,7 @@ package tour
 import (
 	"errors"
 	"fmt"
-	"github.com/xebia/microgen/events"
+	"github.com/xebia/microgen/tourApp/events"
 	"time"
 )
 
