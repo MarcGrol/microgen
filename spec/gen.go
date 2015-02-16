@@ -1,8 +1,7 @@
-package gen
+package spec
 
 import (
 	"fmt"
-	"github.com/xebia/microgen/spec"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,7 +9,7 @@ import (
 	"text/template"
 )
 
-func GenerateApplication(application spec.Application, baseDir string) error {
+func GenerateApplication(application Application, baseDir string) error {
 	err := validate(application)
 	if err != nil {
 		return err
@@ -26,14 +25,14 @@ func GenerateApplication(application spec.Application, baseDir string) error {
 	return nil
 }
 
-func validate(application spec.Application) error {
+func validate(application Application) error {
 	// TODO detect collisions with golang
 	// TODO detect duplicate names etc
 	return nil
 }
 
-func generateEvents(application spec.Application, baseDir string) error {
-	src := fmt.Sprintf("%s/gen/event.go.tmpl", baseDir)
+func generateEvents(application Application, baseDir string) error {
+	src := fmt.Sprintf("%s/spec/event.go.tmpl", baseDir)
 	target := fmt.Sprintf("%s/%s/events/events.go", baseDir, application.Name)
 
 	err := generateFileFromTemplate(application, src, target)
@@ -44,9 +43,9 @@ func generateEvents(application spec.Application, baseDir string) error {
 	return nil
 }
 
-func generateServices(application spec.Application, baseDir string) error {
+func generateServices(application Application, baseDir string) error {
 	for _, service := range application.Services {
-		src := fmt.Sprintf("%s/gen/service-interface.go.tmpl", baseDir)
+		src := fmt.Sprintf("%s/spec/service-interface.go.tmpl", baseDir)
 		target := fmt.Sprintf("%s/%s/%s/interface.go", baseDir, application.Name, strings.ToLower(service.Name))
 
 		err := serviceGenerateFileFromTemplate(application, service, src, target)
@@ -59,11 +58,11 @@ func generateServices(application spec.Application, baseDir string) error {
 }
 
 type ApplicationAndService struct {
-	Application spec.Application
-	Service     spec.Service
+	Application Application
+	Service     Service
 }
 
-func serviceGenerateFileFromTemplate(application spec.Application, service spec.Service, templateFileName string, targetFileName string) error {
+func serviceGenerateFileFromTemplate(application Application, service Service, templateFileName string, targetFileName string) error {
 	log.Printf("Using template %s to generate service target %s\n", templateFileName, targetFileName)
 	t, err := template.ParseFiles(templateFileName)
 	if err != nil {

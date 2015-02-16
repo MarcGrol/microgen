@@ -24,20 +24,20 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	OnCyclistCreated(event events.CyclistCreated) error
 	OnGamblerCreated(event events.GamblerCreated) error
 	OnGamblerTeamCreated(event events.GamblerTeamCreated) error
 	OnTourCreated(event events.TourCreated) error
 	OnEtappeCreated(event events.EtappeCreated) error
+	OnCyclistCreated(event events.CyclistCreated) error
 }
 
 type EventApplier interface {
+	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error
+	ApplyEtappeResultsAvailable(event events.EtappeResultsAvailable) error
+	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) error
 	ApplyGamblerScoreCalculated(event events.GamblerScoreCalculated) error
 	ApplyTourCreated(event events.TourCreated) error
 	ApplyEtappeCreated(event events.EtappeCreated) error
 	ApplyCyclistCreated(event events.CyclistCreated) error
 	ApplyGamblerCreated(event events.GamblerCreated) error
-	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error
-	ApplyEtappeResultsAvailable(event events.EtappeResultsAvailable) error
-	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) error
 }
