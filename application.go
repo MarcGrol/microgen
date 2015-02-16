@@ -8,24 +8,28 @@ var (
 	tourCreated = spec.Event{
 		Name: "TourCreated",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	cyclistCreated = spec.Event{
 		Name: "CyclistCreated",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "cyclistId", Type: spec.TypeInt},
 			{Name: "cyclistName", Type: spec.TypeString},
 			{Name: "cyclistTeam", Type: spec.TypeString},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	etappeCreated = spec.Event{
 		Name: "EtappeCreated",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "etaopeId", Type: spec.TypeInt},
 			{Name: "etappeDate", Type: spec.TypeTimestamp},
 			{Name: "etappeStartLocation", Type: spec.TypeString},
@@ -33,79 +37,97 @@ var (
 			{Name: "etappeLength", Type: spec.TypeInt},
 			{Name: "etappeKind", Type: spec.TypeInt},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	gamblerCreated = spec.Event{
 		Name: "GamblerCreated",
 		Attributes: []spec.Attribute{
-			{Name: "gamblerUid", Type: spec.TypeString},
+			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
 			{Name: "gamblerName", Type: spec.TypeString},
 			{Name: "gamblerEmail", Type: spec.TypeString},
 			{Name: "gamblerImageIUrl", Type: spec.TypeString},
 		},
+		AggregateName:      "gambler",
+		AggregateFieldName: "gamblerUid",
 	}
 
 	gamblerTeamCreated = spec.Event{
 		Name: "GamblerTeamCreated",
 		Attributes: []spec.Attribute{
-			{Name: "gamblerUid", Type: spec.TypeString},
+			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
 			{Name: "year", Type: spec.TypeInt},
 			{Name: "gamblerCyclists", Type: spec.TypeInt, Cardinality: spec.Multiple},
 		},
+		AggregateName:      "gambler",
+		AggregateFieldName: "gamblerUid",
 	}
 
 	tourStarted = spec.Event{
 		Name: "TourStarted",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	scoringRulesAvailable = spec.Event{
 		Name: "scoringRulesAvailable",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	etappeStarted = spec.Event{
 		Name: "EtappeStarted",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "etappeId", Type: spec.TypeInt},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	etappeResultsCreated = spec.Event{
 		Name: "EtappeResultsAvailable",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "lastEtappeId", Type: spec.TypeInt},
 			{Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 			{Name: "bestAllrondersCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 			{Name: "bestSprintersCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 			{Name: "bestClimberCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	cyclistScoreCalculated = spec.Event{
 		Name: "CyclistScoreCalculated",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "cyclistId", Type: spec.TypeInt},
 			{Name: "lastEtappeId", Type: spec.TypeInt},
 			{Name: "newScore", Type: spec.TypeInt},
 		},
+		AggregateName:      "tour",
+		AggregateFieldName: "year",
 	}
 
 	gamblerScoreCalculated = spec.Event{
 		Name: "GamblerScoreCalculated",
 		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt},
+			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 			{Name: "gamblerUid", Type: spec.TypeString},
 			{Name: "lastEtappeId", Type: spec.TypeInt},
 			{Name: "newScore", Type: spec.TypeInt},
 		},
+		AggregateName:      "gambler",
+		AggregateFieldName: "gamblerUid",
 	}
 
 	application = spec.Application{

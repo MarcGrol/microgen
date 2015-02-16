@@ -4,6 +4,7 @@ package events
 
 import (
 {{if .HasDateField}}"time"{{end}}
+    "strconv"
 )
 
 {{range .GetEvents}}
@@ -16,6 +17,8 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
     envelope := new(Envelope)
     envelope.Type = Type{{.NameToFirstUpper}}
     envelope.{{.NameToFirstUpper}} = event
+    envelope.AggregateName = "{{.AggregateName}}"
+	    nvelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
     return envelope
 }
 {{end}}
@@ -36,6 +39,9 @@ func (t Type) String() string {
 }
 
 type Envelope struct {
+    SequenceNumber int64 `json:"sequenceNumber"`
+    AggregateName string `json:"aggregateName"`
+    AggregateUid string `json:"aggregateUid"`
     Type Type `json:"type"`
 {{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
 {{end}}

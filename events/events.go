@@ -3,6 +3,7 @@ package events
 // Generated automatically by microgen: do not edit manually
 
 import (
+	"strconv"
 	"time"
 )
 
@@ -17,6 +18,8 @@ func (event *CyclistCreated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeCyclistCreated
 	envelope.CyclistCreated = event
+	envelope.AggregateName = "tour"
+	nvelope.AggregateUid = strconv.Itoa(event.Year)
 	return envelope
 }
 
@@ -34,6 +37,8 @@ func (event *EtappeCreated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeEtappeCreated
 	envelope.EtappeCreated = event
+	envelope.AggregateName = "tour"
+	nvelope.AggregateUid = strconv.Itoa(event.Year)
 	return envelope
 }
 
@@ -48,6 +53,8 @@ func (event *GamblerCreated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeGamblerCreated
 	envelope.GamblerCreated = event
+	envelope.AggregateName = "gambler"
+	nvelope.AggregateUid = event.GamblerUid
 	return envelope
 }
 
@@ -61,6 +68,8 @@ func (event *GamblerTeamCreated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeGamblerTeamCreated
 	envelope.GamblerTeamCreated = event
+	envelope.AggregateName = "gambler"
+	nvelope.AggregateUid = event.GamblerUid
 	return envelope
 }
 
@@ -77,6 +86,8 @@ func (event *EtappeResultsAvailable) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeEtappeResultsAvailable
 	envelope.EtappeResultsAvailable = event
+	envelope.AggregateName = "tour"
+	nvelope.AggregateUid = strconv.Itoa(event.Year)
 	return envelope
 }
 
@@ -91,6 +102,8 @@ func (event *CyclistScoreCalculated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeCyclistScoreCalculated
 	envelope.CyclistScoreCalculated = event
+	envelope.AggregateName = "tour"
+	nvelope.AggregateUid = strconv.Itoa(event.Year)
 	return envelope
 }
 
@@ -105,6 +118,8 @@ func (event *GamblerScoreCalculated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeGamblerScoreCalculated
 	envelope.GamblerScoreCalculated = event
+	envelope.AggregateName = "gambler"
+	nvelope.AggregateUid = event.GamblerUid
 	return envelope
 }
 
@@ -116,6 +131,8 @@ func (event *TourCreated) Wrap() *Envelope {
 	envelope := new(Envelope)
 	envelope.Type = TypeTourCreated
 	envelope.TourCreated = event
+	envelope.AggregateName = "tour"
+	nvelope.AggregateUid = strconv.Itoa(event.Year)
 	return envelope
 }
 
@@ -123,6 +140,7 @@ type Type int
 
 const (
 	TypeUnknown Type = iota
+	TypeGamblerTeamCreated
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
@@ -130,15 +148,10 @@ const (
 	TypeCyclistCreated
 	TypeEtappeCreated
 	TypeGamblerCreated
-	TypeGamblerTeamCreated
 )
 
 func (t Type) String() string {
 	switch t {
-	case TypeGamblerTeamCreated:
-		return "GamblerTeamCreated"
-	case TypeEtappeResultsAvailable:
-		return "EtappeResultsAvailable"
 	case TypeCyclistScoreCalculated:
 		return "CyclistScoreCalculated"
 	case TypeGamblerScoreCalculated:
@@ -151,12 +164,19 @@ func (t Type) String() string {
 		return "EtappeCreated"
 	case TypeGamblerCreated:
 		return "GamblerCreated"
+	case TypeGamblerTeamCreated:
+		return "GamblerTeamCreated"
+	case TypeEtappeResultsAvailable:
+		return "EtappeResultsAvailable"
 
 	}
 	return "unknown"
 }
 
 type Envelope struct {
+	SequenceNumber         int64                   `json:"sequenceNumber"`
+	AggregateName          string                  `json:"aggregateName"`
+	AggregateUid           string                  `json:"aggregateUid"`
 	Type                   Type                    `json:"type"`
 	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
 	TourCreated            *TourCreated            `json:"tourCreated"`

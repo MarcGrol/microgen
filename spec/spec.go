@@ -1,8 +1,8 @@
 package spec
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
 type Type int
@@ -51,8 +51,10 @@ type Command struct {
 }
 
 type Entity struct {
-	Name       string
-	Attributes []Attribute
+	Name               string
+	Attributes         []Attribute
+	AggregateName      string
+	AggregateFieldName string
 }
 type Event Entity
 
@@ -95,6 +97,30 @@ func (e Event) NameToFirstUpper() string {
 
 func (e Event) NameToFirstLower() string {
 	return strings.ToLower(fmt.Sprintf("%c", e.Name[0])) + e.Name[1:]
+}
+
+func (e Event) AggregateFieldNameToFirstUpper() string {
+	return strings.Title(e.AggregateFieldName)
+}
+
+func (e Event) getAggregateType() Type {
+	aggregateType := TypeString
+
+	for _, attr := range e.Attributes {
+		if attr.Name == e.AggregateFieldName {
+			aggregateType = attr.Type
+			break
+		}
+	}
+	return aggregateType
+}
+
+func (e Event) HasAggregateFieldTypeInt() bool {
+	if e.getAggregateType() == TypeInt {
+		return true
+	}
+
+	return false
 }
 
 func (c Command) NameToFirstUpper() string {
