@@ -3,7 +3,7 @@ package gambler
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"github.com/xebia/microgen/tourApp/events"
+	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
 // commands
@@ -30,10 +30,12 @@ type CommandHandler interface {
 
 type EventHandler interface {
 	OnTourCreated(event events.TourCreated) error
+	OnCyclistCreated(event events.CyclistCreated) error
 }
 
 type EventApplier interface {
-	ApplyGamblerCreated(event events.GamblerCreated) error
-	ApplyTourCreated(event events.TourCreated) error
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error
+	ApplyTourCreated(event events.TourCreated) error
+	ApplyGamblerCreated(event events.GamblerCreated) error
+	ApplyCyclistCreated(event events.CyclistCreated) error
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/xebia/microgen/spec"
+	"github.com/MarcGrol/microgen/spec"
 )
 
 var (
@@ -160,7 +160,7 @@ var (
 								{Name: "team", Type: spec.TypeString, Cardinality: spec.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{},
+						ConsumesEvents: []spec.Event{tourCreated},
 						ProducesEvents: []spec.Event{cyclistCreated},
 					},
 					{
@@ -178,7 +178,7 @@ var (
 								{Name: "kind", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{},
+						ConsumesEvents: []spec.Event{tourCreated},
 						ProducesEvents: []spec.Event{etappeCreated},
 					},
 				},
@@ -197,7 +197,7 @@ var (
 								{Name: "email", Type: spec.TypeString, Cardinality: spec.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{},
+						ConsumesEvents: []spec.Event{tourCreated},
 						ProducesEvents: []spec.Event{gamblerCreated},
 					},
 					{
@@ -211,7 +211,7 @@ var (
 								{Name: "cyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated},
+						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated},
 						ProducesEvents: []spec.Event{gamblerTeamCreated},
 					},
 				},

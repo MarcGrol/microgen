@@ -4,7 +4,7 @@ package {{.Service.NameToLower}}
 
 import (
     {{if .Service.HasDateField}}"time"{{end}}
-    "github.com/xebia/microgen/{{.Application.Name}}/events"
+    "github.com/MarcGrol/microgen/{{.Application.NameToFirstLower}}/events"
 )
 
 // commands

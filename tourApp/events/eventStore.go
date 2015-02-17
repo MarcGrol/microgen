@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/xebia/microgen/store"
+	"github.com/MarcGrol/microgen/store"
 	"log"
 	"sync"
 )

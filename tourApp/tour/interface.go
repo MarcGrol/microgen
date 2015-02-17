@@ -3,7 +3,7 @@ package tour
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"github.com/xebia/microgen/tourApp/events"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"time"
 )
 
@@ -44,7 +44,7 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
+	ApplyCyclistCreated(event events.CyclistCreated) error
 	ApplyEtappeCreated(event events.EtappeCreated) error
 	ApplyTourCreated(event events.TourCreated) error
-	ApplyCyclistCreated(event events.CyclistCreated) error
 }

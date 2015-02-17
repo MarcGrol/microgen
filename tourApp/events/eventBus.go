@@ -2,7 +2,7 @@ package events
 
 import (
 	"encoding/json"
-	"github.com/xebia/microgen/bus"
+	"github.com/MarcGrol/microgen/bus"
 	"log"
 )
 

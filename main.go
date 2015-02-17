@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/xebia/microgen/spec"
+	"github.com/MarcGrol/microgen/spec"
 	"log"
 )
 

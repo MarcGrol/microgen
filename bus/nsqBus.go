@@ -6,11 +6,11 @@ import (
 )
 
 type NsqBus struct {
-	consumerName    string
-	address         string
-	config          *nsq.Config
-	producer        *nsq.Producer
-	consumers       []*nsq.Consumer
+	consumerName string
+	address      string
+	config       *nsq.Config
+	producer     *nsq.Producer
+	consumers    []*nsq.Consumer
 }
 
 func NewNsqBus(consumerName string, address string) *NsqBus {

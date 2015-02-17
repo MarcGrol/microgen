@@ -7,7 +7,7 @@ import (
     "strconv"
 )
 
-{{range .GetEvents}}
+{{range .GetUniqueEvents}}
 type {{.NameToFirstUpper}} struct {
     {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
     {{end}}
@@ -28,13 +28,13 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
 type Type int
 const (
    TypeUnknown Type = iota
-{{range .GetEvents}} Type{{.NameToFirstUpper}}
+{{range .GetUniqueEvents}} Type{{.NameToFirstUpper}}
 {{end}}
 )
 
 func (t Type) String() string {
 	switch( t ) {
-	{{range .GetEvents}}case Type{{.NameToFirstUpper}}: return "{{.NameToFirstUpper}}"
+	{{range .GetUniqueEvents}}case Type{{.NameToFirstUpper}}: return "{{.NameToFirstUpper}}"
 	{{end}}
 	}
 	return "unknown"
@@ -46,7 +46,7 @@ type Envelope struct {
     AggregateUid string `json:"aggregateUid"`
     Timestamp time.Time `json:"timestamp"`
     Type Type `json:"type"`
-{{range .GetEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
+{{range .GetUniqueEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
 {{end}}
 }
 
