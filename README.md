@@ -5,15 +5,25 @@ Experiment with microservices using go
 
 ## Functionality
 A tour-de-france gambling application:
-- As an administrator: Create a tour for a particular year
-- As an administrator: Add cyclists to this tour
-- As an administrator: Add etappes to this tour
-- As an administrator: Publish dayly result of etappe
-- As a gambler: Create a profile 
-- As a gambler: Compose your own team of cyclists for a particular year
-- As anybody: View tours with their cyclists, etappes and results
-- As anybody: View best cyclists of a tour
-- As anybody: View best gamblers of a tour
+1. As an administrator: Create a tour for a particular year
+2. As an administrator: Add cyclists to this tour
+3. As an administrator: Add etappes to this tour
+4. As a gambler: Create a profile 
+5. As a gambler: Compose your own team of cyclists for a particular year
+6. As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers
+7. As anybody: View tours with their cyclists, etappes and results
+8. As anybody: View best cyclists of a tour
+9. As anybody: View best gamblers of a tour
+
+## Devision of functions in services
+### Tour-service
+Responsible for managing tours with their etappes and cyclists (1,2,3,7,8,9)
+
+### Gambler-service
+Responsible for gamblers and their teams of cyclists (4,5)
+
+### Results-service
+Responsible for handling results calculating scores (6)
 
 ## Concept
 An "application" consists of the following concepts:
@@ -31,12 +41,3 @@ An "application" consists of the following concepts:
 - Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](./tourApp/tour/logic_test.go)
 - Provide clear and exact documentation that explains how services are related.
 
-## Devision of functions in services
-### Tour-service
-Responsible for managing tours with their etappes and cyclists. 
-
-### Gambler-service
-Responsible for gamblers and their teams of cyclists.
-
-### Results-service
-Responsible for handling results calculating scores.
