@@ -41,13 +41,15 @@ An "application" consists of the following concepts:
 - Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](./tourApp/tour/logic_test.go)
 - Provide clear and exact documentation that explains how services are related.
 
-## Running and testing
+## Obtaining, building, running and testing
 
+    go get github.com/MarcGrol/microgen
     go fmt ./...
     go test ./...
     go install
     ${GOPATH}/bin/microgen -service=tour
     
-    curl -X POST --header "Content-type: application/json" --data '{"year":2015}' "http://localhost:8081/api/tour"
+    curl -X POST --header "Content-type: application/json"  --header "Accept: application/json" --data '{"year":2015}' "http://localhost:8081/api/tour"
+    curl -X GET  --header "Accept: application/json"  "http://localhost:8081/api/tour/2015"
     
 
