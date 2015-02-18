@@ -21,6 +21,7 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 }
 
 func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) error {
+	// TODO validate input
 
 	// get tour based on year
 	_, found := getTourOnYear(tch.store, command.Year)
@@ -40,6 +41,7 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 }
 
 func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) error {
+	// TODO validate input
 
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
@@ -61,6 +63,7 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 }
 
 func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) error {
+	// TODO validate input
 
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
@@ -119,38 +122,38 @@ func getTourOnYear(store events.Store, year int) (*Tour, bool) {
 }
 
 type Tour struct {
-	Year     *int
-	Etappes  []*Etappe
-	Cyclists []*Cyclist
+	year     *int
+	etappes  []*Etappe
+	cyclists []*Cyclist
 }
 
 type Cyclist struct {
-	Number int
-	Name   string
-	Team   string
+	number int
+	name   string
+	team   string
 }
 
 type Etappe struct {
-	Id             int
-	Date           time.Time
-	StartLocation  string
-	FinishLocation string
-	Length         int
-	Kind           int
+	id             int
+	date           time.Time
+	startLocation  string
+	finishLocation string
+	length         int
+	kind           int
 }
 
 func NewTour() *Tour {
 	tour := new(Tour)
-	tour.Etappes = make([]*Etappe, 0, 30)
-	tour.Cyclists = make([]*Cyclist, 0, 250)
+	tour.etappes = make([]*Etappe, 0, 30)
+	tour.cyclists = make([]*Cyclist, 0, 250)
 	return tour
 }
 
 func (t *Tour) ApplyTourCreated(event events.TourCreated) error {
 	log.Printf("ApplyTourCreated:%v", event)
 
-	t.Year = new(int)
-	*t.Year = event.Year
+	t.year = new(int)
+	*t.year = event.Year
 	return nil
 }
 
@@ -158,10 +161,10 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) error {
 	log.Printf("ApplyCyclistCreated:%v", event)
 
 	cyclist := new(Cyclist)
-	cyclist.Number = event.CyclistId
-	cyclist.Name = event.CyclistName
-	cyclist.Team = event.CyclistTeam
-	t.Cyclists = append(t.Cyclists, cyclist)
+	cyclist.number = event.CyclistId
+	cyclist.name = event.CyclistName
+	cyclist.team = event.CyclistTeam
+	t.cyclists = append(t.cyclists, cyclist)
 	return nil
 }
 
@@ -169,12 +172,12 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) error {
 	log.Printf("ApplyEtappeCreated:%v", event)
 
 	etappe := new(Etappe)
-	etappe.Id = event.EtappeId
-	etappe.Date = event.EtappeDate
-	etappe.StartLocation = event.EtappeStartLocation
-	etappe.FinishLocation = event.EtappeFinishLocation
-	etappe.Length = event.EtappeLength
-	etappe.Kind = event.EtappeKind
-	t.Etappes = append(t.Etappes, etappe)
+	etappe.id = event.EtappeId
+	etappe.date = event.EtappeDate
+	etappe.startLocation = event.EtappeStartLocation
+	etappe.finishLocation = event.EtappeFinishLocation
+	etappe.length = event.EtappeLength
+	etappe.kind = event.EtappeKind
+	t.etappes = append(t.etappes, etappe)
 	return nil
 }
