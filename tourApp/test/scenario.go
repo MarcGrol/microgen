@@ -20,8 +20,7 @@ type Scenario struct {
 	Bus   events.PublishSubscriber
 	Store events.Store
 
-	Name        string
-	Description string
+	Title       string
 	Given       []events.Envelope
 	When        ScenarioExecutorFunc
 	Expect      []events.Envelope

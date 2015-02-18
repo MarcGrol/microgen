@@ -10,8 +10,7 @@ import (
 
 func TestCreateTourCommand(t *testing.T) {
 	scenario := test.Scenario{
-		Name:        "NewTourSuccess",
-		Description: "Create new tour on clean system",
+		Title: "Create new tour on clean system",
 		Given:       []events.Envelope{},
 		When: func(scenario *test.Scenario) error {
 			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
@@ -33,8 +32,7 @@ func TestCreateTourCommand(t *testing.T) {
 
 func TestCreateCyclistCommand(t *testing.T) {
 	scenario := test.Scenario{
-		Name:        "NewCyclistSuccess",
-		Description: "Create new cyclist with existing tour",
+		Title: "Create new cyclist with existing tour",
 		Given: []events.Envelope{
 			{
 				Type:        events.TypeTourCreated,
@@ -75,8 +73,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 func TestCreateEtappeCommand(t *testing.T) {
 	scenario := test.Scenario{
-		Name:        "NewEtappeSuccess",
-		Description: "Create new etappe with existing tour",
+		Title: "Create new etappe with existing tour",
 		Given: []events.Envelope{
 			{
 				Type:        events.TypeTourCreated,
