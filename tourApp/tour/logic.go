@@ -70,10 +70,10 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 
 	// apply business logic
 	etappeCreatedEvent := events.EtappeCreated{Year: command.Year,
-		EtaopeId:              command.Id,
+		EtappeId:              command.Id,
 		EtappeDate:            command.Date,
 		EtappeStartLocation:   command.StartLocation,
-		EtappeFinishtLocation: command.FinishLocation,
+		EtappeFinishLocation: command.FinishLocation,
 		EtappeLength:          command.Length,
 		EtappeKind:            command.Kind}
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
@@ -169,10 +169,10 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) error {
 	log.Printf("ApplyEtappeCreated:%v", event)
 
 	etappe := new(Etappe)
-	etappe.Id = event.EtaopeId
+	etappe.Id = event.EtappeId
 	etappe.Date = event.EtappeDate
 	etappe.StartLocation = event.EtappeStartLocation
-	etappe.FinishLocation = event.EtappeFinishtLocation
+	etappe.FinishLocation = event.EtappeFinishLocation
 	etappe.Length = event.EtappeLength
 	etappe.Kind = event.EtappeKind
 	t.Etappes = append(t.Etappes, etappe)

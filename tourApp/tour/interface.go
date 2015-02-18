@@ -44,7 +44,7 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
+	ApplyTourCreated(event events.TourCreated) error
 	ApplyCyclistCreated(event events.CyclistCreated) error
 	ApplyEtappeCreated(event events.EtappeCreated) error
-	ApplyTourCreated(event events.TourCreated) error
 }

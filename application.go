@@ -30,10 +30,10 @@ var (
 		Name: "EtappeCreated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "etaopeId", Type: spec.TypeInt},
+			{Name: "etappeId", Type: spec.TypeInt},
 			{Name: "etappeDate", Type: spec.TypeTimestamp},
 			{Name: "etappeStartLocation", Type: spec.TypeString},
-			{Name: "etappeFinishtLocation", Type: spec.TypeString},
+			{Name: "etappeFinishLocation", Type: spec.TypeString},
 			{Name: "etappeLength", Type: spec.TypeInt},
 			{Name: "etappeKind", Type: spec.TypeInt},
 		},

@@ -1,4 +1,4 @@
-package tour
+package test
 
 import (
 	"github.com/MarcGrol/microgen/tourApp/events"
@@ -17,25 +17,25 @@ type Scenarios struct {
 type ScenarioExecutorFunc func(scenario *Scenario) error
 
 type Scenario struct {
-	bus   events.PublishSubscriber
-	store events.Store
+	Bus   events.PublishSubscriber
+	Store events.Store
 
 	Name        string
 	Description string
 	Given       []events.Envelope
-	CallSubject ScenarioExecutorFunc
+	When        ScenarioExecutorFunc
 	Expect      []events.Envelope
 	Actual      []*events.Envelope
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {
 
-	s.store = NewFakeStore()
-	s.bus = NewFakeBus()
+	s.Store = NewFakeStore()
+	s.Bus = NewFakeBus()
 
 	// store preconditions
 	for _, given := range s.Given {
-		s.store.Store(&given)
+		s.Store.Store(&given)
 	}
 
 	// subscribe to all expected topics to catch published evemts
@@ -45,11 +45,11 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 		return nil
 	}
 	for _, expected := range s.Expect {
-		s.bus.Subscribe(expected.Type, callback)
+		s.Bus.Subscribe(expected.Type, callback)
 	}
 
 	// execute operation on subject
-	err := s.CallSubject(s)
+	err := s.When(s)
 	assert.Nil(t, err)
 
 	// basic ocmpare expected with actual
