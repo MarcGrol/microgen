@@ -21,9 +21,9 @@ type Scenario struct {
 	Store events.Store
 
 	Title       string
-	Given       []events.Envelope
+	Given       []*events.Envelope
 	When        ScenarioExecutorFunc
-	Expect      []events.Envelope
+	Expect      []*events.Envelope
 	Actual      []*events.Envelope
 }
 
@@ -34,7 +34,7 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 
 	// store preconditions
 	for _, given := range s.Given {
-		s.Store.Store(&given)
+		s.Store.Store(given)
 	}
 
 	// subscribe to all expected topics to catch published evemts
@@ -54,7 +54,6 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 	// basic ocmpare expected with actual
 	assert.Equal(t, len(s.Expect), len(s.Actual))
 	for idx, actual := range s.Actual {
-		assert.Equal(t, s.Expect[idx].SequenceNumber, actual.SequenceNumber)
 		assert.Equal(t, s.Expect[idx].AggregateName, actual.AggregateName)
 		assert.Equal(t, s.Expect[idx].AggregateUid, actual.AggregateUid)
 		assert.Equal(t, s.Expect[idx].Type, actual.Type)

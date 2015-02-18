@@ -19,7 +19,7 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
     envelope.{{.NameToFirstUpper}} = event
     envelope.AggregateName = "{{.AggregateName}}"
 	envelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
-    envelope.SequenceNumber = 0 // TODO
+    envelope.SequenceNumber = 0 // Set later by event-store
     envelope.Timestamp = time.Now()
     return envelope
 }
@@ -53,13 +53,13 @@ type Envelope struct {
 type EventHandlerFunc func( Envelope *Envelope ) error
 
 type PublishSubscriber interface {
-    Subscribe( eventType Type, f EventHandlerFunc ) error
-    Publish( Envelope *Envelope ) error
+    Subscribe( eventType Type, callback EventHandlerFunc ) error
+    Publish( envelope *Envelope ) error
 }
 
 type StoredItemHandlerFunc func( envelope *Envelope )
 
 type Store interface {
     Store( envelope *Envelope ) error
-    Iterate( StoredItemHandlerFunc ) error
+    Iterate( callback StoredItemHandlerFunc ) error
 }
