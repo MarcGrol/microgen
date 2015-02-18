@@ -3,7 +3,7 @@ package test
 import (
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
-	"log"
+//	"log"
 	"os"
 	"testing"
 	"errors"
@@ -77,7 +77,7 @@ func NewFakeBus() *FakeBus {
 
 func (bus *FakeBus) Subscribe(eventType events.Type, callback events.EventHandlerFunc) error {
 	bus.callbacks[eventType] = callback
-	log.Printf("FakeBus: subscribed to: %s", eventType.String())
+	//log.Printf("FakeBus: subscribed to: %s", eventType.String())
 	return nil
 }
 
@@ -85,7 +85,7 @@ func (bus *FakeBus) Publish(envelope *events.Envelope) error {
 	callback, ok := bus.callbacks[envelope.Type]
 	if ok == false {
 		bus.undeliverable[envelope.Type] = append(bus.undeliverable[envelope.Type], *envelope)
-		log.Printf("FakeBus: undeliverable: %v", envelope)
+		//log.Printf("FakeBus: undeliverable: %v", envelope)
 		return errors.New(fmt.Sprintf("Received event on non-subscribed channel %s", envelope.Type.String()))
 	} else {
 		callback(envelope)
@@ -106,7 +106,7 @@ func NewFakeStore() *FakeStore {
 func (store *FakeStore) Store(envelope *events.Envelope) error {
 	envelope.SequenceNumber = uint64(len(store.stored) + 1)
 	store.stored = append(store.stored, *envelope)
-	log.Printf("FakeStore: stored: %v", envelope)
+	//log.Printf("FakeStore: stored: %v", envelope)
 	return nil
 }
 

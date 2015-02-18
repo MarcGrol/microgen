@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"log"
+//	"log"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	tourCreatedEvent := events.TourCreated{command.Year}
 	tour.ApplyTourCreated(tourCreatedEvent)
 
-	log.Printf("HandleCreateTourCommand completed:%v -> %v", command, tourCreatedEvent)
+	//log.Printf("HandleCreateTourCommand completed:%v -> %v", command, tourCreatedEvent)
 
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{tourCreatedEvent.Wrap()})
@@ -56,7 +56,7 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 		CyclistTeam: command.Team}
 	tour.ApplyCyclistCreated(cyclistCreatedEvent)
 
-	log.Printf("HandleCreateCyclistCommand completed:%v -> %v", command, cyclistCreatedEvent)
+	//log.Printf("HandleCreateCyclistCommand completed:%v -> %v", command, cyclistCreatedEvent)
 
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{cyclistCreatedEvent.Wrap()})
@@ -81,7 +81,7 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 		EtappeKind:           command.Kind}
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
-	log.Printf("HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)
+	//log.Printf("HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)
 
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{etappeCreatedEvent.Wrap()})
@@ -89,7 +89,7 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 
 func (tch *TourCommandHandler) publishAndStore(envelopes []*events.Envelope) error {
 	for _, env := range envelopes {
-		log.Printf("publishAndStore:%v", env)
+		//log.Printf("publishAndStore:%v", env)
 		err := tch.store.Store(env)
 		if err != nil {
 			return err
@@ -150,7 +150,7 @@ func NewTour() *Tour {
 }
 
 func (t *Tour) ApplyTourCreated(event events.TourCreated) error {
-	log.Printf("ApplyTourCreated:%v", event)
+	//log.Printf("ApplyTourCreated:%v", event)
 
 	t.year = new(int)
 	*t.year = event.Year
@@ -158,7 +158,7 @@ func (t *Tour) ApplyTourCreated(event events.TourCreated) error {
 }
 
 func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) error {
-	log.Printf("ApplyCyclistCreated:%v", event)
+	//log.Printf("ApplyCyclistCreated:%v", event)
 
 	cyclist := new(Cyclist)
 	cyclist.number = event.CyclistId
@@ -169,7 +169,7 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) error {
 }
 
 func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) error {
-	log.Printf("ApplyEtappeCreated:%v", event)
+	//log.Printf("ApplyEtappeCreated:%v", event)
 
 	etappe := new(Etappe)
 	etappe.id = event.EtappeId
