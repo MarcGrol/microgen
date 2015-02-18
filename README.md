@@ -20,6 +20,6 @@ Describe your application in terms of:
  - events: with attributes
  - commands: with attributes
  - services:
-    - have services that process commands
-        - a command emit event(s)
-    - a service consumes events (emitted by other services)
+    - process commands
+        - a command can emit event(s) that can be consumed by other services
+    - consume events (emitted by other services)
