@@ -4,7 +4,7 @@
 Experiment with microservices using go
 
 ## Functionality
-A tour-de-france gambling
+A tour-de-france gambling application:
 - As an administrator: Create a tour for a particular year
 - As an administrator: Add cyclists to this tour
 - As an administrator: Add etappes to this tour
@@ -18,6 +18,8 @@ A tour-de-france gambling
 ## Solution
 Describe your application in terms of:
  - events: with attributes
- - commands:with attributes
- - services that process commands and emit events
- - services that consume events (emitted by other services)
+ - commands: with attributes
+ - services:
+    - have services that process commands
+        - a command emit event(s)
+    - a service consumes events (emitted by other services)
