@@ -23,7 +23,7 @@ An "application" consists of the following concepts:
 
 ##Technical solution
 - describe application in terns of "services", "commands" and "events". Example: [https://github.com/MarcGrol/microgen/blob/master/application.go]
-- generate events and interfaces based on "description" of application. Example: tourApp/events/events.go and tourApp/tour/interface.go
+- generate events and interfaces based on "description" of application. Example: [https://github.com/MarcGrol/microgen/blob/master/tourApp/events/events.go] and [https://github.com/MarcGrol/microgen/blob/master/tourApp/tour/interface.go]
 - provide implementation for "bus" (=exchange of events between services)
 - provide implementation of append-ony "store" for persistence
 - declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: tourApp/tour/logic_test.go
