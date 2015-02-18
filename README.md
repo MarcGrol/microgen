@@ -23,8 +23,20 @@ An "application" consists of the following concepts:
 
 ##Technical solution
 - Describe application in terns of "services", "commands" and "events". Example: [application.go](./application.go)
-- generate events and interfaces based on "description" of application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/tour/interface.go)
-- Provide implementation for "bus" (=exchange of events between services)
+- Generate events and interfaces based on "description" of application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/tour/interface.go). This to achieve consistent approach and ease error phrone tasks.
+- Provide implementation for "bus" (=to exchange of events between services)
 - Provide implementation of append-ony "store" for persistence
+- Provide implementation of http handler to process commands.
+- Provide a mechanism for starting and configuring services.
 - Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](./tourApp/tour/logic_test.go)
 - Provide clear and exact documentation that explains how services are related.
+
+## Devision of functions in services
+### Tour-service
+Responsible for managing tours with their etappes and cyclists. 
+
+### Gambler-service
+Responsible for gamblers and their teams of cyclists.
+
+### Results-service
+Responsible for handling results calculating scores.
