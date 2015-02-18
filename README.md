@@ -5,15 +5,15 @@ Experiment with microservices using go
 
 ## Functionality
 A tour-de-france gambling application:
-1  As an administrator: Create a tour for a particular year
-2  As an administrator: Add cyclists to a tour
-3  As an administrator: Add etappes to a tour
-4  As a gambler: Create a profile 
-5  As a gambler: Compose your own team of cyclists for a particular year
-6  As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers
-7  As anybody: View tours with their cyclists, etappes and results
-8  As anybody: View best cyclists of a tour
-9  As anybody: View best gamblers of a tour
+- As an administrator: Create a tour for a particular year (1)
+- As an administrator: Add cyclists to a tour (2)
+- As an administrator: Add etappes to a tour (3)
+- As a gambler: Create a profile (4)
+- As a gambler: Compose your own team of cyclists for a particular year (5)
+- As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers (6)
+- As anybody: View tours with their cyclists, etappes and results (7)
+- As anybody: View best cyclists of a tour (8)
+- As anybody: View best gamblers of a tour (9)
 
 ## Devision of functions in services
 ### Tour-service
