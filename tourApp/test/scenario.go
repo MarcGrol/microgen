@@ -3,11 +3,11 @@ package test
 import (
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
-//	"log"
-	"os"
-	"testing"
+	//	"log"
 	"errors"
 	"fmt"
+	"os"
+	"testing"
 )
 
 type Scenarios struct {
@@ -20,11 +20,11 @@ type Scenario struct {
 	Bus   events.PublishSubscriber
 	Store events.Store
 
-	Title       string
-	Given       []*events.Envelope
-	When        ScenarioExecutorFunc
-	Expect      []*events.Envelope
-	Actual      []*events.Envelope
+	Title  string
+	Given  []*events.Envelope
+	When   ScenarioExecutorFunc
+	Expect []*events.Envelope
+	Actual []*events.Envelope
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {
@@ -116,7 +116,7 @@ func (store *FakeStore) Iterate(callback events.StoredItemHandlerFunc) error {
 }
 
 const (
-	FILENAME="test.db"
+	FILENAME = "test.db"
 )
 
 func createRealStore() (*events.EventStore, error) {

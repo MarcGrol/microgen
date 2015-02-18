@@ -3,7 +3,7 @@ package gambler
 import (
 	"errors"
 	"fmt"
-	"github.com/xebia/MarcGrol/tourApp/events"
+	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
 type GamblerCommandHandler struct {
