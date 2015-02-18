@@ -3,8 +3,9 @@ package tour
 import (
 	"errors"
 	"fmt"
-	"github.com/xebia/MarcGrol/tourApp/events"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"time"
+	"log"
 )
 
 type TourCommandHandler struct {
@@ -20,6 +21,7 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 }
 
 func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) error {
+
 	// get tour based on year
 	_, found := getTourOnYear(tch.store, command.Year)
 	if found == true {
@@ -31,11 +33,14 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	tourCreatedEvent := events.TourCreated{command.Year}
 	tour.ApplyTourCreated(tourCreatedEvent)
 
+	log.Printf( "HandleCreateTourCommand completed:%v -> %v", command, tourCreatedEvent)
+
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{tourCreatedEvent.Wrap()})
 }
 
 func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) error {
+
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
@@ -49,11 +54,14 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 		CyclistTeam: command.Team}
 	tour.ApplyCyclistCreated(cyclistCreatedEvent)
 
+	log.Printf( "HandleCreateCyclistCommand completed:%v -> %v", command, cyclistCreatedEvent)
+	
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
 func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) error {
+
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
@@ -70,12 +78,25 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 		EtappeKind:            command.Kind}
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
+	log.Printf( "HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)
+	
 	// store and emit resulting event
 	return tch.publishAndStore([]*events.Envelope{etappeCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) publishAndStore([]*events.Envelope) error {
-	return errors.New("publishAndStore not implemented")
+func (tch *TourCommandHandler) publishAndStore(envelopes []*events.Envelope) error {
+	for _,env := range envelopes {
+		log.Printf( "publishAndStore:%v", env)
+		err := tch.store.Store(env)
+		if err != nil {
+			return err
+		}
+		err = tch.bus.Publish(env)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {
@@ -126,12 +147,16 @@ func NewTour() *Tour {
 }
 
 func (t *Tour) ApplyTourCreated(event events.TourCreated) error {
+	log.Printf( "ApplyTourCreated:%v", event)
+
 	t.Year = new(int)
 	*t.Year = event.Year
 	return nil
 }
 
 func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) error {
+	log.Printf( "ApplyCyclistCreated:%v", event)
+
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
 	cyclist.Name = event.CyclistName
@@ -141,6 +166,8 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) error {
 }
 
 func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) error {
+	log.Printf( "ApplyEtappeCreated:%v", event)
+
 	etappe := new(Etappe)
 	etappe.Id = event.EtaopeId
 	etappe.Date = event.EtappeDate
