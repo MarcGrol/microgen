@@ -70,12 +70,12 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 
 	// apply business logic
 	etappeCreatedEvent := events.EtappeCreated{Year: command.Year,
-		EtappeId:              command.Id,
-		EtappeDate:            command.Date,
-		EtappeStartLocation:   command.StartLocation,
+		EtappeId:             command.Id,
+		EtappeDate:           command.Date,
+		EtappeStartLocation:  command.StartLocation,
 		EtappeFinishLocation: command.FinishLocation,
-		EtappeLength:          command.Length,
-		EtappeKind:            command.Kind}
+		EtappeLength:         command.Length,
+		EtappeKind:           command.Kind}
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
 	log.Printf("HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)

@@ -9,18 +9,18 @@ import (
 )
 
 func TestCreateTourCommand(t *testing.T) {
-	operationOnSubject := func(scenario *test.Scenario) error {
-		service := NewTourCommandHandler(scenario.Bus, scenario.Store)
-		return service.HandleCreateTourCommand(CreateTourCommand{Year: 2015})
-	}
 	scenario := test.Scenario{
 		Name:        "NewTourSuccess",
 		Description: "Create new tour on clean system",
 		Given:       []events.Envelope{},
-		When:        operationOnSubject,
+		When: func(scenario *test.Scenario) error {
+			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateTourCommand(CreateTourCommand{Year: 2015})
+		},
 		Expect: []events.Envelope{
 			{
-				SequenceNumber: 1, AggregateName: "tour", AggregateUid: "2015", Type: events.TypeTourCreated,
+				SequenceNumber: 1, AggregateName: "tour", AggregateUid: "2015",
+				Type:        events.TypeTourCreated,
 				TourCreated: &events.TourCreated{Year: 2015},
 			},
 		},
@@ -32,10 +32,6 @@ func TestCreateTourCommand(t *testing.T) {
 }
 
 func TestCreateCyclistCommand(t *testing.T) {
-	operationOnSubject := func(scenario *test.Scenario) error {
-		service := NewTourCommandHandler(scenario.Bus, scenario.Store)
-		return service.HandleCreateCyclistCommand(CreateCyclistCommand{Year: 2015, Id: 42, Name: "My name", Team: "My team"})
-	}
 	scenario := test.Scenario{
 		Name:        "NewCyclistSuccess",
 		Description: "Create new cyclist with existing tour",
@@ -45,14 +41,28 @@ func TestCreateCyclistCommand(t *testing.T) {
 				TourCreated: &events.TourCreated{Year: 2015},
 			},
 		},
-		When: operationOnSubject,
+		When: func(scenario *test.Scenario) error {
+			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateCyclistCommand(
+				CreateCyclistCommand{
+					Year: 2015,
+					Id:   42,
+					Name: "My name",
+					Team: "My team"})
+		},
 		Expect: []events.Envelope{
 			{
-				SequenceNumber: 2, AggregateName: "tour", AggregateUid: "2015", Type: events.TypeCyclistCreated,
-				CyclistCreated: &events.CyclistCreated{Year: 2015, CyclistId: 42, CyclistName: "My name", CyclistTeam: "My team"},
+				SequenceNumber: 2, AggregateName: "tour", AggregateUid: "2015",
+				Type: events.TypeCyclistCreated,
+				CyclistCreated: &events.CyclistCreated{
+					Year:        2015,
+					CyclistId:   42,
+					CyclistName: "My name",
+					CyclistTeam: "My team"},
 			},
 		},
 	}
+	
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, scenario.Expect[0].CyclistCreated.Year, scenario.Actual[0].CyclistCreated.Year)
@@ -62,18 +72,6 @@ func TestCreateCyclistCommand(t *testing.T) {
 }
 
 func TestCreateEtappeCommand(t *testing.T) {
-	operationOnSubject := func(scenario *test.Scenario) error {
-		service := NewTourCommandHandler(scenario.Bus, scenario.Store)
-		return service.HandleCreateEtappeCommand(
-			CreateEtappeCommand{
-				Year:           2015,
-				Id:             2,
-				Date:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
-				StartLocation:  "Parijs",
-				FinishLocation: "Roubaix",
-				Length:         255,
-				Kind:           3})
-	}
 	scenario := test.Scenario{
 		Name:        "NewEtappeSuccess",
 		Description: "Create new etappe with existing tour",
@@ -83,21 +81,34 @@ func TestCreateEtappeCommand(t *testing.T) {
 				TourCreated: &events.TourCreated{Year: 2015},
 			},
 		},
-		When: operationOnSubject,
+		When: func(scenario *test.Scenario) error {
+			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateEtappeCommand(
+				CreateEtappeCommand{
+					Year:           2015,
+					Id:             2,
+					Date:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
+					StartLocation:  "Parijs",
+					FinishLocation: "Roubaix",
+					Length:         255,
+					Kind:           3})
+		},
 		Expect: []events.Envelope{
 			{
-				SequenceNumber: 2, AggregateName: "tour", AggregateUid: "2015", Type: events.TypeEtappeCreated,
+				SequenceNumber: 2, AggregateName: "tour", AggregateUid: "2015",
+				Type: events.TypeEtappeCreated,
 				EtappeCreated: &events.EtappeCreated{
-					Year:                  2015,
-					EtappeId:              2,
-					EtappeDate:            time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
-					EtappeStartLocation:   "Parijs",
-					EtappeLength:          255,
+					Year:                 2015,
+					EtappeId:             2,
+					EtappeDate:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
+					EtappeStartLocation:  "Parijs",
+					EtappeLength:         255,
 					EtappeFinishLocation: "Roubaix",
-					EtappeKind:            3},
+					EtappeKind:           3},
 			},
 		},
 	}
+	
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, scenario.Expect[0].EtappeCreated.Year, scenario.Actual[0].EtappeCreated.Year)
