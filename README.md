@@ -16,9 +16,9 @@ A tour-de-france gambling application:
 - As a gambler: View best gamblers
 
 ## Concept
-Describe your "application" in terms of:
+An "application" consists of the following concepts:
  - "service": one or more loosely couples "services"
- - "command": each service supports zero or more commands. Actors interact with the system via these commands (and queries)
+ - "command": each service supports zero or more commands. Actors interact with the system via these commands (and queries) on services.
  - "event" (with "attributes"): each commands emits zero or more events. An event is used to exchange of information between services in an async away
 
 ##Technical solution
