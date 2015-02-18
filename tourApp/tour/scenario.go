@@ -117,6 +117,10 @@ func (store *FakeStore) Iterate(callback events.StoredItemHandlerFunc) error {
 	return nil
 }
 
+const (
+	FILENAME="test.db"
+)
+
 func createRealStore() (*events.EventStore, error) {
 	os.Remove(FILENAME)
 	store := events.NewEventStore()

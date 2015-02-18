@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-const (
-	FILENAME = "tour_test.db"
-)
-
 func TestCreateTourCommand(t *testing.T) {
 	operationOnSubject := func(scenario *Scenario) error {
 		service := NewTourCommandHandler(scenario.bus, scenario.store)
@@ -59,16 +55,11 @@ func TestCreateCyclistCommand(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, 2015, scenario.Actual[0].CyclistCreated.Year)
+	assert.Equal(t, 42, scenario.Actual[0].CyclistCreated.CyclistId)
+	assert.Equal(t, "My name", scenario.Actual[0].CyclistCreated.CyclistName)
+	assert.Equal(t, "My team", scenario.Actual[0].CyclistCreated.CyclistTeam)
 }
-/*
-Year                  int       `json:"year"`
-	EtaopeId              int       `json:"etaopeId"`
-	EtappeDate            time.Time `json:"etappeDate"`
-	EtappeStartLocation   string    `json:"etappeStartLocation"`
-	EtappeFinishtLocation string    `json:"etappeFinishtLocation"`
-	EtappeLength          int       `json:"etappeLength"`
-	EtappeKind            int       `json:"etappeKind"`
-	*/
+
 func TestCreateEtappeCommand(t *testing.T) {
 	operationOnSubject := func(scenario *Scenario) error {
 		service := NewTourCommandHandler(scenario.bus, scenario.store)
