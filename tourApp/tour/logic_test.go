@@ -65,10 +65,12 @@ func TestCreateCyclistCommand(t *testing.T) {
 	
 	scenario.RunAndVerify(t)
 
-	assert.Equal(t, scenario.Expect[0].CyclistCreated.Year, scenario.Actual[0].CyclistCreated.Year)
-	assert.Equal(t, scenario.Expect[0].CyclistCreated.CyclistId, scenario.Actual[0].CyclistCreated.CyclistId)
-	assert.Equal(t, scenario.Expect[0].CyclistCreated.CyclistName, scenario.Actual[0].CyclistCreated.CyclistName)
-	assert.Equal(t, scenario.Expect[0].CyclistCreated.CyclistTeam, scenario.Actual[0].CyclistCreated.CyclistTeam)
+	expected := scenario.Expect[0].CyclistCreated
+	actual := scenario.Actual[0].CyclistCreated
+	assert.Equal(t, expected.Year, actual.Year)
+	assert.Equal(t, expected.CyclistId, actual.CyclistId)
+	assert.Equal(t, expected.CyclistName, actual.CyclistName)
+	assert.Equal(t, expected.CyclistTeam, actual.CyclistTeam)
 }
 
 func TestCreateEtappeCommand(t *testing.T) {
@@ -111,13 +113,15 @@ func TestCreateEtappeCommand(t *testing.T) {
 	
 	scenario.RunAndVerify(t)
 
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.Year, scenario.Actual[0].EtappeCreated.Year)
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeId, scenario.Actual[0].EtappeCreated.EtappeId)
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeDate.Year(), scenario.Actual[0].EtappeCreated.EtappeDate.Year())
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeDate.Month(), scenario.Actual[0].EtappeCreated.EtappeDate.Month())
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeDate.Day(), scenario.Actual[0].EtappeCreated.EtappeDate.Day())
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeStartLocation, scenario.Actual[0].EtappeCreated.EtappeStartLocation)
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeFinishLocation, scenario.Actual[0].EtappeCreated.EtappeFinishLocation)
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeLength, scenario.Actual[0].EtappeCreated.EtappeLength)
-	assert.Equal(t, scenario.Expect[0].EtappeCreated.EtappeKind, scenario.Actual[0].EtappeCreated.EtappeKind)
+	expected := scenario.Expect[0].EtappeCreated
+	actual := scenario.Actual[0].EtappeCreated
+	assert.Equal(t, expected.Year, actual.Year)
+	assert.Equal(t, expected.EtappeId, actual.EtappeId)
+	assert.Equal(t, expected.EtappeDate.Year(), actual.EtappeDate.Year())
+	assert.Equal(t, expected.EtappeDate.Month(), actual.EtappeDate.Month())
+	assert.Equal(t, expected.EtappeDate.Day(), actual.EtappeDate.Day())
+	assert.Equal(t, expected.EtappeStartLocation, actual.EtappeStartLocation)
+	assert.Equal(t, expected.EtappeFinishLocation, actual.EtappeFinishLocation)
+	assert.Equal(t, expected.EtappeLength, actual.EtappeLength)
+	assert.Equal(t, expected.EtappeKind, actual.EtappeKind)
 }
