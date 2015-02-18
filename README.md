@@ -1,4 +1,6 @@
 # Microgen
+
+## Goal
 Experiment with microservices using go
 
 ## Functionality
@@ -13,3 +15,9 @@ A tour-de-france gambling
 - As a gambler: View best cyclists
 - As a gambler: View best gamblers
 
+## Solution
+Describe your application in terms of:
+ - events: with attributes
+ - commands:with attributes
+ - services that process commands and emit events
+ - services that consume events (emitted by other services)
