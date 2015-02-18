@@ -11,9 +11,9 @@ A tour-de-france gambling application:
 - As an administrator: Publish dayly result of etappe
 - As a gambler: Create a profile 
 - As a gambler: Compose your own team of cyclists for a particular year
-- As a gambler: View etappes results
-- As a gambler: View best cyclists
-- As a gambler: View best gamblers
+- As anybody: View tours with their cyclists, etappes and results
+- As anybody: View best cyclists of a tour
+- As anybody: View best gamblers of a tour
 
 ## Concept
 An "application" consists of the following concepts:
