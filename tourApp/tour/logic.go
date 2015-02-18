@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	//	"log"
+	"strconv"
 	"time"
 )
 
@@ -103,21 +104,33 @@ func (tch *TourCommandHandler) publishAndStore(envelopes []*events.Envelope) err
 }
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {
-	var tourCreatedEvent *events.TourCreated = nil
+	tourRelatedEvents := make([]*events.Envelope, 0, 10)
 
 	callback := func(envelope *events.Envelope) {
-		if envelope.Type == events.TypeTourCreated && envelope.TourCreated != nil && envelope.TourCreated.Year == year {
-			tourCreatedEvent = envelope.TourCreated
+		if envelope.AggregateName == "tour" && envelope.AggregateUid == strconv.Itoa(year) {
+			tourRelatedEvents = append(tourRelatedEvents, envelope)
 		}
 	}
 	store.Iterate(callback)
 
-	if tourCreatedEvent == nil {
+	if len(tourRelatedEvents) == 0 {
 		return nil, false
 	}
 
 	tour := NewTour()
-	tour.ApplyTourCreated(*tourCreatedEvent)
+	for _, envelope := range tourRelatedEvents {
+		var err error
+		if envelope.Type == events.TypeTourCreated {
+			err = tour.ApplyTourCreated(*envelope.TourCreated)
+		} else if envelope.Type == events.TypeEtappeCreated {
+			err = tour.ApplyEtappeCreated(*envelope.EtappeCreated)
+		} else if envelope.Type == events.TypeCyclistCreated {
+			err = tour.ApplyCyclistCreated(*envelope.CyclistCreated)
+		}
+		if err != nil {
+			break
+		}
+	}
 	return tour, true
 }
 
@@ -180,4 +193,27 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) error {
 	etappe.kind = event.EtappeKind
 	t.etappes = append(t.etappes, etappe)
 	return nil
+}
+
+type TourQueryHandler struct {
+	bus   events.PublishSubscriber
+	store events.Store
+}
+
+func NewTourQueryHandler(bus events.PublishSubscriber, store events.Store) *TourQueryHandler {
+	handler := new(TourQueryHandler)
+	handler.bus = bus
+	handler.store = store
+	return handler
+}
+
+func (tqh *TourQueryHandler) GetTour(year int) (*Tour, error) {
+	// TODO validate input
+
+	// get tour based on year
+	tour, found := getTourOnYear(tqh.store, year)
+	if found == false {
+		return nil, errors.New(fmt.Sprintf("Tour %d not found", year))
+	}
+	return tour, nil
 }

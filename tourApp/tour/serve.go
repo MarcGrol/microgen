@@ -1,8 +1,11 @@
 package tour
 
 import (
+	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type Response struct {
@@ -31,10 +34,49 @@ func ErrorResponse(code int, message string) *Response {
 	return resp
 }
 
-func StartHttp(listenPort int, commandHandler CommandHandler, eventHandler EventHandler) {
+func Start(listenPort int, busAddress string) error {
+	store, err := startStore()
+	if err != nil {
+		return err
+	}
+	bus := startBus(busAddress)
+	if bus == nil {
+		return errors.New("Error starting bus")
+	}
+	startHttp(listenPort, NewTourCommandHandler(bus, store), NewTourQueryHandler(bus, store))
+	return nil
+}
+
+func startStore() (*events.EventStore, error) {
+	store := events.NewEventStore()
+	err := store.Open("tour.db")
+	if err != nil {
+		return nil, err
+	}
+	return store, nil
+}
+
+func startBus(busAddress string) *events.EventBus {
+	return events.NewEventBus("tourApp", "tour", busAddress)
+}
+
+func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *TourQueryHandler) {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
+		api.GET("/tour/:year", func(c *gin.Context) {
+			year, err := strconv.Atoi(c.Params.ByName("year"))
+			if err != nil {
+				c.JSON(400, *ErrorResponse(4, err.Error()))
+				return
+			}
+			tour, err := queryHandler.GetTour(year)
+			if err != nil {
+				c.JSON(400, *ErrorResponse(5, err.Error()))
+				return
+			}
+			c.JSON(200, *tour)
+		})
 		api.POST("/tour", func(c *gin.Context) {
 			var command CreateTourCommand
 			status := c.Bind(&command)
