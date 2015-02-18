@@ -15,11 +15,8 @@ A tour-de-france gambling application:
 - As a gambler: View best cyclists
 - As a gambler: View best gamblers
 
-## Solution
-Describe your application in terms of:
- - events: with attributes
- - commands: with attributes
- - services:
-    - process commands
-        - a command can emit event(s) that can be consumed by other services
-    - consume events (emitted by other services)
+## Concept
+Describe your "application" in terms of:
+ - "service": one or more loosely couples "services"
+ - "command": each service supports zero or more commands. Actors interact with the system via these commands (and queries)
+ - "event" (with "attributes"): each commands emits zero or more events. An event is used to exchange of information between services in an async away
