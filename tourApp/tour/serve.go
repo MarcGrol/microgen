@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 )
 
@@ -72,9 +73,11 @@ func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *Tour
 			}
 			tour, err := queryHandler.GetTour(year)
 			if err != nil {
-				c.JSON(400, *ErrorResponse(5, err.Error()))
+				c.JSON(404, *ErrorResponse(5, err.Error()))
 				return
 			}
+			log.Printf("GetTour: %v", *tour)
+
 			c.JSON(200, *tour)
 		})
 		api.POST("/tour", func(c *gin.Context) {
@@ -82,42 +85,42 @@ func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *Tour
 			status := c.Bind(&command)
 			if status == false {
 				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-			} else {
-				err := commandHandler.HandleCreateTourCommand(command)
-				if err != nil {
-					c.JSON(400, *ErrorResponse(2, err.Error()))
-				} else {
-					c.JSON(200, *SuccessResponse())
-				}
+				return
 			}
+			err := commandHandler.HandleCreateTourCommand(command)
+			if err != nil {
+				c.JSON(400, *ErrorResponse(2, err.Error()))
+				return
+			}
+			c.JSON(200, *SuccessResponse())
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
 			var command CreateEtappeCommand
 			status := c.Bind(&command)
 			if status == false {
 				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-			} else {
-				err := commandHandler.HandleCreateEtappeCommand(command)
-				if err != nil {
-					c.JSON(400, *ErrorResponse(3, err.Error()))
-				} else {
-					c.JSON(200, *SuccessResponse())
-				}
+				return
 			}
+			err := commandHandler.HandleCreateEtappeCommand(command)
+			if err != nil {
+				c.JSON(400, *ErrorResponse(3, err.Error()))
+				return
+			}
+			c.JSON(200, *SuccessResponse())
 		})
 		api.POST("/tour/:year/cylist", func(c *gin.Context) {
 			var command CreateCyclistCommand
 			status := c.Bind(&command)
 			if status == false {
 				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-			} else {
-				err := commandHandler.HandleCreateCyclistCommand(command)
-				if err != nil {
-					c.JSON(400, *ErrorResponse(3, err.Error()))
-				} else {
-					c.JSON(200, *SuccessResponse())
-				}
+				return
 			}
+			err := commandHandler.HandleCreateCyclistCommand(command)
+			if err != nil {
+				c.JSON(400, *ErrorResponse(3, err.Error()))
+				return
+			}
+			c.JSON(200, *SuccessResponse())
 		})
 	}
 
