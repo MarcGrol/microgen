@@ -22,9 +22,9 @@ An "application" consists of the following concepts:
  - "event" (with "attributes"): Each commands emits zero or more events. An event is used to exchange of information between services in an async away
 
 ##Technical solution
-- Describe application in terns of "services", "commands" and "events". Example: [application.go](../blob/master/c)
-- generate events and interfaces based on "description" of application. Example: [https://github.com/MarcGrol/microgen/blob/master/tourApp/events/events.go] and [https://github.com/MarcGrol/microgen/blob/master/tourApp/tour/interface.go]
+- Describe application in terns of "services", "commands" and "events". Example: [application.go](../blob/master/application.go)
+- generate events and interfaces based on "description" of application. Example: [events.go](../blob/master/tourApp/events/events.go) and [interface.go](../blob/master/tourApp/tour/interface.go)
 - Provide implementation for "bus" (=exchange of events between services)
 - Provide implementation of append-ony "store" for persistence
-- Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [https://github.com/MarcGrol/microgen/blob/master/tourApp/tour/logic_test.go]
+- Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](../blob/master/tourApp/tour/logic_test.go)
 - Provide clear and exact documentation that explains how services are related.
