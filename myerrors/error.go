@@ -49,7 +49,7 @@ func (err Error) Error() string {
 	return err.underlyingError.Error()
 }
 
-func (err Error) InternalError() bool {
+func (err Error) IsInternalError() bool {
 	return err.errorType == errorTypeInternal
 }
 

@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-/*
 func TestCreateTourCommand(t *testing.T) {
 	scenario := test.Scenario{
 		Title: "Create new tour on clean system",
@@ -26,7 +25,7 @@ func TestCreateTourCommand(t *testing.T) {
 
 	assert.Equal(t, scenario.Expect[0].TourCreated.Year, scenario.Actual[0].TourCreated.Year)
 }
-*/
+
 func TestCreateCyclistCommand(t *testing.T) {
 	scenario := test.Scenario{
 		Title: "Create new cyclist with existing tour",
