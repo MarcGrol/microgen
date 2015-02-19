@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+/*
 func TestCreateTourCommand(t *testing.T) {
 	scenario := test.Scenario{
 		Title: "Create new tour on clean system",
@@ -25,7 +26,7 @@ func TestCreateTourCommand(t *testing.T) {
 
 	assert.Equal(t, scenario.Expect[0].TourCreated.Year, scenario.Actual[0].TourCreated.Year)
 }
-
+*/
 func TestCreateCyclistCommand(t *testing.T) {
 	scenario := test.Scenario{
 		Title: "Create new cyclist with existing tour",
@@ -58,6 +59,17 @@ func TestCreateCyclistCommand(t *testing.T) {
 	assert.Equal(t, expected.CyclistId, actual.CyclistId)
 	assert.Equal(t, expected.CyclistName, actual.CyclistName)
 	assert.Equal(t, expected.CyclistTeam, actual.CyclistTeam)
+
+	queryHandler := NewTourQueryHandler(scenario.Bus, scenario.Store)
+	tour, err := queryHandler.GetTour(2015)
+	assert.Nil(t, err)
+	assert.Equal(t, 0, len(tour.Etappes))
+	assert.Equal(t, 1, len(tour.Cyclists))
+	assert.Equal(t, expected.Year, tour.Year)
+	assert.Equal(t, expected.CyclistId, tour.Cyclists[0].Number)
+	assert.Equal(t, expected.CyclistName, tour.Cyclists[0].Name)
+	assert.Equal(t, expected.CyclistTeam, tour.Cyclists[0].Team)
+
 }
 
 func TestCreateEtappeCommand(t *testing.T) {

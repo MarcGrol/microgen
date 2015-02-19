@@ -3,8 +3,8 @@ package tour
 import (
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 	"strconv"
 	"time"
@@ -104,25 +104,23 @@ func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) *my
 }
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {
-	tourRelatedEvents := make([]*events.Envelope, 0, 10)
+	tourRelatedEvents := make([]events.Envelope, 0, 10)
 
 	callback := func(envelope *events.Envelope) {
 		if envelope.AggregateName == "tour" && envelope.AggregateUid == strconv.Itoa(year) {
-			tourRelatedEvents = append(tourRelatedEvents, envelope)
+			tourRelatedEvents = append(tourRelatedEvents, *envelope)
 		}
 	}
 	store.Iterate(callback)
 
 	if len(tourRelatedEvents) == 0 {
-		log.Printf("getTourOnYear:0")
 		return nil, false
 	}
 
 	tour := NewTour()
-	for _, envelope := range tourRelatedEvents {
-		log.Printf("getTourOnYear:%v", envelope)
 
-		var err error
+	for _, envelope := range tourRelatedEvents {
+		var err *myerrors.Error
 		if envelope.Type == events.TypeTourCreated {
 			err = tour.ApplyTourCreated(*envelope.TourCreated)
 		} else if envelope.Type == events.TypeEtappeCreated {
@@ -134,7 +132,6 @@ func getTourOnYear(store events.Store, year int) (*Tour, bool) {
 			break
 		}
 	}
-	log.Printf("tour:%v", *tour)
 
 	return tour, true
 }
@@ -168,27 +165,36 @@ func NewTour() *Tour {
 }
 
 func (t *Tour) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
-	log.Printf("ApplyTourCreated:%v", event)
+
+	log.Printf("ApplyTourCreated before:%v -> %v", event, t)
 
 	t.Year = event.Year
+
+	log.Printf("ApplyTourCreated after:%v -> %v", event, t)
+
 	return nil
 }
 
 func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
-	log.Printf("ApplyCyclistCreated:%v", event)
+
+	log.Printf("ApplyCyclistCreated before:%v -> %v", event, t)
 
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
 	cyclist.Name = event.CyclistName
 	cyclist.Team = event.CyclistTeam
 	t.Cyclists = append(t.Cyclists, *cyclist)
+
+	log.Printf("ApplyCyclistCreated after:%v -> %v", event, t)
+
 	return nil
 }
 
 func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
-	log.Printf("ApplyEtappeCreated:%v", event)
 
+	log.Printf("ApplyEtappeCreated before:%v -> %v", event, t)
 	etappe := new(Etappe)
+
 	etappe.Id = event.EtappeId
 	etappe.Date = event.EtappeDate
 	etappe.StartLocation = event.EtappeStartLocation
@@ -196,6 +202,9 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
 	etappe.Length = event.EtappeLength
 	etappe.Kind = event.EtappeKind
 	t.Etappes = append(t.Etappes, *etappe)
+
+	log.Printf("ApplyEtappeCreated after:%v -> %v", event, t)
+
 	return nil
 }
 
@@ -217,5 +226,7 @@ func (tqh *TourQueryHandler) GetTour(year int) (*Tour, *myerrors.Error) {
 	if found == false {
 		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
 	}
+	log.Printf("GetTour:%v", tour)
+
 	return tour, nil
 }

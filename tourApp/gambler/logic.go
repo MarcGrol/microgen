@@ -3,8 +3,8 @@ package gambler
 import (
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
 type GamblerCommandHandler struct {
@@ -19,7 +19,7 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error  {
+func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
 	// get gambler based on uid
 	_, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == true {
@@ -38,7 +38,7 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 	return gch.storeAndPublish([]*events.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error  {
+func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
 	// get gambler based on uid
 	gambler, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == false {
@@ -110,6 +110,6 @@ func (g *Gambler) ApplyTourCreated(event events.TourCreated) error {
 	return nil
 }
 
-func (g *Gambler) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error  {
+func (g *Gambler) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error {
 	return nil
 }

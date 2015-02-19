@@ -17,6 +17,8 @@ var modus *string
 var service *string
 var httpPort *int
 var busAddress *string
+var baseDir *string
+var templateDir *string
 
 func printUsage() {
 	fmt.Fprintf(os.Stderr, "\nUsage:\n")
@@ -32,10 +34,12 @@ func printVersion() {
 }
 
 func processArgs() {
-	modus = flag.String("mode", "service", "Mode in which tools runs: tool or service")
-	service = flag.String("service", "", "service to run: tour, gambler or result")
-	httpPort = flag.Int("port", 8081, "listen port of http-server")
-	busAddress = flag.String("bus-address", "localhost", "Hostname where nsq-bus is running")
+	modus = flag.String("mode", "service", "Mode in which tools runs: 'tool' or 'service'")
+	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler' or 'result'")
+	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
+	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
+	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in 'tool'-modus")
+	templateDir = flag.String("template-dir", ".", "For modus 'tool': Directory where templates are located")
 
 	help := flag.Bool("help", false, "Usage information")
 	version := flag.Bool("version", false, "Version information")
@@ -59,19 +63,18 @@ func main() {
 			printUsage()
 		} else {
 			if *service == "tour" {
-				log.Printf("Starting tour")
 				tour.Start(*httpPort, *busAddress)
 			} else if *service == "gambler" {
-				log.Printf("Starting gambler")
+				log.Printf("TODO: Starting gambler")
 			} else if *service == "results" {
-				log.Printf("Starting results")
+				log.Printf("TODO: Starting results")
 			} else {
 				fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
 				printUsage()
 			}
 		}
 	} else if *modus == "tool" {
-		err := spec.GenerateApplication(application, ".")
+		err := spec.GenerateApplication(application, *baseDir)
 		if err != nil {
 			log.Fatalf("Error generating application %s", err)
 		}
