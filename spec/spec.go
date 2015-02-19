@@ -25,7 +25,8 @@ const (
 type MethodType int
 
 const (
-	Get MethodType = iota
+	Unknown MethodType = iota
+	Get
 	Put
 	Post
 	Delete
@@ -93,21 +94,6 @@ func (s Service) CommandNames() []string {
 	}
 	return nameList
 }
-
-// func (service Service) GetConsumedEventsOld() []Event {
-// 	eventMap := make(map[string]Event)
-// 	for _, command := range service.Commands {
-// 		for _, event := range command.ConsumesEvents {
-// 			eventMap[event.Name] = event
-// 		}
-// 	}
-// 	events := make([]Event, 0, 20)
-// 	for _, event := range eventMap {
-// 		events = append(events, event)
-// 	}
-
-// 	return events
-// }
 
 func (service Service) GetProducedEvents() []Event {
 	eventMap := make(map[string]Event)
@@ -196,6 +182,10 @@ func (c Command) AttributeNames() []string {
 
 func (c Command) NameToFirstUpper() string {
 	return strings.Title(c.Name)
+}
+
+func (c Command) IsQuery() bool {
+	return c.Method == Get
 }
 
 // entity

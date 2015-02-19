@@ -35,8 +35,8 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyTourCreated(event events.TourCreated) *myerrors.Error
-	ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error
 	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
+	ApplyTourCreated(event events.TourCreated) *myerrors.Error
+	ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error
 }

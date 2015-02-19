@@ -9,11 +9,12 @@ import (
 )
 
 func TestCreateTourCommand(t *testing.T) {
-	scenario := test.Scenario{
+		var service CommandHandler
+		scenario := test.Scenario{
 		Title: "Create new tour on clean system",
 		Given: []*events.Envelope{},
 		When: func(scenario *test.Scenario) error {
-			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateTourCommand(CreateTourCommand{Year: 2015})
 		},
 		Expect: []*events.Envelope{
@@ -23,17 +24,29 @@ func TestCreateTourCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Equal(t, scenario.Expect[0].TourCreated.Year, scenario.Actual[0].TourCreated.Year)
+	expected := scenario.Expect[0].TourCreated
+	actual := scenario.Actual[0].TourCreated
+	assert.Equal(t, expected.Year, actual.Year)
+
+	tourOpaque, err := service.HandleGetTourQuery(GetTourCommand{expected.Year})
+	assert.Nil(t, err)
+	tour, ok := tourOpaque.(*Tour)
+	assert.True(t, ok)
+	assert.Equal(t, expected.Year, tour.Year)
+	assert.Equal(t, 0, len(tour.Etappes))
+	assert.Equal(t, 0, len(tour.Cyclists))
+
 }
 
 func TestCreateCyclistCommand(t *testing.T) {
+	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new cyclist with existing tour",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
 		When: func(scenario *test.Scenario) error {
-			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateCyclistCommand(
 				CreateCyclistCommand{
 					Year: 2015,
@@ -59,9 +72,12 @@ func TestCreateCyclistCommand(t *testing.T) {
 	assert.Equal(t, expected.CyclistName, actual.CyclistName)
 	assert.Equal(t, expected.CyclistTeam, actual.CyclistTeam)
 
-	queryHandler := NewTourQueryHandler(scenario.Bus, scenario.Store)
-	tour, err := queryHandler.GetTour(2015)
+	// Test query
+	tourOpaque,err := service.HandleGetTourQuery(GetTourCommand{expected.Year})
 	assert.Nil(t, err)
+	tour, ok := tourOpaque.(*Tour)
+	assert.True(t, ok)
+	assert.Equal(t, 2015, tour.Year)
 	assert.Equal(t, 0, len(tour.Etappes))
 	assert.Equal(t, 1, len(tour.Cyclists))
 	assert.Equal(t, expected.Year, tour.Year)
@@ -72,13 +88,14 @@ func TestCreateCyclistCommand(t *testing.T) {
 }
 
 func TestCreateEtappeCommand(t *testing.T) {
-	scenario := test.Scenario{
+		var service CommandHandler
+		scenario := test.Scenario{
 		Title: "Create new etappe with existing tour",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
 		When: func(scenario *test.Scenario) error {
-			service := NewTourCommandHandler(scenario.Bus, scenario.Store)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateEtappeCommand(
 				CreateEtappeCommand{
 					Year:           2015,

@@ -181,6 +181,18 @@ var (
 						ConsumesEvents: []spec.Event{tourCreated},
 						ProducesEvents: []spec.Event{etappeCreated},
 					},
+					{
+						Name:   "GetTour",
+						Method: spec.Get,
+						Url:    "/tour/:year",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+							},
+						},
+						ConsumesEvents: []spec.Event{},
+						ProducesEvents: []spec.Event{},
+					},
 				},
 			},
 			{

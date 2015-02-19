@@ -156,14 +156,14 @@ type Type int
 
 const (
 	TypeUnknown Type = iota
+	TypeGamblerCreated
+	TypeGamblerTeamCreated
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
 	TypeTourCreated
 	TypeCyclistCreated
 	TypeEtappeCreated
-	TypeGamblerCreated
-	TypeGamblerTeamCreated
 )
 
 func (t Type) String() string {

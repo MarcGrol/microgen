@@ -19,7 +19,7 @@ func Start(listenPort int, busAddress string) error {
 	if bus == nil {
 		return errors.New("Error starting bus")
 	}
-	startHttp(listenPort, NewTourCommandHandler(bus, store), NewTourQueryHandler(bus, store))
+	startHttp(listenPort, NewTourCommandHandler(bus, store))
 	return nil
 }
 
@@ -36,7 +36,7 @@ func startBus(busAddress string) *events.EventBus {
 	return events.NewEventBus("tourApp", "tour", busAddress)
 }
 
-func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *TourQueryHandler) {
+func startHttp(listenPort int, commandHandler CommandHandler) {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -46,8 +46,9 @@ func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *Tour
 				http.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
-			tour, err := queryHandler.GetTour(year)
-			if err != nil {
+			tourOpaque, err := commandHandler.HandleGetTourQuery(GetTourCommand{Year:year})
+			tour, ok := tourOpaque.(*Tour)
+			if err != nil || ok == false {
 				http.HandleError(c, err)
 			}
 			c.JSON(200, *tour)

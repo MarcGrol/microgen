@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"log"
+	//"log"
 	"strconv"
 	"time"
 )
@@ -36,7 +36,7 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	tourCreatedEvent := events.TourCreated{command.Year}
 	tour.ApplyTourCreated(tourCreatedEvent)
 
-	log.Printf("HandleCreateTourCommand completed:%v -> %v", command, tourCreatedEvent)
+	//log.Printf("HandleCreateTourCommand completed:%v -> %v", command, tourCreatedEvent)
 
 	// store and emit resulting event
 	return tch.storeAndPublish([]*events.Envelope{tourCreatedEvent.Wrap()})
@@ -58,7 +58,7 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 		CyclistTeam: command.Team}
 	tour.ApplyCyclistCreated(cyclistCreatedEvent)
 
-	log.Printf("HandleCreateCyclistCommand completed:%v -> %v", command, cyclistCreatedEvent)
+	//log.Printf("HandleCreateCyclistCommand completed:%v -> %v", command, cyclistCreatedEvent)
 
 	// store and emit resulting event
 	return tch.storeAndPublish([]*events.Envelope{cyclistCreatedEvent.Wrap()})
@@ -83,10 +83,21 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 		EtappeKind:           command.Kind}
 	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
-	log.Printf("HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)
+	//log.Printf("HandleCreateEtappeCommand completed:%v -> %v", command, etappeCreatedEvent)
 
 	// store and emit resulting event
 	return tch.storeAndPublish([]*events.Envelope{etappeCreatedEvent.Wrap()})
+}
+
+func (tch *TourCommandHandler) HandleGetTourQuery(command GetTourCommand) (interface{}, *myerrors.Error) {
+	// TODO validate input
+	tour, found := getTourOnYear(tch.store, command.Year)
+	if found == false {
+		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", command.Year)))
+	}
+	//log.Printf("GetTour:%v", tour)
+
+	return tour, nil
 }
 
 func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) *myerrors.Error {
@@ -166,18 +177,14 @@ func NewTour() *Tour {
 
 func (t *Tour) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
 
-	log.Printf("ApplyTourCreated before:%v -> %v", event, t)
-
 	t.Year = event.Year
 
-	log.Printf("ApplyTourCreated after:%v -> %v", event, t)
+	//log.Printf("ApplyTourCreated after:%v -> %v", event, t)
 
 	return nil
 }
 
-func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
-
-	log.Printf("ApplyCyclistCreated before:%v -> %v", event, t)
+func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated,) *myerrors.Error {
 
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
@@ -185,14 +192,13 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error 
 	cyclist.Team = event.CyclistTeam
 	t.Cyclists = append(t.Cyclists, *cyclist)
 
-	log.Printf("ApplyCyclistCreated after:%v -> %v", event, t)
+	//log.Printf("ApplyCyclistCreated after:%v -> %v", event, t)
 
 	return nil
 }
 
 func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
 
-	log.Printf("ApplyEtappeCreated before:%v -> %v", event, t)
 	etappe := new(Etappe)
 
 	etappe.Id = event.EtappeId
@@ -203,30 +209,7 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
 	etappe.Kind = event.EtappeKind
 	t.Etappes = append(t.Etappes, *etappe)
 
-	log.Printf("ApplyEtappeCreated after:%v -> %v", event, t)
+	//log.Printf("ApplyEtappeCreated after:%v -> %v", event, t)
 
 	return nil
-}
-
-type TourQueryHandler struct {
-	bus   events.PublishSubscriber
-	store events.Store
-}
-
-func NewTourQueryHandler(bus events.PublishSubscriber, store events.Store) *TourQueryHandler {
-	handler := new(TourQueryHandler)
-	handler.bus = bus
-	handler.store = store
-	return handler
-}
-
-func (tqh *TourQueryHandler) GetTour(year int) (*Tour, *myerrors.Error) {
-	// TODO validate input
-	tour, found := getTourOnYear(tqh.store, year)
-	if found == false {
-		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
-	}
-	log.Printf("GetTour:%v", tour)
-
-	return tour, nil
 }

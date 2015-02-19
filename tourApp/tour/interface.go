@@ -31,12 +31,18 @@ type CreateEtappeCommand struct {
 	Kind           int       `json:"kind"`
 }
 
+type GetTourCommand struct {
+	Year int `json:"year"`
+}
+
 type CommandHandler interface {
 	HandleCreateTourCommand(command CreateTourCommand) *myerrors.Error
 
 	HandleCreateCyclistCommand(command CreateCyclistCommand) *myerrors.Error
 
 	HandleCreateEtappeCommand(command CreateEtappeCommand) *myerrors.Error
+
+	HandleGetTourQuery(parameters GetTourCommand) (interface{}, *myerrors.Error)
 }
 
 // events
@@ -45,7 +51,7 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error
 	ApplyTourCreated(event events.TourCreated) *myerrors.Error
 	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
+	ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error
 }
