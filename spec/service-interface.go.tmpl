@@ -5,6 +5,7 @@ package {{.Service.NameToLower}}
 import (
     {{if .Service.HasDateField}}"time"{{end}}
     "github.com/MarcGrol/microgen/{{.Application.NameToFirstLower}}/events"
+    "github.com/MarcGrol/microgen/myerrors"
 )
 
 // commands
@@ -18,19 +19,19 @@ type {{.NameToFirstUpper}}Command struct {
 
 type CommandHandler interface {
     {{range .Service.Commands}}
-        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
+        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) *myerrors.Error
     {{end}}
 }
 
 // events
 
 type EventHandler interface {
-    {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) *myerrors.Error
     {{end}}
 }
 
 type EventApplier interface {
-    {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) error
+    {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event events.{{.NameToFirstUpper}} ) *myerrors.Error
     {{end}}
 }
 

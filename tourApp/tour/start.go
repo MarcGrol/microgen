@@ -3,36 +3,50 @@ package tour
 import (
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
-	"log"
 	"strconv"
 )
 
 type Response struct {
-	status bool
-	error  *ErrorDescriptor
+	Status bool             `json:"status"`
+	Error  *ErrorDescriptor `json:"errorDescriptor"`
 }
 
 type ErrorDescriptor struct {
-	code    int
-	message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 func SuccessResponse() *Response {
 	resp := new(Response)
-	resp.status = true
-	resp.error = nil
+	resp.Status = true
+	resp.Error = nil
 	return resp
 }
 
 func ErrorResponse(code int, message string) *Response {
 	resp := new(Response)
-	resp.status = false
-	resp.error = new(ErrorDescriptor)
-	resp.error.code = code
-	resp.error.message = message
+	resp.Status = false
+	resp.Error = new(ErrorDescriptor)
+	resp.Error.Code = code
+	resp.Error.Message = message
 	return resp
+}
+
+func handleError(c *gin.Context, err error) {
+	if myerrors.IsNotFoundError(err) {
+		c.JSON(404, *ErrorResponse(1, err.Error()))
+	} else if myerrors.IsInternalError(err) {
+		c.JSON(500, *ErrorResponse(2, err.Error()))
+	} else if myerrors.IsInvalidInputError(err) {
+		c.JSON(400, *ErrorResponse(3, err.Error()))
+	} else if myerrors.IsNotAuthorizedError(err) {
+		c.JSON(403, *ErrorResponse(4, err.Error()))
+	} else {
+		c.JSON(500, *ErrorResponse(5, err.Error()))
+	}
 }
 
 func Start(listenPort int, busAddress string) error {
@@ -68,57 +82,39 @@ func startHttp(listenPort int, commandHandler CommandHandler, queryHandler *Tour
 		api.GET("/tour/:year", func(c *gin.Context) {
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				c.JSON(400, *ErrorResponse(4, err.Error()))
+				handleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
 			tour, err := queryHandler.GetTour(year)
 			if err != nil {
-				c.JSON(404, *ErrorResponse(5, err.Error()))
-				return
+				handleError(c, err)
 			}
-			log.Printf("GetTour: %v", *tour)
-
 			c.JSON(200, *tour)
 		})
 		api.POST("/tour", func(c *gin.Context) {
 			var command CreateTourCommand
-			status := c.Bind(&command)
-			if status == false {
-				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-				return
-			}
+			c.Bind(&command)
 			err := commandHandler.HandleCreateTourCommand(command)
 			if err != nil {
-				c.JSON(400, *ErrorResponse(2, err.Error()))
-				return
+				handleError(c, err)
 			}
 			c.JSON(200, *SuccessResponse())
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
 			var command CreateEtappeCommand
-			status := c.Bind(&command)
-			if status == false {
-				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-				return
-			}
+			c.Bind(&command)
 			err := commandHandler.HandleCreateEtappeCommand(command)
 			if err != nil {
-				c.JSON(400, *ErrorResponse(3, err.Error()))
-				return
+				handleError(c, err)
 			}
 			c.JSON(200, *SuccessResponse())
 		})
 		api.POST("/tour/:year/cylist", func(c *gin.Context) {
 			var command CreateCyclistCommand
-			status := c.Bind(&command)
-			if status == false {
-				c.JSON(400, *ErrorResponse(1, "Invalid input"))
-				return
-			}
+			c.Bind(&command)
 			err := commandHandler.HandleCreateCyclistCommand(command)
 			if err != nil {
-				c.JSON(400, *ErrorResponse(3, err.Error()))
-				return
+				handleError(c, err)
 			}
 			c.JSON(200, *SuccessResponse())
 		})

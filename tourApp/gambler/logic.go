@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"github.com/MarcGrol/microgen/myerrors"
 )
 
 type GamblerCommandHandler struct {
@@ -18,11 +19,11 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) error {
+func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error  {
 	// get gambler based on uid
 	_, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == true {
-		return errors.New(fmt.Sprintf("gambler %s already exists", command.GamblerUid))
+		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("gambler %s already exists", command.GamblerUid)))
 	}
 
 	// apply business logic
@@ -34,14 +35,14 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 	gambler.ApplyGamblerCreated(gamblerCreatedEvent)
 
 	// store and emit resulting event
-	return gch.publishAndStore([]*events.Envelope{gamblerCreatedEvent.Wrap()})
+	return gch.storeAndPublish([]*events.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
+func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error  {
 	// get gambler based on uid
 	gambler, found := getGamblerOnUid(gch.store, command.GamblerUid)
 	if found == false {
-		return errors.New(fmt.Sprintf("gambler %s does not exist", command.GamblerUid))
+		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("gambler %s does not exist", command.GamblerUid)))
 	}
 
 	// apply business logic
@@ -51,11 +52,11 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateG
 		GamblerCyclists: command.CyclistIds}
 	gambler.ApplyGamblerTeamCreated(gamblerTeamCreatedEvent)
 
-	return gch.publishAndStore([]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
+	return gch.storeAndPublish([]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func (tch *GamblerCommandHandler) publishAndStore([]*events.Envelope) error {
-	return errors.New("publishAndStore not implemented")
+func (tch *GamblerCommandHandler) storeAndPublish([]*events.Envelope) *myerrors.Error {
+	return myerrors.NewInternalError(errors.New("publishAndStore not implemented"))
 }
 
 func getGamblerOnUid(store events.Store, uid string) (*Gambler, bool) {
@@ -98,7 +99,7 @@ func NewGambler(uid string, name string, email string) *Gambler {
 	return gambler
 }
 
-func (g *Gambler) ApplyGamblerCreated(event events.GamblerCreated) error {
+func (g *Gambler) ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error {
 	g.Uid = event.GamblerUid
 	g.Name = event.GamblerName
 	g.Email = event.GamblerEmail
@@ -109,6 +110,6 @@ func (g *Gambler) ApplyTourCreated(event events.TourCreated) error {
 	return nil
 }
 
-func (g *Gambler) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) error {
+func (g *Gambler) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error  {
 	return nil
 }
