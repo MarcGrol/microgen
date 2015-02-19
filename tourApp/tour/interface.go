@@ -31,10 +31,6 @@ type CreateEtappeCommand struct {
 	Kind           int       `json:"kind"`
 }
 
-type GetTourCommand struct {
-	Year int `json:"year"`
-}
-
 type CommandHandler interface {
 	HandleCreateTourCommand(command CreateTourCommand) *myerrors.Error
 
@@ -42,7 +38,7 @@ type CommandHandler interface {
 
 	HandleCreateEtappeCommand(command CreateEtappeCommand) *myerrors.Error
 
-	HandleGetTourQuery(parameters GetTourCommand) (interface{}, *myerrors.Error)
+	HandleGetTourQuery(year int) (interface{}, *myerrors.Error)
 }
 
 // events

@@ -46,7 +46,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
-			tourOpaque, err := commandHandler.HandleGetTourQuery(GetTourCommand{Year:year})
+			tourOpaque, err := commandHandler.HandleGetTourQuery(year)
 			tour, ok := tourOpaque.(*Tour)
 			if err != nil || ok == false {
 				http.HandleError(c, err)

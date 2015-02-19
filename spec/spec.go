@@ -284,3 +284,7 @@ func (attr Attribute) MultiplicityNsme() string {
 func (attr Attribute) NameToFirstUpper() string {
 	return strings.Title(attr.Name)
 }
+
+func (attr Attribute) NameToFirstLower() string {
+	return strings.ToLower(fmt.Sprintf("%c", attr.Name[0])) + attr.Name[1:]
+}

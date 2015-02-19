@@ -11,16 +11,18 @@ import (
 // commands
 
 {{range .Service.Commands}}
-type {{.NameToFirstUpper}}Command struct {
-{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
-{{end}}
-}
+  {{if not .IsQuery}} 
+	type {{.NameToFirstUpper}}Command struct {
+	{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
+	{{end}}
+	}
+  {{end}}
 {{end}}
 
 type CommandHandler interface {
     {{range .Service.Commands}}
     	{{if .IsQuery}} 
-        Handle{{.NameToFirstUpper}}Query ( parameters {{.NameToFirstUpper}}Command ) (interface{}, *myerrors.Error)
+        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) (interface{}, *myerrors.Error)
     	{{else}}
         Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) *myerrors.Error
     	{{end}}

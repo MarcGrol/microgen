@@ -89,11 +89,11 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	return tch.storeAndPublish([]*events.Envelope{etappeCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleGetTourQuery(command GetTourCommand) (interface{}, *myerrors.Error) {
+func (tch *TourCommandHandler) HandleGetTourQuery(year int) (interface{}, *myerrors.Error) {
 	// TODO validate input
-	tour, found := getTourOnYear(tch.store, command.Year)
+	tour, found := getTourOnYear(tch.store, year)
 	if found == false {
-		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", command.Year)))
+		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
 	}
 	//log.Printf("GetTour:%v", tour)
 
@@ -184,7 +184,7 @@ func (t *Tour) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
 	return nil
 }
 
-func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated,) *myerrors.Error {
+func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
 
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
