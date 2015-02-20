@@ -36,7 +36,6 @@ func TestCreateTourCommand(t *testing.T) {
 	assert.Equal(t, expected.Year, tour.Year)
 	assert.Equal(t, 0, len(tour.Etappes))
 	assert.Equal(t, 0, len(tour.Cyclists))
-
 }
 
 func TestCreateCyclistCommand(t *testing.T) {

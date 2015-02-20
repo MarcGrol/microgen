@@ -62,4 +62,5 @@ type StoredItemHandlerFunc func( envelope *Envelope )
 type Store interface {
     Store( envelope *Envelope ) error
     Iterate( callback StoredItemHandlerFunc ) error
+    Get( aggregateName string, aggregateUid string ) ([]Envelope,error)
 }
