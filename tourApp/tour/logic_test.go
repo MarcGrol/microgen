@@ -28,6 +28,7 @@ func TestCreateTourCommand(t *testing.T) {
 	actual := scenario.Actual[0].TourCreated
 	assert.Equal(t, expected.Year, actual.Year)
 
+	// Test query
 	tourOpaque, err := service.HandleGetTourQuery(expected.Year)
 	assert.Nil(t, err)
 	tour, ok := tourOpaque.(*Tour)
@@ -131,4 +132,21 @@ func TestCreateEtappeCommand(t *testing.T) {
 	assert.Equal(t, expected.EtappeFinishLocation, actual.EtappeFinishLocation)
 	assert.Equal(t, expected.EtappeLength, actual.EtappeLength)
 	assert.Equal(t, expected.EtappeKind, actual.EtappeKind)
+
+	// Test query
+	tourOpaque, err := service.HandleGetTourQuery(expected.Year)
+	assert.Nil(t, err)
+	tour, ok := tourOpaque.(*Tour)
+	assert.True(t, ok)
+	assert.Equal(t, 2015, tour.Year)
+	assert.Equal(t, 1, len(tour.Etappes))
+	assert.Equal(t, 0, len(tour.Cyclists))
+	assert.Equal(t, expected.EtappeId, tour.Etappes[0].Id)
+	assert.Equal(t, expected.EtappeDate.Year(), tour.Etappes[0].Date.Year())
+	assert.Equal(t, expected.EtappeDate.Month(), tour.Etappes[0].Date.Month())
+	assert.Equal(t, expected.EtappeDate.Day(), tour.Etappes[0].Date.Day())
+	assert.Equal(t, expected.EtappeStartLocation, tour.Etappes[0].StartLocation)
+	assert.Equal(t, expected.EtappeFinishLocation, tour.Etappes[0].FinishLocation)
+	assert.Equal(t, expected.EtappeLength, tour.Etappes[0].Length)
+	assert.Equal(t, expected.EtappeKind, tour.Etappes[0].Kind)
 }
