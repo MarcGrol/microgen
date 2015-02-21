@@ -17,9 +17,9 @@ func NewSimpleEventStore() *SimpleEventStore {
 	return store
 }
 
-func (store *SimpleEventStore) Open(filename string) error {
+func (store *SimpleEventStore) Open(dirname string, filename string) error {
 	var err error
-	store.filename = filename
+	store.filename = dirname + "/" + filename
 	store.fio, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Printf("error opening file %s (%v)", store.filename, err)

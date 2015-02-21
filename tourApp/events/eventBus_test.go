@@ -9,7 +9,7 @@ import (
 func TestPublishSubscribe(t *testing.T) {
 	bus := NewEventBus("tourdefrance", "unittest", "127.0.0.1")
 
-	// publish events
+	// publish 3 events
 	bus.Publish((&TourCreated{Year: 2015}).Wrap())
 	bus.Publish((&CyclistCreated{
 		Year:        2015,

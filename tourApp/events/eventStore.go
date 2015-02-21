@@ -10,21 +10,25 @@ import (
 )
 
 type EventStore struct {
+	dirname            string
+	filename		   string
 	store              store.SimpleEventStore
 	mutex              sync.RWMutex
 	lastSequenceNumber uint64
 }
 
-func NewEventStore() *EventStore {
+func NewEventStore( dirname string, filename string ) *EventStore {
 	store := new(EventStore)
+	store.dirname =dirname
+	store.filename = filename
 	return store
 }
 
-func (store *EventStore) Open(filename string) error {
+func (store *EventStore) Open() error {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 
-	err := store.store.Open(filename)
+	err := store.store.Open(store.dirname, store.filename)
 	if err != nil {
 		return err
 	}

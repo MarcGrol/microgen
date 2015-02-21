@@ -7,18 +7,19 @@ import (
 )
 
 const (
+	DIRNAME = "."
 	FILENAME = "test.db"
 )
 
 func TestStore(t *testing.T) {
 
-	os.Remove(FILENAME)
+	os.Remove(DIRNAME+"/"+FILENAME)
 
-	store := NewEventStore()
+	store := NewEventStore(DIRNAME,FILENAME)
 
 	{
 		// write and close
-		err := store.Open(FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		tourCreatedEvent := TourCreated{Year: 2015}
 		store.Store(tourCreatedEvent.Wrap())
@@ -27,7 +28,7 @@ func TestStore(t *testing.T) {
 
 	{
 		// write and close
-		err := store.Open(FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		cyclistCreatedEvent := CyclistCreated{
 			Year:        2015,
@@ -48,7 +49,7 @@ func TestStore(t *testing.T) {
 
 	{
 		// read all and close
-		err := store.Open(FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		envelopes := make([]*Envelope, 0, 2)
 		cb := func(envelope *Envelope) {
@@ -86,10 +87,10 @@ func TestStore(t *testing.T) {
 }
 
 func BenchmarkWrite(b *testing.B) {
-	os.Remove(FILENAME)
+	os.Remove(DIRNAME+FILENAME)
 
-	store := NewEventStore()
-	store.Open(FILENAME)
+	store := NewEventStore(DIRNAME,FILENAME)
+	store.Open()
 
 	envelope := (&CyclistCreated{
 		Year:        2015,

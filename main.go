@@ -38,7 +38,7 @@ func processArgs() {
 	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler' or 'result'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
 	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
-	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in 'tool'-modus")
+	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
 	templateDir = flag.String("template-dir", ".", "For modus 'tool': Directory where templates are located")
 
 	help := flag.Bool("help", false, "Usage information")
@@ -63,7 +63,11 @@ func main() {
 			printUsage()
 		} else {
 			if *service == "tour" {
-				tour.Start(*httpPort, *busAddress)
+				err := tour.Start(*httpPort, *busAddress, *baseDir)
+				if err != nil {
+					log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s",
+							*httpPort, *busAddress, *baseDir)
+				}
 			} else if *service == "gambler" {
 				log.Printf("TODO: Starting gambler")
 			} else if *service == "results" {

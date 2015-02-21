@@ -3,6 +3,7 @@ package tour
 import (
 	"errors"
 	"fmt"
+	"os"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/http"
@@ -10,8 +11,8 @@ import (
 	"strconv"
 )
 
-func Start(listenPort int, busAddress string) error {
-	store, err := startStore()
+func Start(listenPort int, busAddress string, baseDir string) error {
+	store, err := startStore(baseDir)
 	if err != nil {
 		return err
 	}
@@ -23,9 +24,16 @@ func Start(listenPort int, busAddress string) error {
 	return nil
 }
 
-func startStore() (*events.EventStore, error) {
-	store := events.NewEventStore()
-	err := store.Open("tour.db")
+func startStore(baseDir string) (*events.EventStore, error) {
+	dataDir := baseDir + "/" + "data"
+	
+	// create dir if not exists
+	err := os.MkdirAll(dataDir, 0777)
+	if err != nil {
+		return nil, err
+	}
+	store := events.NewEventStore(dataDir,  "tour.db")
+	err = store.Open()
 	if err != nil {
 		return nil, err
 	}

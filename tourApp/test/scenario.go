@@ -132,13 +132,14 @@ func (store *FakeStore) Get(aggregateName string, aggregateUid string) ([]events
 }
 
 const (
+	DIRNAME = "."
 	FILENAME = "test.db"
 )
 
 func createRealStore() (*events.EventStore, error) {
-	os.Remove(FILENAME)
-	store := events.NewEventStore()
-	err := store.Open(FILENAME)
+	os.Remove(DIRNAME+"/"+FILENAME)
+	store := events.NewEventStore(DIRNAME,FILENAME)
+	err := store.Open()
 	if err != nil {
 		return nil, err
 	}
