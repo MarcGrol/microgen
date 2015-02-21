@@ -1,0 +1,5 @@
+*.dat
+*.db
+*.sublime*
+*.gone
+.project

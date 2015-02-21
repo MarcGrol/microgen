@@ -131,7 +131,8 @@ var (
 	}
 
 	application = spec.Application{
-		Name: "tourApp",
+		Name:    "tourApp",
+		Package: "github.com/MarcGrol/microgen",
 		Services: []spec.Service{
 			{
 				Name: "Tour",
@@ -226,6 +227,18 @@ var (
 						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated},
 						ProducesEvents: []spec.Event{gamblerTeamCreated},
 					},
+					{
+						Name:   "GetGambler",
+						Method: spec.Get,
+						Url:    "/gambler/:gamblerUid",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+							},
+						},
+						ConsumesEvents: []spec.Event{tourCreated, gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []spec.Event{},
+					},
 				},
 			},
 			{
@@ -234,11 +247,11 @@ var (
 					{
 						Name:   "CreateDayResults",
 						Method: spec.Post,
-						Url:    "/tour/:year/etappe/:etappeId/results",
+						Url:    "/tour/:year/results",
 						Input: spec.Entity{
 							Attributes: []spec.Attribute{
 								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+								{Name: "etappeId", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 								{Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 								{Name: "bestAllroundCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
 								{Name: "bestClimbCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
@@ -247,6 +260,18 @@ var (
 						},
 						ConsumesEvents: []spec.Event{tourCreated, etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
 						ProducesEvents: []spec.Event{etappeResultsCreated, cyclistScoreCalculated, gamblerScoreCalculated},
+					},
+					{
+						Name:   "GetResults",
+						Method: spec.Get,
+						Url:    "/tour/:year/results",
+						Input: spec.Entity{
+							Attributes: []spec.Attribute{
+								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+							},
+						},
+						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []spec.Event{},
 					},
 				},
 			},

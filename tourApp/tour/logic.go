@@ -115,21 +115,12 @@ func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) *my
 }
 
 func getTourOnYear(store events.Store, year int) (*Tour, bool) {
-	tourRelatedEvents := make([]events.Envelope, 0, 10)
-
-	callback := func(envelope *events.Envelope) {
-		if envelope.AggregateName == "tour" && envelope.AggregateUid == strconv.Itoa(year) {
-			tourRelatedEvents = append(tourRelatedEvents, *envelope)
-		}
-	}
-	store.Iterate(callback)
-
-	if len(tourRelatedEvents) == 0 {
+	tourRelatedEvents, err := store.Get("tour", strconv.Itoa(year))
+	if err != nil || len(tourRelatedEvents) == 0 {
 		return nil, false
 	}
 
 	tour := NewTour()
-
 	for _, envelope := range tourRelatedEvents {
 		var err *myerrors.Error
 		if envelope.Type == events.TypeTourCreated {

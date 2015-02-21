@@ -35,6 +35,7 @@ const (
 // application
 type Application struct {
 	Name     string
+	Package  string
 	Services []Service
 }
 

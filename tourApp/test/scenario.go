@@ -115,7 +115,7 @@ func (store *FakeStore) Iterate(callback events.StoredItemHandlerFunc) error {
 	return nil
 }
 
-func (store *FakeStore) Get( aggregateName string, aggregateUid string ) ([]events.Envelope,error) {
+func (store *FakeStore) Get(aggregateName string, aggregateUid string) ([]events.Envelope, error) {
 	envelopes := make([]events.Envelope, 0, 10)
 
 	callback := func(envelope *events.Envelope) {

@@ -4,8 +4,8 @@ package {{.Service.NameToLower}}
 
 import (
     {{if .Service.HasDateField}}"time"{{end}}
-    "github.com/MarcGrol/microgen/{{.Application.NameToFirstLower}}/events"
-    "github.com/MarcGrol/microgen/myerrors"
+    "{{.Application.Package}}/{{.Application.NameToFirstLower}}/events"
+    "{{.Application.Package}}/myerrors"
 )
 
 // commands

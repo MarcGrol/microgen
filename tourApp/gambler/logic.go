@@ -59,6 +59,11 @@ func (tch *GamblerCommandHandler) storeAndPublish([]*events.Envelope) *myerrors.
 	return myerrors.NewInternalError(errors.New("publishAndStore not implemented"))
 }
 
+func (tch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string) (interface{}, *myerrors.Error) {
+	return nil, myerrors.NewInternalError(errors.New("HandleGetGamblerQuery not implemented"))
+
+}
+
 func getGamblerOnUid(store events.Store, uid string) (*Gambler, bool) {
 	var gamblerCreatedEvent *events.GamblerCreated = nil
 

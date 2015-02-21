@@ -7,7 +7,6 @@ import (
 	"github.com/MarcGrol/microgen/store"
 	"log"
 	"sync"
-
 )
 
 type EventStore struct {
@@ -98,7 +97,7 @@ func (store *EventStore) Close() {
 	store.store.Close()
 }
 
-func (store *EventStore) Get( aggregateName string, aggregateUid string ) ([]Envelope,error) {
+func (store *EventStore) Get(aggregateName string, aggregateUid string) ([]Envelope, error) {
 	envelopes := make([]Envelope, 0, 10)
 
 	callback := func(envelope *Envelope) {
@@ -113,4 +112,3 @@ func (store *EventStore) Get( aggregateName string, aggregateUid string ) ([]Env
 
 	return envelopes, nil
 }
-
