@@ -1,56 +1,58 @@
 digraph G {
-    compound=true;
-	rankdir=LR, ranksep="1.0"];
-
+	graph [compound=true, rankdir=LR, ranksep="1.0", page="11.692913,8.267716", margin="0.500000,0.125197", bb="0 0 1554 562"];
+	node [label="\N"];
+	graph [page="8.263889,11.694444",
+		margin="0.250000,0.569444"];
 	subgraph clusterproxy {
-		graph [label="Proxy"];
-	    "UI";
-	    "Proxy";
+		graph [page="11.692913,8.267716",
+			margin="0.500000,0.125197",
+			bb="",
+			label=Proxy];
+		UI;
+		Proxy;
 	}
-
 	subgraph clustertour {
-		graph [label="Tour-service"];
-	    "CreateTour" [label="CreateTour-command"];
-	    "CreateCyclist" [label="CreateCyclist-command"];
-	    "CreateEtappe" [label="CreateEtappe-command"];
-	    "GetTour" [label="GetTour-query"];
-	    "TourStore" [style="filled",shape="box"];
+		graph [page="11.692913,8.267716",
+			margin="0.500000,0.125197",
+			bb="",
+			label="Tour-service"];
+		CreateTour [label="CreateTour-command"];
+		CreateCyclist [label="CreateCyclist-command"];
+		CreateEtappe [label="CreateEtappe-command"];
+		GetTour [label="GetTour-query", shape=box];
+		TourStore [shape=box, style=filled];
 	}
-
 	subgraph clustergambler {
-		graph [label="Gambler-service"];
-	    "GamblerEventhandler" [style="filled",shape="diamond"];
-	    "CreateGambler" [label="CreateGambler-command"];
-	    "CreateGamblerTeam" [label="CreateGamblerTeam-command"];
-	    "GetGambler" [label="GetGambler-query"];
-	    "GamblerStore" [style="filled",shape="box"];
+		graph [page="11.692913,8.267716",
+			margin="0.500000,0.125197",
+			bb="",
+			label="Gambler-service"];
+		GamblerEventhandler [shape=diamond, style=filled];
+		CreateGambler [label="CreateGambler-command"];
+		CreateGamblerTeam [label="CreateGamblerTeam-command"];
+		GetGambler [label="GetGambler-query", shape=box];
+		GamblerStore [shape=box, style=filled];
 	}
-
 	subgraph clusterresults {
-		graph [label="Results-service"];
-	    "ResultsEventhandler" [style="filled",shape="diamond"];
-	    "CreateDayResults" [label="CreateDayResults-command"];
-	    "GetResults" [label="GetResults-query"];
-	    "ResultsStore" [style="filled",shape="box"];
+		graph [page="11.692913,8.267716",
+			margin="0.500000,0.125197",
+			bb="",
+			label="Results-service"];
+		ResultsEventhandler [shape=diamond, style=filled];
+		CreateDayResults [label="CreateDayResults-command"];
+		GetResults [label="GetResults-query", shape=box];
+		ResultsStore [shape=box, style=filled];
 	}
-
-	"Browser/App" -> "UI"
-	"Browser/App" -> "Proxy"
-
-	"Proxy" -> "CreateTour" [lhead="clustertour",label="HTTP", arrowhead="crow"];
-	"Proxy" -> "CreateGambler" [lhead="clustergambler",label="HTTP", arrowhead="crow"];
-	"Proxy" -> "CreateDayResults" [lhead="clusterresults",label="HTTP", arrowhead="crow"];
-
-    "CreateTour" -> "GamblerEventhandler" [label="TourCreated-event", style="dashed"];
-    "CreateTour" -> "ResultsEventhandler" [label="TourCreated-event", style="dashed"];
-
-    "CreateCyclist" -> "GamblerEventhandler"  [label="CyclistCreated-event", style="dashed"];
-    "CreateCyclist" -> "ResultsEventhandler"  [label="CyclistCreated-event", style="dashed"];
-
-    "CreateEtappe" -> "ResultsEventhandler"  [label="EtappeCreated-event", style="dashed"];
-
-    "CreateGambler" -> "ResultsEventhandler"  [label="GamblerCreated-event", style="dashed"];
-
-	"CreateGamblerTeam" -> "ResultsEventhandler" [label="GamblerTeamCreated-event", style="dashed"];
-
+	"Browser/App" -> UI [arrowhead=crow];
+	"Browser/App" -> Proxy [arrowhead=crow];
+	Proxy -> CreateTour [arrowhead=crow, lhead=clustertour, label=HTTP];
+	Proxy -> CreateGambler [arrowhead=crow, lhead=clustergambler, label=HTTP];
+	Proxy -> CreateDayResults [arrowhead=crow, lhead=clusterresults, label=HTTP];
+	CreateTour -> GamblerEventhandler [label="TourCreated-event", style=dashed];
+	CreateTour -> ResultsEventhandler [label="TourCreated-event", style=dashed];
+	CreateCyclist -> GamblerEventhandler [label="CyclistCreated-event", style=dashed];
+	CreateCyclist -> ResultsEventhandler [label="CyclistCreated-event", style=dashed];
+	CreateEtappe -> ResultsEventhandler [label="EtappeCreated-event", style=dashed];
+	CreateGambler -> ResultsEventhandler [label="GamblerCreated-event", style=dashed];
+	CreateGamblerTeam -> ResultsEventhandler [label="GamblerTeamCreated-event", style=dashed];
 }
