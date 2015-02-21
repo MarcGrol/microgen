@@ -1,0 +1,56 @@
+digraph G {
+    compound=true;
+	rankdir=LR, ranksep="1.0"];
+
+	subgraph clusterproxy {
+		graph [label="Proxy"];
+	    "UI";
+	    "Proxy";
+	}
+
+	subgraph clustertour {
+		graph [label="Tour-service"];
+	    "CreateTour" [label="CreateTour-command"];
+	    "CreateCyclist" [label="CreateCyclist-command"];
+	    "CreateEtappe" [label="CreateEtappe-command"];
+	    "GetTour" [label="GetTour-query"];
+	    "TourStore" [style="filled",shape="box"];
+	}
+
+	subgraph clustergambler {
+		graph [label="Gambler-service"];
+	    "GamblerEventhandler" [style="filled",shape="diamond"];
+	    "CreateGambler" [label="CreateGambler-command"];
+	    "CreateGamblerTeam" [label="CreateGamblerTeam-command"];
+	    "GetGambler" [label="GetGambler-query"];
+	    "GamblerStore" [style="filled",shape="box"];
+	}
+
+	subgraph clusterresults {
+		graph [label="Results-service"];
+	    "ResultsEventhandler" [style="filled",shape="diamond"];
+	    "CreateDayResults" [label="CreateDayResults-command"];
+	    "GetResults" [label="GetResults-query"];
+	    "ResultsStore" [style="filled",shape="box"];
+	}
+
+	"Browser/App" -> "UI"
+	"Browser/App" -> "Proxy"
+
+	"Proxy" -> "CreateTour" [lhead="clustertour",label="HTTP", arrowhead="crow"];
+	"Proxy" -> "CreateGambler" [lhead="clustergambler",label="HTTP", arrowhead="crow"];
+	"Proxy" -> "CreateDayResults" [lhead="clusterresults",label="HTTP", arrowhead="crow"];
+
+    "CreateTour" -> "GamblerEventhandler" [label="TourCreated-event", style="dashed"];
+    "CreateTour" -> "ResultsEventhandler" [label="TourCreated-event", style="dashed"];
+
+    "CreateCyclist" -> "GamblerEventhandler"  [label="CyclistCreated-event", style="dashed"];
+    "CreateCyclist" -> "ResultsEventhandler"  [label="CyclistCreated-event", style="dashed"];
+
+    "CreateEtappe" -> "ResultsEventhandler"  [label="EtappeCreated-event", style="dashed"];
+
+    "CreateGambler" -> "ResultsEventhandler"  [label="GamblerCreated-event", style="dashed"];
+
+	"CreateGamblerTeam" -> "ResultsEventhandler" [label="GamblerTeamCreated-event", style="dashed"];
+
+}

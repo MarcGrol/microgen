@@ -1,0 +1,41 @@
+// Generated automatically by microgen: do not edit manually
+
+digraph G {
+    graph [rankdir=LR, ranksep="1.0"];
+
+// services
+{{range .Services}}
+	subgraph cluster{{.NameToLower}} {
+	graph [label="{{.Name}}"];
+
+	{{range .Commands}}
+	    "{{.Name}}";
+	{{end}}
+
+	}
+
+{{end}}
+
+// events
+{{range .GetUniqueEvents}}
+   a -> b [label="{{.Name}}"];
+{{end}}
+
+// arrows
+{{range .Services}}
+    // service {{.Name}}
+
+	{{range .Commands}}
+	    // command {{.Name}}
+	    {{$command := .Name}}
+	    {{range .ConsumesEvents}}
+	    	"{{.Name}}" -> "bus"; //"{{$command}}";
+	    {{end}}
+	    {{range .ProducesEvents}}
+	    	"{{$command}}" -> "{{.Name}}";
+	    {{end}}
+	{{end}}
+
+{{end}}
+
+}

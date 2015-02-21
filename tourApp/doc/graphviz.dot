@@ -1,0 +1,66 @@
+digraph G {
+    graph [rankdir=LR, ranksep="1.0"];
+
+	subgraph clustertour {
+	graph [label="Tour"];
+	    "CreateTour";
+	    "CreateCyclist";
+	    "CreateEtappe";
+	    "GetTour";
+	}
+
+	subgraph clustergambler {
+	graph [label="Gambler"];
+
+	
+	    "CreateGambler";
+	
+	    "CreateGamblerTeam";
+	
+	    "GetGambler";
+	
+
+	}
+
+
+	subgraph clusterresults {
+	graph [label="Results"];
+
+	
+	    "CreateDayResults";
+	
+	    "GetResults";
+	
+
+	}
+
+
+
+// events
+
+    "CreateTour" -> "CreateGambler" [label="TourCreated"];
+    "CreateTour" -> "CreateCyclist" [label="TourCreated"];
+    "CreateTour" -> "CreateEtappe" [label="TourCreated"];
+    "CreateTour" -> "CreateGambler" [label="TourCreated"];
+    "CreateTour" -> "CreateGamblerTeam" [label="TourCreated"];
+    "CreateTour" -> "CreateDayResults" [label="TourCreated"];
+
+   "CreateCyclist" -> "CreateGamblerTeam"  [label="CyclistCreated"];
+   "CreateCyclist" -> "CreateDayResults"  [label="CyclistCreated"];
+
+   "CreateEtappe" -> "CreateDayResults"  [label="EtappeCreated"];
+
+   "CreateGambler" -> "CreateGamblerTeam"  [label="GamblerCreated"];
+   "CreateGambler" -> "CreateDayResults"  [label="GamblerCreated"];
+
+   "CreateGamblerTeam" -> "Results"  [label="GamblerTeamCreated"];
+
+	"CreateDayResults" -> "Tour" [label="EtappeResultsAvailable"];
+	"CreateDayResults" -> "Tour" [label="CyclistScoreCalculated"];
+
+	"CreateDayResults" -> "Gambler" [label="GamblerScoreCalculated"];
+
+ 
+
+
+}

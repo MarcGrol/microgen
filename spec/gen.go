@@ -23,6 +23,10 @@ func GenerateApplication(application Application, baseDir string) error {
 	if err != nil {
 		return err
 	}
+	err = generateDoumentation(application, baseDir)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -179,3 +183,16 @@ func generateFileFromTemplate(data interface{}, templateFileName string, targetF
 	}
 	return nil
 }
+
+func generateDoumentation(application Application, baseDir string) error {
+	src := fmt.Sprintf("%s/spec/graphviz.dot.tmpl", baseDir)
+	target := fmt.Sprintf("%s/%s/doc/graphviz.dot", baseDir, application.Name)
+
+	err := generateFileFromTemplate(application, src, target)
+	if err != nil {
+		log.Fatalf("Error generating graphviz-doc (%s)", err)
+		return err
+	}
+	return nil
+}
+
