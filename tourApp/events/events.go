@@ -3,9 +3,29 @@ package events
 // Generated automatically by microgen: do not edit manually
 
 import (
+	"code.google.com/p/go-uuid/uuid"
 	"strconv"
 	"time"
 )
+
+type CyclistCreated struct {
+	Year        int    `json:"year"`
+	CyclistId   int    `json:"cyclistId"`
+	CyclistName string `json:"cyclistName"`
+	CyclistTeam string `json:"cyclistTeam"`
+}
+
+func (event *CyclistCreated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeCyclistCreated
+	envelope.CyclistCreated = event
+	envelope.AggregateName = "tour"
+	envelope.AggregateUid = strconv.Itoa(event.Year)
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
+	return envelope
+}
 
 type EtappeCreated struct {
 	Year                 int       `json:"year"`
@@ -25,6 +45,7 @@ func (event *EtappeCreated) Wrap() *Envelope {
 	envelope.AggregateUid = strconv.Itoa(event.Year)
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -43,6 +64,7 @@ func (event *GamblerCreated) Wrap() *Envelope {
 	envelope.AggregateUid = event.GamblerUid
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -60,6 +82,7 @@ func (event *GamblerTeamCreated) Wrap() *Envelope {
 	envelope.AggregateUid = event.GamblerUid
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -80,6 +103,7 @@ func (event *EtappeResultsAvailable) Wrap() *Envelope {
 	envelope.AggregateUid = strconv.Itoa(event.Year)
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -98,6 +122,7 @@ func (event *CyclistScoreCalculated) Wrap() *Envelope {
 	envelope.AggregateUid = strconv.Itoa(event.Year)
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -116,6 +141,7 @@ func (event *GamblerScoreCalculated) Wrap() *Envelope {
 	envelope.AggregateUid = event.GamblerUid
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -131,24 +157,7 @@ func (event *TourCreated) Wrap() *Envelope {
 	envelope.AggregateUid = strconv.Itoa(event.Year)
 	envelope.SequenceNumber = 0 // Set later by event-store
 	envelope.Timestamp = time.Now()
-	return envelope
-}
-
-type CyclistCreated struct {
-	Year        int    `json:"year"`
-	CyclistId   int    `json:"cyclistId"`
-	CyclistName string `json:"cyclistName"`
-	CyclistTeam string `json:"cyclistTeam"`
-}
-
-func (event *CyclistCreated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeCyclistCreated
-	envelope.CyclistCreated = event
-	envelope.AggregateName = "tour"
-	envelope.AggregateUid = strconv.Itoa(event.Year)
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
 	return envelope
 }
 
@@ -156,7 +165,6 @@ type Type int
 
 const (
 	TypeUnknown Type = iota
-	TypeCyclistCreated
 	TypeEtappeCreated
 	TypeGamblerCreated
 	TypeGamblerTeamCreated
@@ -164,18 +172,11 @@ const (
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
 	TypeTourCreated
+	TypeCyclistCreated
 )
 
 func (t Type) String() string {
 	switch t {
-	case TypeEtappeCreated:
-		return "EtappeCreated"
-	case TypeGamblerCreated:
-		return "GamblerCreated"
-	case TypeGamblerTeamCreated:
-		return "GamblerTeamCreated"
-	case TypeEtappeResultsAvailable:
-		return "EtappeResultsAvailable"
 	case TypeCyclistScoreCalculated:
 		return "CyclistScoreCalculated"
 	case TypeGamblerScoreCalculated:
@@ -184,12 +185,21 @@ func (t Type) String() string {
 		return "TourCreated"
 	case TypeCyclistCreated:
 		return "CyclistCreated"
+	case TypeEtappeCreated:
+		return "EtappeCreated"
+	case TypeGamblerCreated:
+		return "GamblerCreated"
+	case TypeGamblerTeamCreated:
+		return "GamblerTeamCreated"
+	case TypeEtappeResultsAvailable:
+		return "EtappeResultsAvailable"
 
 	}
 	return "unknown"
 }
 
 type Envelope struct {
+	Uuid                   string                  `json:"uuid"`
 	SequenceNumber         uint64                  `json:"sequenceNumber"`
 	AggregateName          string                  `json:"aggregateName"`
 	AggregateUid           string                  `json:"aggregateUid"`

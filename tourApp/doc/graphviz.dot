@@ -41,9 +41,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
-		
 			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+		
+			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
 		
 			 
@@ -66,8 +66,6 @@ digraph G {
 		label="Results-service";
 		// events
 		
-			"ResultsGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
-		
 			"ResultsGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
 		
 			"ResultsTourCreated" [label="TourCreated\neventhandler", shape=diamond];
@@ -75,6 +73,8 @@ digraph G {
 			"ResultsEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
 		
 			"ResultsCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+		
+			"ResultsGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
 		
 		
 			 

@@ -5,6 +5,7 @@ package events
 import (
     "time"
     "strconv"
+    "code.google.com/p/go-uuid/uuid"
 )
 
 {{range .GetUniqueEvents}}
@@ -21,6 +22,7 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
 	envelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
     envelope.SequenceNumber = 0 // Set later by event-store
     envelope.Timestamp = time.Now()
+    envelope.Uuid = uuid.New()
     return envelope
 }
 {{end}}
@@ -41,6 +43,7 @@ func (t Type) String() string {
 }
 
 type Envelope struct {
+    Uuid           string `json:"uuid"`
     SequenceNumber uint64 `json:"sequenceNumber"`
     AggregateName string `json:"aggregateName"`
     AggregateUid string `json:"aggregateUid"`
