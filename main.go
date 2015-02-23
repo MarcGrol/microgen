@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/MarcGrol/microgen/spec"
+	"github.com/MarcGrol/microgen/dsl"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
 	"os"

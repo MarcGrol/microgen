@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/MarcGrol/microgen/spec"
+	"github.com/MarcGrol/microgen/dsl"
 )
 
 var (
