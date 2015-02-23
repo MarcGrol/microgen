@@ -29,10 +29,9 @@ func TestCreateTourCommand(t *testing.T) {
 	assert.Equal(t, expected.Year, actual.Year)
 
 	// Test query
-	tourOpaque, err := service.HandleGetTourQuery(expected.Year)
+	tour, err := service.HandleGetTourQuery(expected.Year)
 	assert.Nil(t, err)
-	tour, ok := tourOpaque.(*Tour)
-	assert.True(t, ok)
+	assert.NotNil(t, tour)
 	assert.Equal(t, expected.Year, tour.Year)
 	assert.Equal(t, 0, len(tour.Etappes))
 	assert.Equal(t, 0, len(tour.Cyclists))
@@ -73,10 +72,9 @@ func TestCreateCyclistCommand(t *testing.T) {
 	assert.Equal(t, expected.CyclistTeam, actual.CyclistTeam)
 
 	// Test query
-	tourOpaque, err := service.HandleGetTourQuery(expected.Year)
+	tour, err := service.HandleGetTourQuery(expected.Year)
 	assert.Nil(t, err)
-	tour, ok := tourOpaque.(*Tour)
-	assert.True(t, ok)
+	assert.NotNil(t, tour)
 	assert.Equal(t, 2015, tour.Year)
 	assert.Equal(t, 0, len(tour.Etappes))
 	assert.Equal(t, 1, len(tour.Cyclists))
@@ -133,10 +131,9 @@ func TestCreateEtappeCommand(t *testing.T) {
 	assert.Equal(t, expected.EtappeKind, actual.EtappeKind)
 
 	// Test query
-	tourOpaque, err := service.HandleGetTourQuery(expected.Year)
+	tour, err := service.HandleGetTourQuery(expected.Year)
 	assert.Nil(t, err)
-	tour, ok := tourOpaque.(*Tour)
-	assert.True(t, ok)
+	assert.NotNil(t, tour)
 	assert.Equal(t, 2015, tour.Year)
 	assert.Equal(t, 1, len(tour.Etappes))
 	assert.Equal(t, 0, len(tour.Cyclists))

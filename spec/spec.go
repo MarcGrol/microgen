@@ -225,6 +225,7 @@ type Command struct {
 	Method         MethodType
 	Url            string
 	Input          Entity
+	OutputName     string
 	ConsumesEvents []Event
 	ProducesEvents []Event
 }

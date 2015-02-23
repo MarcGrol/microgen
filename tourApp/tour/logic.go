@@ -89,7 +89,7 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	return tch.storeAndPublish([]*events.Envelope{etappeCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleGetTourQuery(year int) (interface{}, *myerrors.Error) {
+func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, *myerrors.Error) {
 	// TODO validate input
 	tour, found := getTourOnYear(tch.store, year)
 	if found == false {

@@ -22,7 +22,7 @@ import (
 type CommandHandler interface {
     {{range .Service.Commands}}
     	{{if .IsQuery}} 
-        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) (interface{}, *myerrors.Error)
+        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, *myerrors.Error)
     	{{else}}
         Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) *myerrors.Error
     	{{end}}
