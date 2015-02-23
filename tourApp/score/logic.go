@@ -1,4 +1,4 @@
-package results
+package score
 
 type Results struct {
 }

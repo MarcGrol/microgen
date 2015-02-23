@@ -41,9 +41,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
-		
 			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+		
+			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
 		
 			 
@@ -61,31 +61,31 @@ digraph G {
 		GamblerStore [shape=box, style=filled];
 	}
 
-	subgraph clusterresults {
+	subgraph clusterscore {
 		
-		label="Results-service";
+		label="Score-service";
 		// events
 		
-			"ResultsGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
+			"ScoreTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
-			"ResultsTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+			"ScoreEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
 		
-			"ResultsEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
+			"ScoreCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
-			"ResultsCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+			"ScoreGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
 		
-			"ResultsGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
+			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
 		
 		
 			 
-				"ResultsCreateDayResults"  [label="CreateDayResults\ncommand-handler", shape=box];
+				"ScoreCreateDayResults"  [label="CreateDayResults\ncommand-handler", shape=box];
 			
 		
 			
-			    "ResultsGetResults"  [label="GetResults\nquery-handler"];
+			    "ScoreGetResults"  [label="GetResults\nquery-handler"];
 			
 		
-		ResultsStore [shape=box, style=filled];
+		ScoreStore [shape=box, style=filled];
 	}
 
 
@@ -98,16 +98,16 @@ digraph G {
 
 	"Proxy" -> "GamblerCreateGambler" [label="json/HTTP", lhead=clustergambler, arrowhead=crow];
 
-	"Proxy" -> "ResultsCreateDayResults" [label="json/HTTP", lhead=clusterresults, arrowhead=crow];
+	"Proxy" -> "ScoreCreateDayResults" [label="json/HTTP", lhead=clusterscore, arrowhead=crow];
 
 
 	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed]
-	"TourCreateTour" -> "ResultsTourCreated" [label="TourCreated-event", style=dashed]
+	"TourCreateTour" -> "ScoreTourCreated" [label="TourCreated-event", style=dashed]
 	"TourCreateCyclist" -> "GamblerCyclistCreated" [label="CyclistCreated-event", style=dashed]
-	"TourCreateCyclist" -> "ResultsCyclistCreated" [label="CyclistCreated-event", style=dashed]
-	"TourCreateEtappe" -> "ResultsEtappeCreated" [label="EtappeCreated-event", style=dashed]
-	"GamblerCreateGambler" -> "ResultsGamblerCreated" [label="GamblerCreated-event", style=dashed]
-	"GamblerCreateGamblerTeam" -> "ResultsGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed]
+	"TourCreateCyclist" -> "ScoreCyclistCreated" [label="CyclistCreated-event", style=dashed]
+	"TourCreateEtappe" -> "ScoreEtappeCreated" [label="EtappeCreated-event", style=dashed]
+	"GamblerCreateGambler" -> "ScoreGamblerCreated" [label="GamblerCreated-event", style=dashed]
+	"GamblerCreateGamblerTeam" -> "ScoreGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed]
 
 
 }

@@ -226,7 +226,7 @@ var (
 				},
 			},
 			{
-				Name: "Results",
+				Name: "Score",
 				Commands: []spec.Command{
 					{
 						Name:   "CreateDayResults",
