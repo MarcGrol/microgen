@@ -3,6 +3,7 @@ package spec
 import (
 	"fmt"
 	"strings"
+	"log"
 )
 
 type Type int
@@ -82,10 +83,68 @@ func (app Application) HasDateField() bool {
 	return status
 }
 
+func (app Application)GetConsumingServiceNamesForEvent( eventName string ) []string {
+	serviceNames := make([]string,0,10)
+	for _, service := range app.Services {
+		events := service.GetConsumedEvents()
+		for _, ev := range events {
+			if ev.Name == eventName {
+				serviceNames = append(serviceNames, ev.Name)
+				break
+			}
+		}
+	}	
+	return serviceNames
+}
+
+// 	CreateGamblerTeam -> ResultsGamblerTeamCreatedEventhandler [label="GamblerTeamCreated-event", style=dashed];
+
+func (app Application) GraphvizEdgesForEvents( ) string {
+	edges := make([]string,0,10)
+	for _, service := range app.Services {
+		for _, command := range service.Commands {
+			for _,event := range command.ProducesEvents {
+				log.Printf("service: %s, comand: %s, produced:%s", service.Name, command.Name, event.Name)
+				for _,s := range app.ServicesThatConsumeEvent(event) {
+					log.Printf("consumed by: %s", s.Name)
+					edge := fmt.Sprintf("\t%s%s -> %s%sEventHandler [label=\"%s-event\", style=dashed]\n", 
+							service.Name,
+							command.Name, 
+							s.Name,
+							event.Name,
+							event.Name)
+					edges = append( edges, edge)
+				}	
+			}
+		}
+	}	
+	var allEdgesAsString string
+	for _,e := range edges {
+		allEdgesAsString = allEdgesAsString + e
+	}
+	return allEdgesAsString
+}
+
+func (app Application) ServicesThatConsumeEvent( event Event ) []Service {
+	services := make([]Service,0,10)
+	for _, service := range app.Services {
+		for _,e := range service.GetConsumedEvents() {
+			if event.Name == e.Name {
+				services = append(services,service)
+			}
+		}
+	}
+	return services	
+}
+
 // service
 type Service struct {
 	Name     string
 	Commands []Command
+}
+
+func (s Service) FirstCommand() string {
+	return  s.Commands[0].Name
 }
 
 func (s Service) CommandNames() []string {

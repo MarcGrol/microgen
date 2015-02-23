@@ -64,24 +64,6 @@ var (
 		AggregateFieldName: "gamblerUid",
 	}
 
-	tourStarted = spec.Event{
-		Name: "TourStarted",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-		},
-		AggregateName:      "tour",
-		AggregateFieldName: "year",
-	}
-
-	scoringRulesAvailable = spec.Event{
-		Name: "scoringRulesAvailable",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-		},
-		AggregateName:      "tour",
-		AggregateFieldName: "year",
-	}
-
 	etappeStarted = spec.Event{
 		Name: "EtappeStarted",
 		Attributes: []spec.Attribute{
@@ -270,7 +252,7 @@ var (
 								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
+						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated, etappeCreated, gamblerCreated, gamblerTeamCreated},
 						ProducesEvents: []spec.Event{},
 					},
 				},

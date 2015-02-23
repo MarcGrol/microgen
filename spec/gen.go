@@ -177,6 +177,8 @@ func generateFileFromTemplate(data interface{}, templateFileName string, targetF
 	if err != nil {
 		return err
 	}
+	//w = template.New("consumingServices").Funcs(defaultfuncs)
+
 	defer w.Close()
 	if err := t.Execute(w, data); err != nil {
 		return err
@@ -195,4 +197,11 @@ func generateDoumentation(application Application, baseDir string) error {
 	}
 	return nil
 }
+
+var defaultfuncs = map[string]interface{} {
+	"consumingServices": func(event Event) []string { 
+		return []string{"eva","marc","pien"}
+	},
+}
+
 

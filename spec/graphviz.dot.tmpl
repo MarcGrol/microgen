@@ -1,41 +1,42 @@
 // Generated automatically by microgen: do not edit manually
 
 digraph G {
-    graph [rankdir=LR, ranksep="1.0"];
+    graph [compound=true, rankdir=LR, ranksep="1.0"];
+
+	subgraph clusterproxy {
+        label="Proxy";
+        "UI";
+        "Proxy";
+    }
 
 // services
 {{range .Services}}
 	subgraph cluster{{.NameToLower}} {
-	graph [label="{{.Name}}"];
-
-	{{range .Commands}}
-	    "{{.Name}}";
-	{{end}}
-
+		{{$serviceName := .Name}}
+		label="{{.Name}}-service";
+		// events
+		{{range .GetConsumedEvents}}
+			"{{$serviceName}}{{.Name}}EventHandler" [label="{{.Name}}\neventhandler", shape=diamond];
+		{{end}}
+		{{range .Commands}}
+			{{if not .IsQuery}} 
+				"{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncommand-handler", shape=box];
+			{{else}}
+			    "{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncquery-handler"];
+			{{end}}
+		{{end}}
+		{{.Name}}Store [shape=box, style=filled];
 	}
-
 {{end}}
 
-// events
-{{range .GetUniqueEvents}}
-   a -> b [label="{{.Name}}"];
-{{end}}
-
-// arrows
+	// edges
+	"Browser\nApp" -> "UI" [label="html/css/javascript/HTTP",arrowhead=crow];
+	"Browser\nApp" -> "Proxy" [label="json/HTTP",arrowhead=crow];
+	
 {{range .Services}}
-    // service {{.Name}}
-
-	{{range .Commands}}
-	    // command {{.Name}}
-	    {{$command := .Name}}
-	    {{range .ConsumesEvents}}
-	    	"{{.Name}}" -> "bus"; //"{{$command}}";
-	    {{end}}
-	    {{range .ProducesEvents}}
-	    	"{{$command}}" -> "{{.Name}}";
-	    {{end}}
-	{{end}}
-
+	"Proxy" -> "{{.Name}}{{.FirstCommand}}" [label="json/HTTP", lhead=cluster{{.NameToLower}}, arrowhead=crow];
 {{end}}
+
+{{ .GraphvizEdgesForEvents }}
 
 }

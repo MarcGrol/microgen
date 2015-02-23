@@ -1,58 +1,112 @@
 digraph G {
-	graph [compound=true, rankdir=LR, ranksep="1.0", page="11.692913,8.267716", margin="0.500000,0.125197", bb="0 0 1554 562"];
+	graph [compound=true, rankdir=LR, ranksep="1.0"];
 	node [label="\N"];
-	graph [page="8.263889,11.694444",
-		margin="0.250000,0.569444"];
+
 	subgraph clusterproxy {
-		graph [page="11.692913,8.267716",
-			margin="0.500000,0.125197",
-			bb="",
-			label=Proxy];
+		label=Proxy;
 		UI;
 		Proxy;
 	}
+
 	subgraph clustertour {
-		graph [page="11.692913,8.267716",
-			margin="0.500000,0.125197",
-			bb="",
-			label="Tour-service"];
-		CreateTour [label="CreateTour-command"];
-		CreateCyclist [label="CreateCyclist-command"];
-		CreateEtappe [label="CreateEtappe-command"];
-		GetTour [label="GetTour-query", shape=box];
+		label="Tour-service";
+		// events
+		// commands
+		CreateTour [label="CreateTour\ncommand-handler", shape=box];
+		CreateCyclist [label="CreateCyclist\ncommand-handler", shape=box];
+		CreateEtappe [label="CreateEtappe\ncommand-handler", shape=box];
+		// queries
+		GetTour [label="GetTour\nquery-handler"];
+		// store
 		TourStore [shape=box, style=filled];
 	}
+
 	subgraph clustergambler {
-		graph [page="11.692913,8.267716",
-			margin="0.500000,0.125197",
-			bb="",
-			label="Gambler-service"];
-		GamblerEventhandler [shape=diamond, style=filled];
-		CreateGambler [label="CreateGambler-command"];
-		CreateGamblerTeam [label="CreateGamblerTeam-command"];
-		GetGambler [label="GetGambler-query", shape=box];
+		label="Gambler-service";
+		// events
+		GamblerTourCreatedEventhandler [label="TourCreated\nevent-handler",shape=diamond];
+		GamblerCyclistCreatedEventhandler [label="CyclistCreated\nevent-handler",shape=diamond];
+		// commands
+		CreateGambler [label="CreateGambler\ncommand-handler", shape=box];
+		CreateGamblerTeam [label="CreateGamblerTeam\ncommand-handler", shape=box];
+		// queries
+		GetGambler [label="GetGambler-query-handler"];
+		SearchGambler [label="SearchGambler-query-handler"];
+		// store
 		GamblerStore [shape=box, style=filled];
 	}
+
 	subgraph clusterresults {
-		graph [page="11.692913,8.267716",
-			margin="0.500000,0.125197",
-			bb="",
-			label="Results-service"];
-		ResultsEventhandler [shape=diamond, style=filled];
-		CreateDayResults [label="CreateDayResults-command"];
-		GetResults [label="GetResults-query", shape=box];
+		label="Results-service";
+		// events
+		ResultsTourCreatedEventhandler [label="TourCreated\nevent-handler",shape=diamond];
+		ResultsCyclistCreatedEventhandler [label="CyclistCreated\nevent-handler",shape=diamond];
+		ResultsEtappeCreatedEventhandler [label="EtappeCreated\nevent-handler",shape=diamond];
+		ResultsGamblerCreatedEventhandler [label="GamblerCreated\nevent-handler",shape=diamond];
+		ResultsGamblerTeamCreatedEventhandler [label="GamblerTeamCreated\nevent-handler",shape=diamond];
+		// commands
+		CreateDayResults [label="CreateDayResults\ncommand-handler", shape=box];
+		// queries
+		GetResults [label="GetResults\nquery-handler"];
+		// store
 		ResultsStore [shape=box, style=filled];
 	}
-	"Browser/App" -> UI [arrowhead=crow];
-	"Browser/App" -> Proxy [arrowhead=crow];
-	Proxy -> CreateTour [arrowhead=crow, lhead=clustertour, label=HTTP];
-	Proxy -> CreateGambler [arrowhead=crow, lhead=clustergambler, label=HTTP];
-	Proxy -> CreateDayResults [arrowhead=crow, lhead=clusterresults, label=HTTP];
-	CreateTour -> GamblerEventhandler [label="TourCreated-event", style=dashed];
-	CreateTour -> ResultsEventhandler [label="TourCreated-event", style=dashed];
-	CreateCyclist -> GamblerEventhandler [label="CyclistCreated-event", style=dashed];
-	CreateCyclist -> ResultsEventhandler [label="CyclistCreated-event", style=dashed];
-	CreateEtappe -> ResultsEventhandler [label="EtappeCreated-event", style=dashed];
-	CreateGambler -> ResultsEventhandler [label="GamblerCreated-event", style=dashed];
-	CreateGamblerTeam -> ResultsEventhandler [label="GamblerTeamCreated-event", style=dashed];
+
+	subgraph clustercollector {
+		label="Collector-service";
+		// events
+		CollectorTourCreatedEventhandler [label="TourCreated\nevent-handler",shape=diamond];
+		CollectorCyclistCreatedEventhandler [label="CyclistCreated\nevent-handler",shape=diamond];
+		CollectorEtappeCreatedEventhandler [label="EtappeCreated\nevent-handler",shape=diamond];
+		CollectorGamblerCreatedEventhandler [label="GamblerCreated\nevent-handler",shape=diamond];
+		CollectorGamblerTeamCreatedEventhandler [label="GamblerTeamCreated\nevent-handler",shape=diamond];
+		CollectorDayResultsCreatedEventhandler  [label="DayResultsCreated\nevent-handler",shape=diamond];
+		// store
+		CollectorStore [shape=box, style=filled];
+		// queries
+		SearchEvents [label="SearchEvents\nquery-handler"];
+	}
+
+	subgraph clusternotifier {
+		label="Notifier-service";
+		// events
+		NotifierGamblerCreatedEventhandler [label="GamblerCreated\nevent-handler",shape=diamond];
+		NotifierDayResultsCreatedEventhandler  [label="DayResultsCreated\nevent-handler",shape=diamond];
+		// store
+		NotifierStore [shape=box, style=filled];
+	}
+
+	BrowserApp -> UI [label="html/css/javascript/HTTP",arrowhead="crow"];
+	BrowserApp -> Proxy [label="json/HTTP",arrowhead="crow"];
+	
+	Proxy -> CreateTour [label="json/HTTP",arrowhead=crow, lhead=clustertour];
+	Proxy -> CreateGambler [label="json/HTTP",arrowhead=crow, lhead=clustergambler];
+	Proxy -> CreateDayResults [label="json/HTTP",arrowhead=crow, lhead=clusterresults];
+	Proxy -> SearchEvents [label="json/HTTP",arrowhead=crow, lhead=clusterresults];
+
+	// events initialted from tour-service
+	CreateTour -> GamblerTourCreatedEventhandler [label="TourCreated-event", style=dashed];
+	CreateTour -> GamblerTourCreatedEventhandler [label="TourCreated-event", style=dashed];
+	CreateTour -> ResultsTourCreatedEventhandler [label="TourCreated-event", style=dashed];
+	CreateTour -> CollectorTourCreatedEventhandler [label="TourCreated-event", style=dashed];
+
+	CreateCyclist -> GamblerCyclistCreatedEventhandler [label="CyclistCreated-event", style=dashed];
+	CreateCyclist -> ResultsCyclistCreatedEventhandler [label="CyclistCreated-event", style=dashed];
+	CreateCyclist -> CollectorCyclistCreatedEventhandler [label="CyclistCreated-event", style=dashed];
+	
+	CreateEtappe -> ResultsEtappeCreatedEventhandler [label="EtappeCreated-event", style=dashed];
+	CreateEtappe -> CollectorEtappeCreatedEventhandler [label="EtappeCreated-event", style=dashed];
+
+	// events initiated from gambler service
+	CreateGambler -> ResultsGamblerCreatedEventhandler [label="GamblerCreated-event", style=dashed];
+	CreateGambler -> CollectorGamblerCreatedEventhandler [label="GamblerCreated-event", style=dashed];
+	CreateGambler -> NotifierGamblerCreatedEventhandler [label="GamblerCreated-event", style=dashed];
+
+	CreateGamblerTeam -> ResultsGamblerTeamCreatedEventhandler [label="GamblerTeamCreated-event", style=dashed];
+	CreateGamblerTeam -> CollectorGamblerTeamCreatedEventhandler [label="GamblerTeamCreated-event", style=dashed];
+
+	CreateDayResults -> CollectorDayResultsCreatedEventhandler [label="DayResultsCreated-event", style=dashed];
+	CreateDayResults -> NotifierDayResultsCreatedEventhandler [label="DayResultsCreated-event", style=dashed];
+
+
 }
