@@ -8,6 +8,7 @@ import (
 )
 
 type SimpleEventStore struct {
+	dirname  string
 	filename string
 	fio      *os.File
 }
@@ -18,11 +19,14 @@ func NewSimpleEventStore() *SimpleEventStore {
 }
 
 func (store *SimpleEventStore) Open(dirname string, filename string) error {
+	store.dirname = dirname
+	store.filename = filename
+
 	var err error
-	store.filename = dirname + "/" + filename
-	store.fio, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	pathName := store.dirname + "/" + store.filename
+	store.fio, err = os.OpenFile(pathName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Printf("error opening file %s (%v)", store.filename, err)
+		log.Printf("error opening file %s (%v)", pathName, err)
 		return err
 	}
 	//log.Printf("Opened file %s", store.filename)
