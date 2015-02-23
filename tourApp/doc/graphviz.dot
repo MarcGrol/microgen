@@ -30,7 +30,7 @@ digraph G {
 			
 		
 			
-			    "TourGetTour"  [label="GetTour\ncquery-handler"];
+			    "TourGetTour"  [label="GetTour\nquery-handler"];
 			
 		
 		TourStore [shape=box, style=filled];
@@ -41,9 +41,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerTourCreatedEventHandler" [label="TourCreated\neventhandler", shape=diamond];
+			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
-			"GamblerCyclistCreatedEventHandler" [label="CyclistCreated\neventhandler", shape=diamond];
+			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
 		
 			 
@@ -55,7 +55,7 @@ digraph G {
 			
 		
 			
-			    "GamblerGetGambler"  [label="GetGambler\ncquery-handler"];
+			    "GamblerGetGambler"  [label="GetGambler\nquery-handler"];
 			
 		
 		GamblerStore [shape=box, style=filled];
@@ -66,15 +66,15 @@ digraph G {
 		label="Results-service";
 		// events
 		
-			"ResultsTourCreatedEventHandler" [label="TourCreated\neventhandler", shape=diamond];
+			"ResultsGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
 		
-			"ResultsEtappeCreatedEventHandler" [label="EtappeCreated\neventhandler", shape=diamond];
+			"ResultsGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
 		
-			"ResultsCyclistCreatedEventHandler" [label="CyclistCreated\neventhandler", shape=diamond];
+			"ResultsTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
-			"ResultsGamblerCreatedEventHandler" [label="GamblerCreated\neventhandler", shape=diamond];
+			"ResultsEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
 		
-			"ResultsGamblerTeamCreatedEventHandler" [label="GamblerTeamCreated\neventhandler", shape=diamond];
+			"ResultsCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
 		
 			 
@@ -82,7 +82,7 @@ digraph G {
 			
 		
 			
-			    "ResultsGetResults"  [label="GetResults\ncquery-handler"];
+			    "ResultsGetResults"  [label="GetResults\nquery-handler"];
 			
 		
 		ResultsStore [shape=box, style=filled];
@@ -101,13 +101,13 @@ digraph G {
 	"Proxy" -> "ResultsCreateDayResults" [label="json/HTTP", lhead=clusterresults, arrowhead=crow];
 
 
-	TourCreateTour -> GamblerTourCreatedEventHandler [label="TourCreated-event", style=dashed]
-	TourCreateTour -> ResultsTourCreatedEventHandler [label="TourCreated-event", style=dashed]
-	TourCreateCyclist -> GamblerCyclistCreatedEventHandler [label="CyclistCreated-event", style=dashed]
-	TourCreateCyclist -> ResultsCyclistCreatedEventHandler [label="CyclistCreated-event", style=dashed]
-	TourCreateEtappe -> ResultsEtappeCreatedEventHandler [label="EtappeCreated-event", style=dashed]
-	GamblerCreateGambler -> ResultsGamblerCreatedEventHandler [label="GamblerCreated-event", style=dashed]
-	GamblerCreateGamblerTeam -> ResultsGamblerTeamCreatedEventHandler [label="GamblerTeamCreated-event", style=dashed]
+	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed]
+	"TourCreateTour" -> "ResultsTourCreated" [label="TourCreated-event", style=dashed]
+	"TourCreateCyclist" -> "GamblerCyclistCreated" [label="CyclistCreated-event", style=dashed]
+	"TourCreateCyclist" -> "ResultsCyclistCreated" [label="CyclistCreated-event", style=dashed]
+	"TourCreateEtappe" -> "ResultsEtappeCreated" [label="EtappeCreated-event", style=dashed]
+	"GamblerCreateGambler" -> "ResultsGamblerCreated" [label="GamblerCreated-event", style=dashed]
+	"GamblerCreateGamblerTeam" -> "ResultsGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed]
 
 
 }

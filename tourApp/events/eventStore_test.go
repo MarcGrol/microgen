@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	DIRNAME = "."
+	DIRNAME  = "."
 	FILENAME = "test.db"
 )
 
 func TestStore(t *testing.T) {
 
-	os.Remove(DIRNAME+"/"+FILENAME)
+	os.Remove(DIRNAME + "/" + FILENAME)
 
-	store := NewEventStore(DIRNAME,FILENAME)
+	store := NewEventStore(DIRNAME, FILENAME)
 
 	{
 		// write and close
@@ -87,9 +87,9 @@ func TestStore(t *testing.T) {
 }
 
 func BenchmarkWrite(b *testing.B) {
-	os.Remove(DIRNAME+FILENAME)
+	os.Remove(DIRNAME + FILENAME)
 
-	store := NewEventStore(DIRNAME,FILENAME)
+	store := NewEventStore(DIRNAME, FILENAME)
 	store.Open()
 
 	envelope := (&CyclistCreated{

@@ -16,13 +16,13 @@ digraph G {
 		label="{{.Name}}-service";
 		// events
 		{{range .GetConsumedEvents}}
-			"{{$serviceName}}{{.Name}}EventHandler" [label="{{.Name}}\neventhandler", shape=diamond];
+			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\neventhandler", shape=diamond];
 		{{end}}
 		{{range .Commands}}
 			{{if not .IsQuery}} 
 				"{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncommand-handler", shape=box];
 			{{else}}
-			    "{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncquery-handler"];
+			    "{{$serviceName}}{{.Name}}"  [label="{{.Name}}\nquery-handler"];
 			{{end}}
 		{{end}}
 		{{.Name}}Store [shape=box, style=filled];

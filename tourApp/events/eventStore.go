@@ -11,15 +11,15 @@ import (
 
 type EventStore struct {
 	dirname            string
-	filename		   string
+	filename           string
 	store              store.SimpleEventStore
 	mutex              sync.RWMutex
 	lastSequenceNumber uint64
 }
 
-func NewEventStore( dirname string, filename string ) *EventStore {
+func NewEventStore(dirname string, filename string) *EventStore {
 	store := new(EventStore)
-	store.dirname =dirname
+	store.dirname = dirname
 	store.filename = filename
 	return store
 }

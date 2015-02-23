@@ -198,10 +198,8 @@ func generateDoumentation(application Application, baseDir string) error {
 	return nil
 }
 
-var defaultfuncs = map[string]interface{} {
-	"consumingServices": func(event Event) []string { 
-		return []string{"eva","marc","pien"}
+var defaultfuncs = map[string]interface{}{
+	"consumingServices": func(event Event) []string {
+		return []string{"eva", "marc", "pien"}
 	},
 }
-
-

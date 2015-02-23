@@ -66,7 +66,7 @@ func main() {
 				err := tour.Start(*httpPort, *busAddress, *baseDir)
 				if err != nil {
 					log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s",
-							*httpPort, *busAddress, *baseDir)
+						*httpPort, *busAddress, *baseDir)
 				}
 			} else if *service == "gambler" {
 				log.Printf("TODO: Starting gambler")
