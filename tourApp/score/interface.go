@@ -3,44 +3,63 @@ package score
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"github.com/MarcGrol/microgen/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
+    
+    "github.com/MarcGrol/microgen/tourApp/events"
+    "github.com/MarcGrol/microgen/myerrors"
 )
 
 // commands
 
-type CreateDayResultsCommand struct {
-	Year                   int   `json:"year" binding:"required"`
-	EtappeId               int   `json:"etappeId" binding:"required"`
-	BestDayCyclistIds      []int `json:"bestDayCyclistIds" `
-	BestAllroundCyclistIds []int `json:"bestAllroundCyclistIds" `
-	BestClimbCyclistIds    []int `json:"bestClimbCyclistIds" `
-	BestSprintCyclistIds   []int `json:"bestSprintCyclistIds" `
-}
+
+   
+	type CreateDayResultsCommand struct {
+	 Year  int `json:"year" binding:"required"`
+	 EtappeId  int `json:"etappeId" binding:"required"`
+	 BestDayCyclistIds [] int `json:"bestDayCyclistIds" `
+	 BestAllroundCyclistIds [] int `json:"bestAllroundCyclistIds" `
+	 BestClimbCyclistIds [] int `json:"bestClimbCyclistIds" `
+	 BestSprintCyclistIds [] int `json:"bestSprintCyclistIds" `
+	
+	}
+
+    
+  
+
+  
+
 
 type CommandHandler interface {
-	HandleCreateDayResultsCommand(command CreateDayResultsCommand) *myerrors.Error
-
-	HandleGetResultsQuery(gamblerUid string) (*Results, *myerrors.Error)
+    
+    	
+        HandleCreateDayResultsCommand ( command CreateDayResultsCommand ) *myerrors.Error
+    	
+    
+    	 
+        HandleGetResultsQuery (  gamblerUid string,  ) (*Results, *myerrors.Error)
+    	
+    
 }
 
 // events
 
 type EventHandler interface {
-	OnTourCreated(event events.TourCreated) *myerrors.Error
-	OnEtappeCreated(event events.EtappeCreated) *myerrors.Error
-	OnCyclistCreated(event events.CyclistCreated) *myerrors.Error
-	OnGamblerCreated(event events.GamblerCreated) *myerrors.Error
-	OnGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
+     OnCyclistCreated ( event events.CyclistCreated ) error
+     OnGamblerCreated ( event events.GamblerCreated ) error
+     OnGamblerTeamCreated ( event events.GamblerTeamCreated ) error
+     OnTourCreated ( event events.TourCreated ) error
+     OnEtappeCreated ( event events.EtappeCreated ) error
+    
 }
 
 type EventApplier interface {
-	ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error
-	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
-	ApplyEtappeResultsAvailable(event events.EtappeResultsAvailable) *myerrors.Error
-	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) *myerrors.Error
-	ApplyGamblerScoreCalculated(event events.GamblerScoreCalculated) *myerrors.Error
-	ApplyTourCreated(event events.TourCreated) *myerrors.Error
-	ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error
-	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
+     ApplyGamblerTeamCreated ( event events.GamblerTeamCreated )
+     ApplyEtappeResultsAvailable ( event events.EtappeResultsAvailable )
+     ApplyCyclistScoreCalculated ( event events.CyclistScoreCalculated )
+     ApplyGamblerScoreCalculated ( event events.GamblerScoreCalculated )
+     ApplyTourCreated ( event events.TourCreated )
+     ApplyEtappeCreated ( event events.EtappeCreated )
+     ApplyCyclistCreated ( event events.CyclistCreated )
+     ApplyGamblerCreated ( event events.GamblerCreated )
+    
 }
+

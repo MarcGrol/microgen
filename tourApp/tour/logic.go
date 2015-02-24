@@ -142,18 +142,14 @@ func getTourOnYear(store events.Store, year int) (*Tour, bool) {
 
 	tour := NewTour()
 	for _, envelope := range tourRelatedEvents {
-		var err *myerrors.Error
 		if envelope.Type == events.TypeTourCreated {
-			err = tour.ApplyTourCreated(*envelope.TourCreated)
+			tour.ApplyTourCreated(*envelope.TourCreated)
 		} else if envelope.Type == events.TypeEtappeCreated {
-			err = tour.ApplyEtappeCreated(*envelope.EtappeCreated)
+			tour.ApplyEtappeCreated(*envelope.EtappeCreated)
 		} else if envelope.Type == events.TypeCyclistCreated {
-			err = tour.ApplyCyclistCreated(*envelope.CyclistCreated)
+			tour.ApplyCyclistCreated(*envelope.CyclistCreated)
 		} else {
 			log.Panicf("getTourOnYear: Unexpected event %s", envelope.Type.String())
-		}
-		if err != nil {
-			break
 		}
 	}
 
@@ -188,16 +184,16 @@ func NewTour() *Tour {
 	return tour
 }
 
-func (t *Tour) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
+func (t *Tour) ApplyTourCreated(event events.TourCreated)  {
 
 	t.Year = event.Year
 
 	//log.Printf("ApplyTourCreated after:%+v -> %+v", event, t)
 
-	return nil
+	return
 }
 
-func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
+func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) {
 
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
@@ -207,10 +203,10 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error 
 
 	//log.Printf("ApplyCyclistCreated after:%+v -> %+v", event, t)
 
-	return nil
+	return
 }
 
-func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
+func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) {
 
 	etappe := new(Etappe)
 
@@ -224,5 +220,5 @@ func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error {
 
 	//log.Printf("ApplyEtappeCreated after:%+v -> %+v", event, t)
 
-	return nil
+	return
 }

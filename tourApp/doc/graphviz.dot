@@ -16,6 +16,7 @@ digraph G {
 		label="Tour-service";
 		// events
 		
+		// comamnds
 		
 			 
 				"TourCreateTour"  [label="CreateTour\ncommand-handler", shape=box];
@@ -33,7 +34,7 @@ digraph G {
 			    "TourGetTour"  [label="GetTour\nquery-handler"];
 			
 		
-		TourStore [shape=box, style=filled];
+		"TourStore" [shape=box, style=filled];
 	}
 
 	subgraph clustergambler {
@@ -41,10 +42,11 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
-		
 			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
+			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+		
+		// comamnds
 		
 			 
 				"GamblerCreateGambler"  [label="CreateGambler\ncommand-handler", shape=box];
@@ -58,7 +60,7 @@ digraph G {
 			    "GamblerGetGambler"  [label="GetGambler\nquery-handler"];
 			
 		
-		GamblerStore [shape=box, style=filled];
+		"GamblerStore" [shape=box, style=filled];
 	}
 
 	subgraph clusterscore {
@@ -66,16 +68,17 @@ digraph G {
 		label="Score-service";
 		// events
 		
-			"ScoreEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
-		
-			"ScoreCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
-		
 			"ScoreGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
 		
 			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
 		
 			"ScoreTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
+			"ScoreEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
+		
+			"ScoreCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+		
+		// comamnds
 		
 			 
 				"ScoreCreateDayResults"  [label="CreateDayResults\ncommand-handler", shape=box];
@@ -85,7 +88,7 @@ digraph G {
 			    "ScoreGetResults"  [label="GetResults\nquery-handler"];
 			
 		
-		ScoreStore [shape=box, style=filled];
+		"ScoreStore" [shape=box, style=filled];
 	}
 
 

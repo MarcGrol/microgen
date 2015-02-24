@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -16,7 +17,7 @@ type Scenarios struct {
 	Scenarios []Scenario
 }
 
-type ScenarioExecutorFunc func(scenario *Scenario) error
+type ScenarioExecutorFunc func(scenario *Scenario) *myerrors.Error
 
 type Scenario struct {
 	Bus   events.PublishSubscriber `json:"-"`
@@ -27,7 +28,9 @@ type Scenario struct {
 	When   ScenarioExecutorFunc `json:"-"`
 	Expect []*events.Envelope   `json:"expect"`
 	Actual []*events.Envelope   `json:"actual"`
-	Err    error                `json:"err"`
+	Err    *myerrors.Error      `json:"err"`
+	InvalidInputError bool `json:"invalidInputError"`
+	NotFoundError bool `json:"notFoundError"`
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {
@@ -61,7 +64,11 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 			assert.Equal(t, s.Expect[idx].AggregateUid, actual.AggregateUid)
 			assert.Equal(t, s.Expect[idx].Type, actual.Type)
 		}
+	} else {
+		s.InvalidInputError = myerrors.IsInvalidInputError(s.Err)
+		s.NotFoundError = myerrors.IsNotFoundError(s.Err)
 	}
+
 	s.Dump(title2filename(s.Title))
 }
 

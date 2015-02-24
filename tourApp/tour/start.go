@@ -78,7 +78,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})
-		api.POST("/tour/:year/cylist", func(c *gin.Context) {
+		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
 			var command CreateCyclistCommand
 			c.Bind(&command)
 			err := commandHandler.HandleCreateCyclistCommand(command)

@@ -4,6 +4,7 @@ import (
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/MarcGrol/microgen/myerrors"
 	"testing"
 	"time"
 )
@@ -13,7 +14,7 @@ func TestCreateTourCommand(t *testing.T) {
 	scenario := test.Scenario{
 		Title: "Create new tour success",
 		Given: []*events.Envelope{},
-		When: func(scenario *test.Scenario) error {
+		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateTourCommand(CreateTourCommand{Year: 2015})
 		},
@@ -46,7 +47,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		When: func(scenario *test.Scenario) error {
+		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateCyclistCommand(
 				CreateCyclistCommand{
@@ -96,7 +97,7 @@ func TestCreateEtappeCommand(t *testing.T) {
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		When: func(scenario *test.Scenario) error {
+		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateEtappeCommand(
 				CreateEtappeCommand{

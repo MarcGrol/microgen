@@ -19,12 +19,12 @@ func NewGamblerEventHandler(store events.Store) EventHandler {
 	return handler
 }
 
-func (eh *GamblerEventHandler) OnTourCreated(event events.TourCreated) *myerrors.Error {
+func (eh *GamblerEventHandler) OnTourCreated(event events.TourCreated) error {
 	log.Printf("OnTourCreated: event: %+v", event)
 	return doStore(eh.store,[]*events.Envelope{event.Wrap()})
 }
 
-func (eh *GamblerEventHandler) OnCyclistCreated(event events.CyclistCreated) *myerrors.Error {
+func (eh *GamblerEventHandler) OnCyclistCreated(event events.CyclistCreated) error {
 
 	log.Printf("OnCyclistCreated: event: %+v", event)
 	return doStore(eh.store, []*events.Envelope{event.Wrap()})
@@ -101,12 +101,14 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGa
 	return doStoreAndPublish(ch.store, ch.bus,[]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func  doStore(store events.Store, envelopes []*events.Envelope) *myerrors.Error {
+func  doStore(store events.Store, envelopes []*events.Envelope) error {
 	for _, env := range envelopes {
 		err := store.Store(env)
 		if err != nil {
-			return myerrors.NewInternalError(err)
+			log.Printf("Error storing event: %+v", err)
+			return err
 		}
+		log.Printf("Successfullt stored event: %+v", env)
 	}
 	return nil
 }
@@ -117,8 +119,8 @@ func  doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelo
 		return nil
 	}
 	for _, env := range envelopes {
-		busErr := bus.Publish(env)
-		if busErr != nil {
+		err = bus.Publish(env)
+		if err != nil {
 			return myerrors.NewInternalError(err)
 		}
 	}
@@ -212,7 +214,7 @@ type Cyclist struct {
 	Team string
 }
 
-func (context *GamblerContext) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
+func (context *GamblerContext) ApplyTourCreated(event events.TourCreated)  {
 	//log.Printf("ApplyTourCreated: context before: %+v, event: %+v", context, event)
 
 	context.Year = new(int)
@@ -220,35 +222,31 @@ func (context *GamblerContext) ApplyTourCreated(event events.TourCreated) *myerr
 
 	//log.Printf("ApplyTourCreated: context after: %+v", context)
 
-	return nil
+	return
 }
 
-func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
+func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated)  {
 	//log.Printf("ApplyCyclistCreated: context before: %+v, event: %+v", context, event)
-
-	if context.Year == nil || *context.Year != event.Year {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", event.Year)))
-	}
 
 	context.cyclistsForTour[event.CyclistId] =
 		Cyclist{Id: event.CyclistId, Name: event.CyclistName, Team: event.CyclistTeam}
 
 	//log.Printf("ApplyCyclistCreated: context after: %+v", context)
 
-	return nil
+	return
 }
 
-func (context *GamblerContext) ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error {
+func (context *GamblerContext) ApplyGamblerCreated(event events.GamblerCreated)  {
 	//log.Printf("ApplyGamblerCreated: context before: %+v, event: %+v", context, event)
 
 	context.Gambler = NewGambler(event.GamblerUid, event.GamblerName, event.GamblerEmail)
 
 	//log.Printf("ApplyGamblerCreated: context after: %+v", context)
 
-	return nil
+	return
 }
 
-func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error {
+func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamCreated){
 	//log.Printf("ApplyGamblerTeamCreated: context: %+v, event: %+v", context, event)
 
 	for _, cyclistId := range event.GamblerCyclists {
@@ -259,5 +257,5 @@ func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamC
 	}
 
 	//log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
-	return nil
+	return
 }

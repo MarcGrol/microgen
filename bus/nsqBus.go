@@ -29,24 +29,26 @@ func (bus *NsqBus) Subscribe(topic string, callback BlobHandlerFunc) error {
 }
 
 func (bus *NsqBus) startConsumer(topic string, userCallback BlobHandlerFunc) error {
+	log.Printf("Connecting using topic %s anc channel %s", topic, bus.consumerName)
 	consumer, err := nsq.NewConsumer(topic, bus.consumerName, bus.config)
 	if err != nil {
-		log.Printf("Error creating nsq consumer %s/%s (%v)", topic, bus.consumerName, err)
+		log.Printf("Error creating nsq consumer %s/%s (%+v)", topic, bus.consumerName, err)
 		return err
 	}
 
-	callback := func(message *nsq.Message) error {
+	consumer.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		err := userCallback(message.Body)
 		if err != nil {
-			log.Printf("Error handling event-envelope (%v)", err)
+			log.Printf("Error handling event-envelope (%+v)", err)
+		} else {
+			log.Printf("Successfully handled event-envelope (%v+)", err)
 		}
 		return err
-	}
-	consumer.AddHandler(nsq.HandlerFunc(callback))
+	}))
 
 	err = consumer.ConnectToNSQLookupd(bus.address + ":4161")
 	if err != nil {
-		log.Printf("Error connecting to lookupd (%v)", err)
+		log.Printf("Error connecting to lookupd (%+v)", err)
 		return err
 	}
 
