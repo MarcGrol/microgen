@@ -246,6 +246,7 @@ func (c Command) IsQuery() bool {
 
 // entity
 type Entity struct {
+	Id                 int
 	Name               string
 	Attributes         []Attribute
 	AggregateName      string

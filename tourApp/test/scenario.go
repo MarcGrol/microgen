@@ -1,12 +1,14 @@
 package test
 
 import (
-	"github.com/MarcGrol/microgen/tourApp/events"
-	"github.com/stretchr/testify/assert"
-	//	"log"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/tourApp/events"
+	"github.com/stretchr/testify/assert"
+	"log"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -17,15 +19,15 @@ type Scenarios struct {
 type ScenarioExecutorFunc func(scenario *Scenario) error
 
 type Scenario struct {
-	Bus   events.PublishSubscriber
-	Store events.Store
+	Bus   events.PublishSubscriber `json:"-"`
+	Store events.Store             `json:"-"`
 
-	Title  string
-	Given  []*events.Envelope
-	When   ScenarioExecutorFunc
-	Expect []*events.Envelope
-	Actual []*events.Envelope
-	Err    error
+	Title  string               `json:"title"`
+	Given  []*events.Envelope   `json:"given"`
+	When   ScenarioExecutorFunc `json:"-"`
+	Expect []*events.Envelope   `json:"expect"`
+	Actual []*events.Envelope   `json:"actual"`
+	Err    error                `json:"err"`
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {
@@ -60,6 +62,33 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 			assert.Equal(t, s.Expect[idx].Type, actual.Type)
 		}
 	}
+	s.Dump(title2filename(s.Title))
+}
+
+func title2filename(title string) string {
+	return "../doc/" + strings.Replace(title, " ", "_", -1) + ".json"
+}
+
+func (s *Scenario) Dump(filename string) error {
+	w, err := os.Create(filename)
+	if err != nil {
+		log.Printf("Error opening json-file %s (%s)", filename, err.Error())
+		return err
+	}
+	defer w.Close()
+
+	jsondata, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		log.Printf("Error marshalling json %s", err.Error())
+		return err
+	}
+
+	_, err = w.Write(jsondata)
+	if err != nil {
+		log.Printf("Error writing json to %s (%s)", filename, err.Error())
+		return err
+	}
+	return nil
 }
 
 type FakeBus struct {

@@ -30,7 +30,7 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
 type Type int
 const (
    TypeUnknown Type = iota
-{{range .GetUniqueEvents}} Type{{.NameToFirstUpper}}
+{{range .GetUniqueEvents}} Type{{.NameToFirstUpper}} = {{.Id}}
 {{end}}
 )
 

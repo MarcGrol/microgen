@@ -163,6 +163,7 @@ func serviceGenerateFileFromTemplate(application Application, service Service, t
 	}
 	return nil
 }
+
 func generateFileFromTemplate(data interface{}, templateFileName string, targetFileName string) error {
 	log.Printf("Using template %s to generate target %s\n", templateFileName, targetFileName)
 	t, err := template.ParseFiles(templateFileName)
@@ -177,7 +178,6 @@ func generateFileFromTemplate(data interface{}, templateFileName string, targetF
 	if err != nil {
 		return err
 	}
-	//w = template.New("consumingServices").Funcs(defaultfuncs)
 
 	defer w.Close()
 	if err := t.Execute(w, data); err != nil {
@@ -196,10 +196,4 @@ func generateDoumentation(application Application, baseDir string) error {
 		return err
 	}
 	return nil
-}
-
-var defaultfuncs = map[string]interface{}{
-	"consumingServices": func(event Event) []string {
-		return []string{"eva", "marc", "pien"}
-	},
 }

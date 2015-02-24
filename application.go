@@ -6,6 +6,7 @@ import (
 
 var (
 	tourCreated = spec.Event{
+		Id:   1,
 		Name: "TourCreated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -15,6 +16,7 @@ var (
 	}
 
 	cyclistCreated = spec.Event{
+		Id:   2,
 		Name: "CyclistCreated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -27,6 +29,7 @@ var (
 	}
 
 	etappeCreated = spec.Event{
+		Id:   3,
 		Name: "EtappeCreated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -42,6 +45,7 @@ var (
 	}
 
 	gamblerCreated = spec.Event{
+		Id:   4,
 		Name: "GamblerCreated",
 		Attributes: []spec.Attribute{
 			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
@@ -54,6 +58,7 @@ var (
 	}
 
 	gamblerTeamCreated = spec.Event{
+		Id:   5,
 		Name: "GamblerTeamCreated",
 		Attributes: []spec.Attribute{
 			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
@@ -65,6 +70,7 @@ var (
 	}
 
 	etappeStarted = spec.Event{
+		Id:   6,
 		Name: "EtappeStarted",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -75,6 +81,7 @@ var (
 	}
 
 	etappeResultsCreated = spec.Event{
+		Id:   7,
 		Name: "EtappeResultsAvailable",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -89,6 +96,7 @@ var (
 	}
 
 	cyclistScoreCalculated = spec.Event{
+		Id:   8,
 		Name: "CyclistScoreCalculated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
@@ -101,6 +109,7 @@ var (
 	}
 
 	gamblerScoreCalculated = spec.Event{
+		Id:   9,
 		Name: "GamblerScoreCalculated",
 		Attributes: []spec.Attribute{
 			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},

@@ -1,0 +1,70 @@
+{
+  "title": "Create new cyclist with existing tour",
+  "given": [
+    {
+      "uuid": "3f951f2a-fa05-44b6-b4d7-749e87b05c4f",
+      "sequenceNumber": 1,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T19:46:38.580541195+01:00",
+      "type": 8,
+      "etappeCreated": null,
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": {
+        "year": 2015
+      },
+      "cyclistCreated": null
+    }
+  ],
+  "expect": [
+    {
+      "uuid": "502b3fea-cebc-44dc-a64f-cc127153ff66",
+      "sequenceNumber": 0,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T19:46:38.580551057+01:00",
+      "type": 1,
+      "etappeCreated": null,
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": {
+        "year": 2015,
+        "cyclistId": 42,
+        "cyclistName": "My name",
+        "cyclistTeam": "My team"
+      }
+    }
+  ],
+  "actual": [
+    {
+      "uuid": "3ff0e669-bfe6-424a-8d43-e7cef64ff8b0",
+      "sequenceNumber": 2,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T19:46:38.580582559+01:00",
+      "type": 1,
+      "etappeCreated": null,
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": {
+        "year": 2015,
+        "cyclistId": 42,
+        "cyclistName": "My name",
+        "cyclistTeam": "My team"
+      }
+    }
+  ],
+  "err": null
+}

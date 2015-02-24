@@ -1,5 +1,6 @@
 package events
 
+/*
 import (
 	"github.com/stretchr/testify/assert"
 	"sync"
@@ -45,3 +46,4 @@ func TestPublishSubscribe(t *testing.T) {
 	assert.Equal(t, "Lance", received[1].CyclistCreated.CyclistName)
 	assert.Equal(t, "Rabo", received[1].CyclistCreated.CyclistTeam)
 }
+*/
