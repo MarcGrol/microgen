@@ -1,0 +1,76 @@
+{
+  "title": "Create new etappe success",
+  "given": [
+    {
+      "uuid": "7a60e83b-8e4b-4b87-bbbc-259d731fbca1",
+      "sequenceNumber": 1,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T20:05:51.673734782+01:00",
+      "type": 1,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": {
+        "year": 2015
+      },
+      "cyclistCreated": null,
+      "etappeCreated": null,
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null
+    }
+  ],
+  "expect": [
+    {
+      "uuid": "4cd01c09-94c5-4d6c-a0ca-8c9c95e7ad94",
+      "sequenceNumber": 0,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T20:05:51.673747466+01:00",
+      "type": 3,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": null,
+      "etappeCreated": {
+        "year": 2015,
+        "etappeId": 2,
+        "etappeDate": "2015-07-14T09:00:00+02:00",
+        "etappeStartLocation": "Parijs",
+        "etappeFinishLocation": "Roubaix",
+        "etappeLength": 255,
+        "etappeKind": 3
+      },
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null
+    }
+  ],
+  "actual": [
+    {
+      "uuid": "dbc85ca3-f5f3-4302-9569-c747a2a7a3b4",
+      "sequenceNumber": 2,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-24T20:05:51.673755743+01:00",
+      "type": 3,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": null,
+      "etappeCreated": {
+        "year": 2015,
+        "etappeId": 2,
+        "etappeDate": "2015-07-14T09:00:00+02:00",
+        "etappeStartLocation": "Parijs",
+        "etappeFinishLocation": "Roubaix",
+        "etappeLength": 255,
+        "etappeKind": 3
+      },
+      "gamblerCreated": null,
+      "gamblerTeamCreated": null
+    }
+  ],
+  "err": null
+}

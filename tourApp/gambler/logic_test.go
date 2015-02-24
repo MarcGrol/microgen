@@ -10,7 +10,7 @@ import (
 func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
-		Title: "Create new gambler",
+		Title: "Create new gambler success",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
@@ -45,7 +45,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 func TestCreateGamblerTeamCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
-		Title: "Create new team of cyclist for on existing gambler and tour",
+		Title: "Create new gambler team success",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 			(&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "cyclist 1", CyclistTeam: "team 1"}).Wrap(),

@@ -11,7 +11,7 @@ import (
 func TestCreateTourCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
-		Title: "Create new tour on clean system",
+		Title: "Create new tour success",
 		Given: []*events.Envelope{},
 		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
@@ -42,7 +42,7 @@ func TestCreateTourCommand(t *testing.T) {
 func TestCreateCyclistCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
-		Title: "Create new cyclist with existing tour",
+		Title: "Create new cyclist success",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
@@ -92,7 +92,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 func TestCreateEtappeCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
-		Title: "Create new etappe with existing tour",
+		Title: "Create new etappe success",
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
