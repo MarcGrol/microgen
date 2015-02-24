@@ -18,6 +18,7 @@ digraph G {
 		{{range .GetConsumedEvents}}
 			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\neventhandler", shape=diamond];
 		{{end}}
+		// comamnds
 		{{range .Commands}}
 			{{if not .IsQuery}} 
 				"{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncommand-handler", shape=box];
@@ -25,7 +26,7 @@ digraph G {
 			    "{{$serviceName}}{{.Name}}"  [label="{{.Name}}\nquery-handler"];
 			{{end}}
 		{{end}}
-		{{.Name}}Store [shape=box, style=filled];
+		"{{.Name}}Store" [shape=box, style=filled];
 	}
 {{end}}
 
