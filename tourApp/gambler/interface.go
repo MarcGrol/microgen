@@ -26,7 +26,7 @@ type CommandHandler interface {
 
 	HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error
 
-	HandleGetGamblerQuery(gamblerUid string) (*Gambler, *myerrors.Error)
+	HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, *myerrors.Error)
 }
 
 // events

@@ -217,6 +217,7 @@ var (
 						Input: spec.Entity{
 							Attributes: []spec.Attribute{
 								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
 							},
 						},
 						OutputName:     "*Gambler",

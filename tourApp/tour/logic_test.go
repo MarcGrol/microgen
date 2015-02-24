@@ -24,6 +24,8 @@ func TestCreateTourCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
+	assert.Nil(t, scenario.Err)
+
 	expected := scenario.Expect[0].TourCreated
 	actual := scenario.Actual[0].TourCreated
 	assert.Equal(t, expected.Year, actual.Year)
@@ -63,6 +65,8 @@ func TestCreateCyclistCommand(t *testing.T) {
 	}
 
 	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.Err)
 
 	expected := scenario.Expect[0].CyclistCreated
 	actual := scenario.Actual[0].CyclistCreated
@@ -117,6 +121,8 @@ func TestCreateEtappeCommand(t *testing.T) {
 	}
 
 	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.Err)
 
 	expected := scenario.Expect[0].EtappeCreated
 	actual := scenario.Actual[0].EtappeCreated

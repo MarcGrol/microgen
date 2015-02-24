@@ -25,6 +25,7 @@ type Scenario struct {
 	When   ScenarioExecutorFunc
 	Expect []*events.Envelope
 	Actual []*events.Envelope
+	Err    error
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {
@@ -48,15 +49,16 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 	}
 
 	// execute operation on subject
-	err := s.When(s)
-	assert.Nil(t, err)
+	s.Err = s.When(s)
 
-	// basic ocmpare expected with actual
-	assert.Equal(t, len(s.Expect), len(s.Actual))
-	for idx, actual := range s.Actual {
-		assert.Equal(t, s.Expect[idx].AggregateName, actual.AggregateName)
-		assert.Equal(t, s.Expect[idx].AggregateUid, actual.AggregateUid)
-		assert.Equal(t, s.Expect[idx].Type, actual.Type)
+	if s.Err == nil {
+		// basic ocmpare expected with actual
+		assert.Equal(t, len(s.Expect), len(s.Actual))
+		for idx, actual := range s.Actual {
+			assert.Equal(t, s.Expect[idx].AggregateName, actual.AggregateName)
+			assert.Equal(t, s.Expect[idx].AggregateUid, actual.AggregateUid)
+			assert.Equal(t, s.Expect[idx].Type, actual.Type)
+		}
 	}
 }
 
