@@ -1,10 +1,10 @@
 package gambler
 
 import (
+	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/MarcGrol/microgen/myerrors"
 	"testing"
 )
 

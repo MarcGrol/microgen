@@ -16,7 +16,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	if err != nil {
 		return err
 	}
-	bus := startBus(busAddress,NewGamblerEventHandler(store))
+	bus := startBus(busAddress, NewGamblerEventHandler(store))
 	if bus == nil {
 		return errors.New("Error starting bus")
 	}

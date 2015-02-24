@@ -184,7 +184,7 @@ func NewTour() *Tour {
 	return tour
 }
 
-func (t *Tour) ApplyTourCreated(event events.TourCreated)  {
+func (t *Tour) ApplyTourCreated(event events.TourCreated) {
 
 	t.Year = event.Year
 

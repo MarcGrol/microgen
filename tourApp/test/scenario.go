@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -23,14 +23,14 @@ type Scenario struct {
 	Bus   events.PublishSubscriber `json:"-"`
 	Store events.Store             `json:"-"`
 
-	Title  string               `json:"title"`
-	Given  []*events.Envelope   `json:"given"`
-	When   ScenarioExecutorFunc `json:"-"`
-	Expect []*events.Envelope   `json:"expect"`
-	Actual []*events.Envelope   `json:"actual"`
-	Err    *myerrors.Error      `json:"err"`
-	InvalidInputError bool `json:"invalidInputError"`
-	NotFoundError bool `json:"notFoundError"`
+	Title             string               `json:"title"`
+	Given             []*events.Envelope   `json:"given"`
+	When              ScenarioExecutorFunc `json:"-"`
+	Expect            []*events.Envelope   `json:"expect"`
+	Actual            []*events.Envelope   `json:"actual"`
+	Err               *myerrors.Error      `json:"err"`
+	InvalidInputError bool                 `json:"invalidInputError"`
+	NotFoundError     bool                 `json:"notFoundError"`
 }
 
 func (s *Scenario) RunAndVerify(t *testing.T) {

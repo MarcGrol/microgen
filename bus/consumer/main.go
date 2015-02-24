@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/bitly/go-nsq"
 	"log"
 	"sync"
-	"github.com/bitly/go-nsq"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 	q, _ := nsq.NewConsumer("tourApp_CyclistCreated", "gambler", config)
 	q.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		log.Printf("Got a message: %v", message)
-	      wg.Done()
+		wg.Done()
 		return nil
 	}))
 
