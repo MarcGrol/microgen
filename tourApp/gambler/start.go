@@ -55,7 +55,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
-			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid,year)
+			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid, year)
 			if err != nil {
 				http.HandleError(c, err)
 			}

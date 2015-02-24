@@ -27,7 +27,7 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 		return myerrors.NewInvalidInputError(err)
 	}
 	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, -1)
-	if err == nil {
+	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
 
@@ -96,7 +96,7 @@ func (gch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year 
 		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Gambler with uid %s not found", gamblerUid)))
 	}
 
-	log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblerContext.Gambler)
+	//log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblerContext.Gambler)
 
 	return gamblerContext.Gambler, nil
 }
@@ -174,18 +174,18 @@ type Cyclist struct {
 }
 
 func (context *GamblerContext) ApplyTourCreated(event events.TourCreated) *myerrors.Error {
-	log.Printf("ApplyTourCreated: context before: %+v, event: %+v", context, event)
+	//log.Printf("ApplyTourCreated: context before: %+v, event: %+v", context, event)
 
 	context.Year = new(int)
 	*context.Year = event.Year
 
-	log.Printf("ApplyTourCreated: context after: %+v", context)
+	//log.Printf("ApplyTourCreated: context after: %+v", context)
 
 	return nil
 }
 
 func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error {
-	log.Printf("ApplyCyclistCreated: context before: %+v, event: %+v", context, event)
+	//log.Printf("ApplyCyclistCreated: context before: %+v, event: %+v", context, event)
 
 	if context.Year == nil || *context.Year != event.Year {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", event.Year)))
@@ -194,23 +194,23 @@ func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated) 
 	context.cyclistsForTour[event.CyclistId] =
 		Cyclist{Id: event.CyclistId, Name: event.CyclistName, Team: event.CyclistTeam}
 
-	log.Printf("ApplyCyclistCreated: context after: %+v", context)
+	//log.Printf("ApplyCyclistCreated: context after: %+v", context)
 
 	return nil
 }
 
 func (context *GamblerContext) ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error {
-	log.Printf("ApplyGamblerCreated: context before: %+v, event: %+v", context, event)
+	//log.Printf("ApplyGamblerCreated: context before: %+v, event: %+v", context, event)
 
 	context.Gambler = NewGambler(event.GamblerUid, event.GamblerName, event.GamblerEmail)
 
-	log.Printf("ApplyGamblerCreated: context after: %+v", context)
+	//log.Printf("ApplyGamblerCreated: context after: %+v", context)
 
 	return nil
 }
 
 func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error {
-	log.Printf("ApplyGamblerTeamCreated: context: %+v, event: %+v", context, event)
+	//log.Printf("ApplyGamblerTeamCreated: context: %+v, event: %+v", context, event)
 
 	for _, cyclistId := range event.GamblerCyclists {
 		cyclist, found := context.cyclistsForTour[cyclistId]
@@ -219,6 +219,6 @@ func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamC
 		}
 	}
 
-	log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
+	//log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
 	return nil
 }

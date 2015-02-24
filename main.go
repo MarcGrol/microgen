@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/MarcGrol/microgen/dsl"
+	"github.com/MarcGrol/microgen/tourApp/gambler"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
 	"os"
@@ -69,7 +70,11 @@ func main() {
 						*httpPort, *busAddress, *baseDir)
 				}
 			} else if *service == "gambler" {
-				log.Printf("TODO: Starting gambler")
+				err := gambler.Start(*httpPort, *busAddress, *baseDir)
+				if err != nil {
+					log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s",
+						*httpPort, *busAddress, *baseDir)
+				}
 			} else if *service == "results" {
 				log.Printf("TODO: Starting results")
 			} else {
