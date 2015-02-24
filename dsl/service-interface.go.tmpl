@@ -13,7 +13,7 @@ import (
 {{range .Service.Commands}}
   {{if not .IsQuery}} 
 	type {{.NameToFirstUpper}}Command struct {
-	{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
+	{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityName}} {{.TypeName}} `json:"{{.Name}}" {{ if .IsMandatory }}binding:"required"{{end}}`
 	{{end}}
 	}
 

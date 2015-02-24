@@ -11,7 +11,7 @@ import (
 // commands
 
 type CreateTourCommand struct {
-	Year int `json:"year"`
+	Year int `json:"year" binding:"required"`
 }
 
 func (command CreateTourCommand) BasicValidate() error {
@@ -22,10 +22,10 @@ func (command CreateTourCommand) BasicValidate() error {
 }
 
 type CreateCyclistCommand struct {
-	Year int    `json:"year"`
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-	Team string `json:"team"`
+	Year int    `json:"year" binding:"required"`
+	Id   int    `json:"id" binding:"required"`
+	Name string `json:"name" binding:"required"`
+	Team string `json:"team" binding:"required"`
 }
 
 func (command CreateCyclistCommand) BasicValidate() error {
@@ -42,13 +42,13 @@ func (command CreateCyclistCommand) BasicValidate() error {
 }
 
 type CreateEtappeCommand struct {
-	Year           int       `json:"year"`
-	Id             int       `json:"id"`
-	Date           time.Time `json:"date"`
-	StartLocation  string    `json:"startLocation"`
-	FinishLocation string    `json:"finishLocation"`
-	Length         int       `json:"length"`
-	Kind           int       `json:"kind"`
+	Year           int       `json:"year" binding:"required"`
+	Id             int       `json:"id" binding:"required"`
+	Date           time.Time `json:"date" binding:"required"`
+	StartLocation  string    `json:"startLocation" binding:"required"`
+	FinishLocation string    `json:"finishLocation" binding:"required"`
+	Length         int       `json:"length" binding:"required"`
+	Kind           int       `json:"kind" binding:"required"`
 }
 
 func (command CreateEtappeCommand) BasicValidate() error {

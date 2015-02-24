@@ -10,9 +10,9 @@ import (
 // commands
 
 type CreateGamblerCommand struct {
-	GamblerUid string `json:"gamblerUid"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
+	GamblerUid string `json:"gamblerUid" binding:"required"`
+	Name       string `json:"name" binding:"required"`
+	Email      string `json:"email" binding:"required"`
 }
 
 func (command CreateGamblerCommand) BasicValidate() error {
@@ -27,9 +27,9 @@ func (command CreateGamblerCommand) BasicValidate() error {
 }
 
 type CreateGamblerTeamCommand struct {
-	GamblerUid string `json:"gamblerUid"`
-	Year       int    `json:"year"`
-	CyclistIds []int  `json:"cyclistIds"`
+	GamblerUid string `json:"gamblerUid" binding:"required"`
+	Year       int    `json:"year" binding:"required"`
+	CyclistIds []int  `json:"cyclistIds" `
 }
 
 func (command CreateGamblerTeamCommand) BasicValidate() error {

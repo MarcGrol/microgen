@@ -10,7 +10,7 @@ import (
 
 {{range .GetUniqueEvents}}
 type {{.NameToFirstUpper}} struct {
-    {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
+    {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityName}} {{.TypeName}} `json:"{{.Name}}"`
     {{end}}
 }
 

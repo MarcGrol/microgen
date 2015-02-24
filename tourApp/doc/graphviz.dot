@@ -41,9 +41,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
-		
 			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+		
+			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
 		
 			 
