@@ -15,10 +15,32 @@ type CreateGamblerCommand struct {
 	Email      string `json:"email"`
 }
 
+func (command CreateGamblerCommand) BasicValidate() error {
+
+	// command.GamblerUid string
+
+	// command.Name string
+
+	// command.Email string
+
+	return nil
+}
+
 type CreateGamblerTeamCommand struct {
 	GamblerUid string `json:"gamblerUid"`
 	Year       int    `json:"year"`
 	CyclistIds []int  `json:"cyclistIds"`
+}
+
+func (command CreateGamblerTeamCommand) BasicValidate() error {
+
+	// command.GamblerUid string
+
+	// command.Year int
+
+	// command.CyclistIds int
+
+	return nil
 }
 
 type CommandHandler interface {
@@ -37,8 +59,8 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
-	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
 	ApplyTourCreated(event events.TourCreated) *myerrors.Error
 	ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error
+	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
+	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
 }

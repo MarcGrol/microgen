@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	//"log"
+	"log"
 	"strconv"
 	"time"
 )
@@ -23,7 +23,10 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 }
 
 func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) *myerrors.Error {
-	// TODO validate input
+	err := command.BasicValidate()
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
 
 	// get tour based on year
 	_, found := getTourOnYear(tch.store, command.Year)
@@ -43,7 +46,10 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 }
 
 func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) *myerrors.Error {
-	// TODO validate input
+	err := command.BasicValidate()
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
 
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)
@@ -65,7 +71,10 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 }
 
 func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) *myerrors.Error {
-	// TODO validate input
+	err := command.BasicValidate()
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
 
 	// get tour based on year
 	tour, found := getTourOnYear(tch.store, command.Year)

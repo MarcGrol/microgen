@@ -8,41 +8,6 @@ import (
 	"time"
 )
 
-type TourCreated struct {
-	Year int `json:"year"`
-}
-
-func (event *TourCreated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeTourCreated
-	envelope.TourCreated = event
-	envelope.AggregateName = "tour"
-	envelope.AggregateUid = strconv.Itoa(event.Year)
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.Uuid = uuid.New()
-	return envelope
-}
-
-type CyclistCreated struct {
-	Year        int    `json:"year"`
-	CyclistId   int    `json:"cyclistId"`
-	CyclistName string `json:"cyclistName"`
-	CyclistTeam string `json:"cyclistTeam"`
-}
-
-func (event *CyclistCreated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeCyclistCreated
-	envelope.CyclistCreated = event
-	envelope.AggregateName = "tour"
-	envelope.AggregateUid = strconv.Itoa(event.Year)
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.Uuid = uuid.New()
-	return envelope
-}
-
 type EtappeCreated struct {
 	Year                 int       `json:"year"`
 	EtappeId             int       `json:"etappeId"`
@@ -161,10 +126,46 @@ func (event *GamblerScoreCalculated) Wrap() *Envelope {
 	return envelope
 }
 
+type TourCreated struct {
+	Year int `json:"year"`
+}
+
+func (event *TourCreated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeTourCreated
+	envelope.TourCreated = event
+	envelope.AggregateName = "tour"
+	envelope.AggregateUid = strconv.Itoa(event.Year)
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
+	return envelope
+}
+
+type CyclistCreated struct {
+	Year        int    `json:"year"`
+	CyclistId   int    `json:"cyclistId"`
+	CyclistName string `json:"cyclistName"`
+	CyclistTeam string `json:"cyclistTeam"`
+}
+
+func (event *CyclistCreated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeCyclistCreated
+	envelope.CyclistCreated = event
+	envelope.AggregateName = "tour"
+	envelope.AggregateUid = strconv.Itoa(event.Year)
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
+	return envelope
+}
+
 type Type int
 
 const (
 	TypeUnknown Type = iota
+	TypeTourCreated
 	TypeCyclistCreated
 	TypeEtappeCreated
 	TypeGamblerCreated
@@ -172,11 +173,14 @@ const (
 	TypeEtappeResultsAvailable
 	TypeCyclistScoreCalculated
 	TypeGamblerScoreCalculated
-	TypeTourCreated
 )
 
 func (t Type) String() string {
 	switch t {
+	case TypeTourCreated:
+		return "TourCreated"
+	case TypeCyclistCreated:
+		return "CyclistCreated"
 	case TypeEtappeCreated:
 		return "EtappeCreated"
 	case TypeGamblerCreated:
@@ -189,10 +193,6 @@ func (t Type) String() string {
 		return "CyclistScoreCalculated"
 	case TypeGamblerScoreCalculated:
 		return "GamblerScoreCalculated"
-	case TypeTourCreated:
-		return "TourCreated"
-	case TypeCyclistCreated:
-		return "CyclistCreated"
 
 	}
 	return "unknown"
@@ -205,14 +205,14 @@ type Envelope struct {
 	AggregateUid           string                  `json:"aggregateUid"`
 	Timestamp              time.Time               `json:"timestamp"`
 	Type                   Type                    `json:"type"`
-	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
-	TourCreated            *TourCreated            `json:"tourCreated"`
 	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
 	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
 	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
 	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
 	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
 	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
+	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
+	TourCreated            *TourCreated            `json:"tourCreated"`
 }
 
 type EventHandlerFunc func(Envelope *Envelope) error

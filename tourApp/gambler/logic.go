@@ -22,8 +22,12 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 }
 
 func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
-	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, -1)
+	err := command.BasicValidate()
 	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
+	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, -1)
+	if err == nil {
 		return myerrors.NewInternalError(err)
 	}
 
@@ -43,6 +47,10 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 }
 
 func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
+	err := command.BasicValidate()
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
 	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, command.Year)
 	if err != nil {
 		return myerrors.NewInternalError(err)

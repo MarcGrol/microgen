@@ -112,7 +112,7 @@ func ValidateApplication(application Application) error {
 }
 
 func generateEvents(application Application, baseDir string) error {
-	src := fmt.Sprintf("%s/spec/event.go.tmpl", baseDir)
+	src := fmt.Sprintf("%s/dsl/event.go.tmpl", baseDir)
 	target := fmt.Sprintf("%s/%s/events/events.go", baseDir, application.Name)
 
 	err := generateFileFromTemplate(application, src, target)
@@ -125,7 +125,7 @@ func generateEvents(application Application, baseDir string) error {
 
 func generateServices(application Application, baseDir string) error {
 	for _, service := range application.Services {
-		src := fmt.Sprintf("%s/spec/service-interface.go.tmpl", baseDir)
+		src := fmt.Sprintf("%s/dsl/service-interface.go.tmpl", baseDir)
 		target := fmt.Sprintf("%s/%s/%s/interface.go", baseDir, application.NameToFirstLower(), strings.ToLower(service.Name))
 
 		err := serviceGenerateFileFromTemplate(application, service, src, target)
@@ -187,7 +187,7 @@ func generateFileFromTemplate(data interface{}, templateFileName string, targetF
 }
 
 func generateDoumentation(application Application, baseDir string) error {
-	src := fmt.Sprintf("%s/spec/graphviz.dot.tmpl", baseDir)
+	src := fmt.Sprintf("%s/dsl/graphviz.dot.tmpl", baseDir)
 	target := fmt.Sprintf("%s/%s/doc/graphviz.dot", baseDir, application.Name)
 
 	err := generateFileFromTemplate(application, src, target)

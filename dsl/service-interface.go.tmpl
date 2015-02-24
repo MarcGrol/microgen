@@ -16,6 +16,16 @@ import (
 	{{range .Input.Attributes}} {{.NameToFirstUpper}} {{.MultiplicityNsme}} {{.TypeName}} `json:"{{.Name}}"`
 	{{end}}
 	}
+
+    func (command {{.NameToFirstUpper}}Command) BasicValidate() error {
+        {{range .Input.Attributes}}
+        {{ if .IsInt}} // command.{{.NameToFirstUpper}} int {{end}}
+        {{ if .IsString}} // command.{{.NameToFirstUpper}} string {{end}}
+        {{ if .IsBoolean}} // command.{{.NameToFirstUpper}} bool {{end}}
+        {{ if .IsTimestamp}} // command.{{.NameToFirstUpper}} time.Time {{end}}
+        {{end}}
+        return nil
+    }
   {{end}}
 {{end}}
 

@@ -331,7 +331,7 @@ func (attr Attribute) TypeName() string {
 	}
 }
 
-func (attr Attribute) MultiplicityNsme() string {
+func (attr Attribute) MultiplicityName() string {
 	if attr.Cardinality == Multiple {
 		return "[]"
 	} else {
@@ -345,4 +345,24 @@ func (attr Attribute) NameToFirstUpper() string {
 
 func (attr Attribute) NameToFirstLower() string {
 	return strings.ToLower(fmt.Sprintf("%c", attr.Name[0])) + attr.Name[1:]
+}
+
+func (attr Attribute) IsMandatory() bool {
+	return attr.Cardinality == Mandatory
+}
+
+func (attr Attribute) IsInt() bool {
+	return attr.Type == TypeInt
+}
+
+func (attr Attribute) IsString() bool {
+	return attr.Type == TypeString
+}
+
+func (attr Attribute) IsBoolean() bool {
+	return attr.Type == TypeBoolean
+}
+
+func (attr Attribute) IsTimestamp() bool {
+	return attr.Type == TypeTimestamp
 }
