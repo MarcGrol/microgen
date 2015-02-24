@@ -26,6 +26,7 @@ type Scenario struct {
 	Title             string               `json:"title"`
 	Given             []*events.Envelope   `json:"given"`
 	When              ScenarioExecutorFunc `json:"-"`
+	Command			  interface{}          `json:"command"`
 	Expect            []*events.Envelope   `json:"expect"`
 	Actual            []*events.Envelope   `json:"actual"`
 	Err               *myerrors.Error      `json:"err"`

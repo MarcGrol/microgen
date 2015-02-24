@@ -9,14 +9,18 @@ import (
 	"time"
 )
 
+// 			return service.HandleCreateGamblerCommand(scenario.Command.(CreateGamblerCommand))
+
+
 func TestCreateTourCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new tour success",
 		Given: []*events.Envelope{},
+		Command:CreateTourCommand{Year: 2015},
 		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateTourCommand(CreateTourCommand{Year: 2015})
+			return service.HandleCreateTourCommand(scenario.Command.(CreateTourCommand))
 		},
 		Expect: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
@@ -47,14 +51,14 @@ func TestCreateCyclistCommand(t *testing.T) {
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		When: func(scenario *test.Scenario) *myerrors.Error {
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateCyclistCommand(
-				CreateCyclistCommand{
+		Command: CreateCyclistCommand{
 					Year: 2015,
 					Id:   42,
 					Name: "My name",
-					Team: "My team"})
+					Team: "My team"},
+		When: func(scenario *test.Scenario) *myerrors.Error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateCyclistCommand(scenario.Command.(CreateCyclistCommand) )
 		},
 		Expect: []*events.Envelope{
 			(&events.CyclistCreated{
@@ -97,17 +101,17 @@ func TestCreateEtappeCommand(t *testing.T) {
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		When: func(scenario *test.Scenario) *myerrors.Error {
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateEtappeCommand(
-				CreateEtappeCommand{
+		Command: CreateEtappeCommand{
 					Year:           2015,
 					Id:             2,
 					Date:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
 					StartLocation:  "Parijs",
 					FinishLocation: "Roubaix",
 					Length:         255,
-					Kind:           3})
+					Kind:           3}
+		When: func(scenario *test.Scenario) *myerrors.Error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateEtappeCommand(scenario.Command.(CreateEtappeCommand))
 		},
 		Expect: []*events.Envelope{
 			(&events.EtappeCreated{

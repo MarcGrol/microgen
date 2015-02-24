@@ -15,9 +15,10 @@ func TestCreateGamblerCommand(t *testing.T) {
 		Given: []*events.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
+		Command: CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
 		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateGamblerCommand(CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"})
+			return service.HandleCreateGamblerCommand(scenario.Command.(CreateGamblerCommand))
 		},
 		Expect: []*events.Envelope{
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
@@ -53,9 +54,10 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 			(&events.CyclistCreated{Year: 2015, CyclistId: 2, CyclistName: "cyclist 2", CyclistTeam: "team 2"}).Wrap(),
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
 		},
+		Command: CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
 		When: func(scenario *test.Scenario) *myerrors.Error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateGamblerTeamCommand(CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}})
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(CreateGamblerTeamCommand))
 		},
 		Expect: []*events.Envelope{
 			(&events.GamblerTeamCreated{GamblerUid: "my uid", Year: 2015, GamblerCyclists: []int{1, 2}}).Wrap(),
