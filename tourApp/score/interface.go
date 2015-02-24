@@ -52,12 +52,12 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) *myerrors.Error
-	ApplyGamblerScoreCalculated(event events.GamblerScoreCalculated) *myerrors.Error
-	ApplyTourCreated(event events.TourCreated) *myerrors.Error
-	ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error
 	ApplyCyclistCreated(event events.CyclistCreated) *myerrors.Error
 	ApplyGamblerCreated(event events.GamblerCreated) *myerrors.Error
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated) *myerrors.Error
 	ApplyEtappeResultsAvailable(event events.EtappeResultsAvailable) *myerrors.Error
+	ApplyCyclistScoreCalculated(event events.CyclistScoreCalculated) *myerrors.Error
+	ApplyGamblerScoreCalculated(event events.GamblerScoreCalculated) *myerrors.Error
+	ApplyTourCreated(event events.TourCreated) *myerrors.Error
+	ApplyEtappeCreated(event events.EtappeCreated) *myerrors.Error
 }

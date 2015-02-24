@@ -14,7 +14,7 @@ const (
 	VERSION = "0.1"
 )
 
-var modus *string
+var tool *string
 var service *string
 var httpPort *int
 var busAddress *string
@@ -35,12 +35,12 @@ func printVersion() {
 }
 
 func processArgs() {
-	modus = flag.String("mode", "service", "Mode in which tools runs: 'tool' or 'service'")
+	tool = flag.String("tool", "", "Run in 'tool-mode: 'gen'")
+	templateDir = flag.String("template-dir", ".", "For 'tool'-mode: Directory where templates are located")
+	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
 	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler' or 'result'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
 	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
-	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
-	templateDir = flag.String("template-dir", ".", "For modus 'tool': Directory where templates are located")
 
 	help := flag.Bool("help", false, "Usage information")
 	version := flag.Bool("version", false, "Version information")
@@ -58,34 +58,37 @@ func processArgs() {
 func main() {
 	processArgs()
 
-	if *modus == "service" {
-		if service == nil {
-			fmt.Fprintf(os.Stderr, "Missing service name")
-			printUsage()
-		} else {
-			if *service == "tour" {
-				err := tour.Start(*httpPort, *busAddress, *baseDir)
-				if err != nil {
-					log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s",
-						*httpPort, *busAddress, *baseDir)
-				}
-			} else if *service == "gambler" {
-				err := gambler.Start(*httpPort, *busAddress, *baseDir)
-				if err != nil {
-					log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s",
-						*httpPort, *busAddress, *baseDir)
-				}
-			} else if *service == "results" {
-				log.Printf("TODO: Starting results")
-			} else {
-				fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
-				printUsage()
+	if len(*service) > 0 {
+		if *service == "tour" {
+			err := tour.Start(*httpPort, *busAddress, *baseDir)
+			if err != nil {
+				log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s",
+					*httpPort, *busAddress, *baseDir)
 			}
+		} else if *service == "gambler" {
+			err := gambler.Start(*httpPort, *busAddress, *baseDir)
+			if err != nil {
+				log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s",
+					*httpPort, *busAddress, *baseDir)
+			}
+		} else if *service == "results" {
+			log.Printf("TODO: Starting results")
+		} else {
+			fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
+			printUsage()
 		}
-	} else if *modus == "tool" {
-		err := spec.GenerateApplication(application, *baseDir)
-		if err != nil {
-			log.Fatalf("Error generating application %s", err)
+	} else if len(*tool) > 0 {
+		if *tool == "gen" {
+			err := spec.GenerateApplication(application, *baseDir)
+			if err != nil {
+				log.Fatalf("Error generating application %s", err)
+			}
+		} else {
+			fmt.Fprintf(os.Stderr, "Unrecognized tool name %s", *tool)
+			printUsage()
 		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Unrecognized command")
+		printUsage()
 	}
 }
