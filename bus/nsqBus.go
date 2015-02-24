@@ -40,8 +40,6 @@ func (bus *NsqBus) startConsumer(topic string, userCallback BlobHandlerFunc) err
 		err := userCallback(message.Body)
 		if err != nil {
 			log.Printf("Error handling event-envelope (%+v)", err)
-		} else {
-			log.Printf("Successfully handled event-envelope (%v+)", err)
 		}
 		return err
 	}))

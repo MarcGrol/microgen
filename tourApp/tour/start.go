@@ -57,33 +57,49 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			tour, err := commandHandler.HandleGetTourQuery(year)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *tour)
 		})
 		api.POST("/tour", func(c *gin.Context) {
 			var command CreateTourCommand
-			c.Bind(&command)
+			ok := c.Bind(&command)
+			if ok == false {
+				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
+				return
+			}
 			err := commandHandler.HandleCreateTourCommand(command)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
-			var command CreateEtappeCommand
-			c.Bind(&command)
+			 var command CreateEtappeCommand
+			ok := c.Bind(&command)
+			if ok == false {
+				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
+				return
+			}
 			err := commandHandler.HandleCreateEtappeCommand(command)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})
 		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
 			var command CreateCyclistCommand
-			c.Bind(&command)
+			ok :=c.Bind(&command)
+			if ok == false {
+				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
+				return
+			}
 			err := commandHandler.HandleCreateCyclistCommand(command)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})

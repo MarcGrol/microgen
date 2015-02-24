@@ -108,7 +108,7 @@ func doStore(store events.Store, envelopes []*events.Envelope) error {
 			log.Printf("Error storing event: %+v", err)
 			return err
 		}
-		log.Printf("Successfullt stored event: %+v", env)
+		log.Printf("Successfully stored event: %+v", env)
 	}
 	return nil
 }
@@ -116,7 +116,7 @@ func doStore(store events.Store, envelopes []*events.Envelope) error {
 func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*events.Envelope) *myerrors.Error {
 	err := doStore(store, envelopes)
 	if err != nil {
-		return nil
+		return myerrors.NewInternalError(err)
 	}
 	for _, env := range envelopes {
 		err = bus.Publish(env)

@@ -67,24 +67,35 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid, year)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *gambler)
 		})
 		api.POST("/gambler", func(c *gin.Context) {
 			var command CreateGamblerCommand
-			c.Bind(&command)
+			ok := c.Bind(&command)
+			if ok == false {
+				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
+				return
+			}
 			err := commandHandler.HandleCreateGamblerCommand(command)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})
 		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
 			var command CreateGamblerTeamCommand
-			c.Bind(&command)
+			ok := c.Bind(&command)
+			if ok == false {
+				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
+				return
+			}
 			err := commandHandler.HandleCreateGamblerTeamCommand(command)
 			if err != nil {
 				http.HandleError(c, err)
+				return
 			}
 			c.JSON(200, *http.SuccessResponse())
 		})
