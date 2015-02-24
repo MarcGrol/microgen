@@ -1,7 +1,7 @@
 // Generated automatically by microgen: do not edit manually
 
 digraph G {
-    graph [compound=true, rankdir=LR, ranksep="1.0"];
+    graph [compound=true, rankdir=LR];
 
 	subgraph clusterproxy {
         label="Proxy";
@@ -41,9 +41,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
-		
 			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+		
+			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
 		
 			 
@@ -101,13 +101,13 @@ digraph G {
 	"Proxy" -> "ScoreCreateDayResults" [label="json/HTTP", lhead=clusterscore, arrowhead=crow];
 
 
-	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed]
-	"TourCreateTour" -> "ScoreTourCreated" [label="TourCreated-event", style=dashed]
-	"TourCreateCyclist" -> "GamblerCyclistCreated" [label="CyclistCreated-event", style=dashed]
-	"TourCreateCyclist" -> "ScoreCyclistCreated" [label="CyclistCreated-event", style=dashed]
-	"TourCreateEtappe" -> "ScoreEtappeCreated" [label="EtappeCreated-event", style=dashed]
-	"GamblerCreateGambler" -> "ScoreGamblerCreated" [label="GamblerCreated-event", style=dashed]
-	"GamblerCreateGamblerTeam" -> "ScoreGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed]
+	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed];
+	"TourCreateTour" -> "ScoreTourCreated" [label="TourCreated-event", style=dashed];
+	"TourCreateCyclist" -> "GamblerCyclistCreated" [label="CyclistCreated-event", style=dashed];
+	"TourCreateCyclist" -> "ScoreCyclistCreated" [label="CyclistCreated-event", style=dashed];
+	"TourCreateEtappe" -> "ScoreEtappeCreated" [label="EtappeCreated-event", style=dashed];
+	"GamblerCreateGambler" -> "ScoreGamblerCreated" [label="GamblerCreated-event", style=dashed];
+	"GamblerCreateGamblerTeam" -> "ScoreGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed];
 
 
 }

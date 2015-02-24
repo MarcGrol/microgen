@@ -96,15 +96,13 @@ func (app Application) GetConsumingServiceNamesForEvent(eventName string) []stri
 	return serviceNames
 }
 
-// 	CreateGamblerTeam -> ResultsGamblerTeamCreatedEventhandler [label="GamblerTeamCreated-event", style=dashed];
-
 func (app Application) GraphvizEdgesForEvents() string {
 	edges := make([]string, 0, 10)
 	for _, service := range app.Services {
 		for _, command := range service.Commands {
 			for _, event := range command.ProducesEvents {
 				for _, s := range app.ServicesThatConsumeEvent(event) {
-					edge := fmt.Sprintf("\t\"%s%s\" -> \"%s%s\" [label=\"%s-event\", style=dashed]\n",
+					edge := fmt.Sprintf("\t\"%s%s\" -> \"%s%s\" [label=\"%s-event\", style=dashed];\n",
 						service.Name,
 						command.Name,
 						s.Name,
