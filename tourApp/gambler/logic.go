@@ -9,6 +9,27 @@ import (
 	"strconv"
 )
 
+type GamblerEventHandler struct {
+	store events.Store
+}
+
+func NewGamblerEventHandler(store events.Store) EventHandler {
+	handler := new(GamblerEventHandler)
+	handler.store = store
+	return handler
+}
+
+func (eh *GamblerEventHandler) OnTourCreated(event events.TourCreated) *myerrors.Error {
+	log.Printf("OnTourCreated: event: %+v", event)
+	return doStore(eh.store,[]*events.Envelope{event.Wrap()})
+}
+
+func (eh *GamblerEventHandler) OnCyclistCreated(event events.CyclistCreated) *myerrors.Error {
+
+	log.Printf("OnCyclistCreated: event: %+v", event)
+	return doStore(eh.store, []*events.Envelope{event.Wrap()})
+}
+
 type GamblerCommandHandler struct {
 	bus   events.PublishSubscriber
 	store events.Store
@@ -21,17 +42,17 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
-func (gch *GamblerCommandHandler) validateCreateGamblerCommand(command CreateGamblerCommand) error {
+func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command CreateGamblerCommand) error {
 	// TODO
 	return nil
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
-	err := gch.validateCreateGamblerCommand(command)
+func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
+	err := ch.validateCreateGamblerCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, -1)
+	gamblerContext, err := getGamblerContext(ch.store, command.GamblerUid, -1)
 	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
@@ -45,23 +66,22 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 		GamblerUid:   command.GamblerUid,
 		GamblerName:  command.Name,
 		GamblerEmail: command.Email}
-	gamblerContext.ApplyGamblerCreated(gamblerCreatedEvent)
 
 	// store and emit resulting event
-	return gch.storeAndPublish([]*events.Envelope{gamblerCreatedEvent.Wrap()})
+	return doStoreAndPublish(ch.store, ch.bus,[]*events.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
-func (gch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
+func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
 	// TODO
 	return nil
 }
 
-func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
-	err := gch.validateCreateGamblerTeamCommand(command)
+func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
+	err := ch.validateCreateGamblerTeamCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblerContext, err := getGamblerContext(gch.store, command.GamblerUid, command.Year)
+	gamblerContext, err := getGamblerContext(ch.store, command.GamblerUid, command.Year)
 	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
@@ -77,18 +97,13 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateG
 		GamblerUid:      command.GamblerUid,
 		Year:            command.Year,
 		GamblerCyclists: command.CyclistIds}
-	gamblerContext.ApplyGamblerTeamCreated(gamblerTeamCreatedEvent)
 
-	return gch.storeAndPublish([]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
+	return doStoreAndPublish(ch.store, ch.bus,[]*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func (gch *GamblerCommandHandler) storeAndPublish(envelopes []*events.Envelope) *myerrors.Error {
+func  doStore(store events.Store, envelopes []*events.Envelope) *myerrors.Error {
 	for _, env := range envelopes {
-		err := gch.store.Store(env)
-		if err != nil {
-			return myerrors.NewInternalError(err)
-		}
-		err = gch.bus.Publish(env)
+		err := store.Store(env)
 		if err != nil {
 			return myerrors.NewInternalError(err)
 		}
@@ -96,9 +111,23 @@ func (gch *GamblerCommandHandler) storeAndPublish(envelopes []*events.Envelope) 
 	return nil
 }
 
-func (gch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, *myerrors.Error) {
+func  doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*events.Envelope) *myerrors.Error {
+	err := doStore(store, envelopes)
+	if err != nil {
+		return nil
+	}
+	for _, env := range envelopes {
+		busErr := bus.Publish(env)
+		if busErr != nil {
+			return myerrors.NewInternalError(err)
+		}
+	}
+	return nil
+}
+
+func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, *myerrors.Error) {
 	// TODO validate input
-	gamblerContext, err := getGamblerContext(gch.store, gamblerUid, year)
+	gamblerContext, err := getGamblerContext(ch.store, gamblerUid, year)
 	if err != nil {
 		return nil, myerrors.NewInternalError(err)
 	}

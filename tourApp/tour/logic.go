@@ -40,9 +40,7 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	}
 
 	// apply business logic
-	tour := NewTour()
 	tourCreatedEvent := events.TourCreated{command.Year}
-	tour.ApplyTourCreated(tourCreatedEvent)
 
 	//log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
 
@@ -62,7 +60,7 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 	}
 
 	// get tour based on year
-	tour, found := getTourOnYear(tch.store, command.Year)
+	_, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
 	}
@@ -72,7 +70,6 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 		CyclistId:   command.Id,
 		CyclistName: command.Name,
 		CyclistTeam: command.Team}
-	tour.ApplyCyclistCreated(cyclistCreatedEvent)
 
 	//log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
 
@@ -92,7 +89,7 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	}
 
 	// get tour based on year
-	tour, found := getTourOnYear(tch.store, command.Year)
+	_, found := getTourOnYear(tch.store, command.Year)
 	if found == false {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
 	}
@@ -105,7 +102,6 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 		EtappeFinishLocation: command.FinishLocation,
 		EtappeLength:         command.Length,
 		EtappeKind:           command.Kind}
-	tour.ApplyEtappeCreated(etappeCreatedEvent)
 
 	//log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
 

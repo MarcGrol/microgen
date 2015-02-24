@@ -16,7 +16,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	if err != nil {
 		return err
 	}
-	bus := startBus(busAddress)
+	bus := startBus(busAddress,NewGamblerEventHandler(store))
 	if bus == nil {
 		return errors.New("Error starting bus")
 	}
@@ -40,8 +40,17 @@ func startStore(baseDir string) (*events.EventStore, error) {
 	return store, nil
 }
 
-func startBus(busAddress string) *events.EventBus {
-	return events.NewEventBus("tourApp", "gambler", busAddress)
+func startBus(busAddress string, eventHandler EventHandler) *events.EventBus {
+	bus := events.NewEventBus("tourApp", "gambler", busAddress)
+
+	bus.Subscribe(events.TypeTourCreated, func(envelope *events.Envelope) error {
+		return eventHandler.OnTourCreated(*envelope.TourCreated)
+	})
+	bus.Subscribe(events.TypeCyclistCreated, func(envelope *events.Envelope) error {
+		return eventHandler.OnCyclistCreated(*envelope.CyclistCreated)
+	})
+
+	return bus
 }
 
 func startHttp(listenPort int, commandHandler CommandHandler) {
