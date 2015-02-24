@@ -21,8 +21,13 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
+func (gch *GamblerCommandHandler) validateCreateGamblerCommand(command CreateGamblerCommand) error {
+	// TODO
+	return nil
+}
+
 func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
-	err := command.BasicValidate()
+	err := gch.validateCreateGamblerCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
@@ -46,8 +51,13 @@ func (gch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGambl
 	return gch.storeAndPublish([]*events.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
+func (gch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
+	// TODO
+	return nil
+}
+
 func (gch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
-	err := command.BasicValidate()
+	err := gch.validateCreateGamblerTeamCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}

@@ -22,8 +22,13 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 	return handler
 }
 
+func (tch *TourCommandHandler) validateCreateTourCommand(command CreateTourCommand) error {
+	// TODO
+	return nil
+}
+
 func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) *myerrors.Error {
-	err := command.BasicValidate()
+	err := tch.validateCreateTourCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
@@ -45,8 +50,13 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	return tch.storeAndPublish([]*events.Envelope{tourCreatedEvent.Wrap()})
 }
 
+func (tch *TourCommandHandler) validateCreateCyclistCommand(command CreateCyclistCommand) error {
+	// TODO
+	return nil
+}
+
 func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) *myerrors.Error {
-	err := command.BasicValidate()
+	err := tch.validateCreateCyclistCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
@@ -70,8 +80,13 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 	return tch.storeAndPublish([]*events.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
+func (tch *TourCommandHandler) validateCreateEtappeCommand(command CreateEtappeCommand) error {
+	// TODO
+	return nil
+}
+
 func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) *myerrors.Error {
-	err := command.BasicValidate()
+	err := tch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}

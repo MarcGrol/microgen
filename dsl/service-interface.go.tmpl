@@ -17,6 +17,7 @@ import (
 	{{end}}
 	}
 
+    {{/*
     func (command {{.NameToFirstUpper}}Command) BasicValidate() error {
         {{range .Input.Attributes}}
         {{ if .IsInt}} // command.{{.NameToFirstUpper}} int {{end}}
@@ -26,6 +27,7 @@ import (
         {{end}}
         return nil
     }
+    */}}
   {{end}}
 {{end}}
 
