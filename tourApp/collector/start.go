@@ -31,7 +31,7 @@ func startStore(baseDir string) (*infra.EventStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	store := infra.NewEventStore(dataDir, "gambler.db")
+	store := infra.NewEventStore(dataDir, "collector.db")
 	err = store.Open()
 	if err != nil {
 		return nil, err
