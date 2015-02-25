@@ -60,7 +60,7 @@ An "application" consists of the following concepts:
     ${GOPATH}/bin/microgen -service=score   -port=8083 -base-dir=.
     ${GOPATH}/bin/microgen -service=proxy   -port=8080 -base-dir=.
     
-    # Fire comannds into the application
+    # Fire commands into the application
     curl -X POST --header "Content-type: application/json"  --header "Accept: application/json" --data '{"year":2015}' "http://localhost:8081/api/tour"
     curl -X GET  --header "Accept: application/json"  "http://localhost:8081/api/tour/2015"
     
