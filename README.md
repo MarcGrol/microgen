@@ -8,22 +8,24 @@ A tour-de-france gambling application:
 - As an administrator: Create a tour for a particular year (1)
 - As an administrator: Add cyclists to a tour (2)
 - As an administrator: Add etappes to a tour (3)
-- As a gambler: Create a profile (4)
-- As a gambler: Compose your own team of cyclists for a particular year (5)
-- As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers (6)
-- As anybody: View tours with their cyclists, etappes and results (7)
-- As anybody: View best cyclists of a tour (8)
-- As anybody: View best gamblers of a tour (9)
+- As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
+- As a gambler: Create a profile (21)
+- As a gambler: Compose your own team of cyclists for a particular year (22)
+- As a gambler: View scores of my cylists (23)
+- As anybody: View tours with their cyclists (31)
+- As anybody: View etappes and results (32)
+- As anybody: View best cyclists of a tour (33)
+- As anybody: View best gamblers of a tour (34)
 
 ## Devision of functions in services
 ### Tour-service
-Responsible for managing tours with their etappes and cyclists (1,2,3,7,8,9)
+Responsible for managing tours with their etappes and cyclists (1,2,3,31)
 
 ### Gambler-service
-Responsible for gamblers and their teams of cyclists (4,5)
+Responsible for gamblers and their teams of cyclists (21,22,23)
 
 ### Results-service
-Responsible for handling results calculating scores (6)
+Responsible for calculating and presenting results and scores (4,32,33,34)
 
 ## Concept
 An "application" consists of the following concepts:
