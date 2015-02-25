@@ -55,7 +55,7 @@ An "application" consists of the following concepts:
     go install              # to create executable
     
     # Sync source-code with application-dsl
-    ${GOPATH}/bin/microgen -tool=gen # to generate interfaces based in ./application.go
+    ${GOPATH}/bin/microgen -tool=gen -base-dir=. # to generate interfaces based in ./application.go
     
     # Start the bus
     ./bus/start_nsq.sh
