@@ -2,7 +2,8 @@
 
 ## Goal
 Experiment with microservices using go. 
-The core of "micro" is to keep services small so you do not have to understand thefull big monolyth before you can be effective.
+
+The core of "micro" is to keep services small so you do not have to understand thefull big monolyth before you can be effective. Another advantage of this approach that natural boundaties between services make it easy to keep the system modular.
 
 ## Approach
 Specification effort:
