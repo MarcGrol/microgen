@@ -16,6 +16,7 @@ A tour-de-france gambling application:
 - As anybody: View etappes and results (32)
 - As anybody: View best cyclists of a tour (33)
 - As anybody: View best gamblers of a tour (34)
+- As a system: Notify gambler of new day results (41)
 
 ## Devision of functions in services
 ### Tour-service
@@ -25,7 +26,7 @@ Responsible for managing tours with their etappes and cyclists (1,2,3,31)
 Responsible for gamblers and their teams of cyclists (21,22,23)
 
 ### Results-service
-Responsible for calculating and presenting results and scores (4,32,33,34)
+Responsible for calculating and presenting results and scores (4,32,33,34,41)
 
 ## Concept
 An "application" consists of the following concepts:
