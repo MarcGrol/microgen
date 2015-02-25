@@ -3,6 +3,30 @@
 ## Goal
 Experiment with microservices using go
 
+## Approach
+Specification effort:
+* Define your screens 
+* Based on screens, determine your commands and queries
+* Group related commands and queries in a service
+* Define your events, that exchange information between services.
+* Specify which events a command emits
+* Specify on which events a service depends
+
+Develop non-functional components:
+* append-only event-store
+* publish-subscribe bus
+* Scenario based testing: "given-when-expect"
+
+Develop functional services:
+ * create unit tests
+ * implement business-logic: handle commands and events
+ * attach service to http and event-bus
+
+Combine services to create screens:
+ * create end-to-end tests
+ * develop screens using services
+ * 
+ 
 ## Functionality
 A tour-de-france gambling application:
 - As an administrator: 
