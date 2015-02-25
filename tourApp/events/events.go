@@ -8,6 +8,111 @@ import (
 	"time"
 )
 
+type Type int
+
+const (
+	TypeUnknown                Type = iota
+	TypeGamblerScoreCalculated      = 9
+	TypeTourCreated                 = 1
+	TypeCyclistCreated              = 2
+	TypeEtappeCreated               = 3
+	TypeGamblerCreated              = 4
+	TypeGamblerTeamCreated          = 5
+	TypeEtappeResultsAvailable      = 7
+	TypeCyclistScoreCalculated      = 8
+)
+
+func GetAllEventsTypes() []Type {
+	return []Type{
+		TypeGamblerTeamCreated,
+		TypeEtappeResultsAvailable,
+		TypeCyclistScoreCalculated,
+		TypeGamblerScoreCalculated,
+		TypeTourCreated,
+		TypeCyclistCreated,
+		TypeEtappeCreated,
+		TypeGamblerCreated,
+	}
+}
+
+func (t Type) String() string {
+	switch t {
+	case TypeGamblerScoreCalculated:
+		return "GamblerScoreCalculated"
+	case TypeTourCreated:
+		return "TourCreated"
+	case TypeCyclistCreated:
+		return "CyclistCreated"
+	case TypeEtappeCreated:
+		return "EtappeCreated"
+	case TypeGamblerCreated:
+		return "GamblerCreated"
+	case TypeGamblerTeamCreated:
+		return "GamblerTeamCreated"
+	case TypeEtappeResultsAvailable:
+		return "EtappeResultsAvailable"
+	case TypeCyclistScoreCalculated:
+		return "CyclistScoreCalculated"
+
+	}
+	return "unknown"
+}
+
+type Envelope struct {
+	Uuid                   string                  `json:"uuid"`
+	SequenceNumber         uint64                  `json:"sequenceNumber"`
+	AggregateName          string                  `json:"aggregateName"`
+	AggregateUid           string                  `json:"aggregateUid"`
+	Timestamp              time.Time               `json:"timestamp"`
+	Type                   Type                    `json:"type"`
+	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
+	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
+	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
+	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
+	TourCreated            *TourCreated            `json:"tourCreated"`
+	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
+	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
+	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
+}
+
+type CyclistScoreCalculated struct {
+	Year         int `json:"year"`
+	CyclistId    int `json:"cyclistId"`
+	LastEtappeId int `json:"lastEtappeId"`
+	NewScore     int `json:"newScore"`
+}
+
+func (event *CyclistScoreCalculated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeCyclistScoreCalculated
+	envelope.CyclistScoreCalculated = event
+	envelope.AggregateName = "tour"
+	envelope.AggregateUid = strconv.Itoa(event.Year)
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
+	return envelope
+}
+
+type GamblerScoreCalculated struct {
+	Year         int    `json:"year"`
+	GamblerUid   string `json:"gamblerUid"`
+	LastEtappeId int    `json:"lastEtappeId"`
+	NewScore     int    `json:"newScore"`
+}
+
+func (event *GamblerScoreCalculated) Wrap() *Envelope {
+	envelope := new(Envelope)
+	envelope.Type = TypeGamblerScoreCalculated
+	envelope.GamblerScoreCalculated = event
+	envelope.AggregateName = "gambler"
+	envelope.AggregateUid = event.GamblerUid
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.Uuid = uuid.New()
+	return envelope
+}
+
 type TourCreated struct {
 	Year int `json:"year"`
 }
@@ -121,98 +226,6 @@ func (event *EtappeResultsAvailable) Wrap() *Envelope {
 	envelope.Timestamp = time.Now()
 	envelope.Uuid = uuid.New()
 	return envelope
-}
-
-type CyclistScoreCalculated struct {
-	Year         int `json:"year"`
-	CyclistId    int `json:"cyclistId"`
-	LastEtappeId int `json:"lastEtappeId"`
-	NewScore     int `json:"newScore"`
-}
-
-func (event *CyclistScoreCalculated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeCyclistScoreCalculated
-	envelope.CyclistScoreCalculated = event
-	envelope.AggregateName = "tour"
-	envelope.AggregateUid = strconv.Itoa(event.Year)
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.Uuid = uuid.New()
-	return envelope
-}
-
-type GamblerScoreCalculated struct {
-	Year         int    `json:"year"`
-	GamblerUid   string `json:"gamblerUid"`
-	LastEtappeId int    `json:"lastEtappeId"`
-	NewScore     int    `json:"newScore"`
-}
-
-func (event *GamblerScoreCalculated) Wrap() *Envelope {
-	envelope := new(Envelope)
-	envelope.Type = TypeGamblerScoreCalculated
-	envelope.GamblerScoreCalculated = event
-	envelope.AggregateName = "gambler"
-	envelope.AggregateUid = event.GamblerUid
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.Uuid = uuid.New()
-	return envelope
-}
-
-type Type int
-
-const (
-	TypeUnknown                Type = iota
-	TypeGamblerScoreCalculated      = 9
-	TypeTourCreated                 = 1
-	TypeCyclistCreated              = 2
-	TypeEtappeCreated               = 3
-	TypeGamblerCreated              = 4
-	TypeGamblerTeamCreated          = 5
-	TypeEtappeResultsAvailable      = 7
-	TypeCyclistScoreCalculated      = 8
-)
-
-func (t Type) String() string {
-	switch t {
-	case TypeGamblerCreated:
-		return "GamblerCreated"
-	case TypeGamblerTeamCreated:
-		return "GamblerTeamCreated"
-	case TypeEtappeResultsAvailable:
-		return "EtappeResultsAvailable"
-	case TypeCyclistScoreCalculated:
-		return "CyclistScoreCalculated"
-	case TypeGamblerScoreCalculated:
-		return "GamblerScoreCalculated"
-	case TypeTourCreated:
-		return "TourCreated"
-	case TypeCyclistCreated:
-		return "CyclistCreated"
-	case TypeEtappeCreated:
-		return "EtappeCreated"
-
-	}
-	return "unknown"
-}
-
-type Envelope struct {
-	Uuid                   string                  `json:"uuid"`
-	SequenceNumber         uint64                  `json:"sequenceNumber"`
-	AggregateName          string                  `json:"aggregateName"`
-	AggregateUid           string                  `json:"aggregateUid"`
-	Timestamp              time.Time               `json:"timestamp"`
-	Type                   Type                    `json:"type"`
-	GamblerTeamCreated     *GamblerTeamCreated     `json:"gamblerTeamCreated"`
-	EtappeResultsAvailable *EtappeResultsAvailable `json:"etappeResultsAvailable"`
-	CyclistScoreCalculated *CyclistScoreCalculated `json:"cyclistScoreCalculated"`
-	GamblerScoreCalculated *GamblerScoreCalculated `json:"gamblerScoreCalculated"`
-	TourCreated            *TourCreated            `json:"tourCreated"`
-	CyclistCreated         *CyclistCreated         `json:"cyclistCreated"`
-	EtappeCreated          *EtappeCreated          `json:"etappeCreated"`
-	GamblerCreated         *GamblerCreated         `json:"gamblerCreated"`
 }
 
 type EventHandlerFunc func(Envelope *Envelope) error

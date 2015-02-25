@@ -9,6 +9,20 @@ import (
 func TestPublishSubscribe(t *testing.T) {
 	bus := NewEventBus("tourdefrance", "unittest", "127.0.0.1")
 
+	wg := &sync.WaitGroup{}
+
+	// subscribe to event
+	received := make([]*Envelope, 0, 10)
+	cb := func(envelope *Envelope) error {
+		received = append(received, envelope)
+		wg.Done()
+		return nil
+	}
+	bus.Subscribe(TypeTourCreated, cb)
+	bus.Subscribe(TypeCyclistCreated, cb)
+
+	wg.Add(2)
+
 	// publish 3 events
 	bus.Publish((&TourCreated{Year: 2015}).Wrap())
 	bus.Publish((&CyclistCreated{
@@ -20,19 +34,6 @@ func TestPublishSubscribe(t *testing.T) {
 		GamblerUid:   "myuid",
 		GamblerName:  "myname",
 		GamblerEmail: "myname@domain.com"}).Wrap())
-
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-
-	// subscribe to event
-	received := make([]*Envelope, 0, 10)
-	cb := func(envelope *Envelope) error {
-		received = append(received, envelope)
-		wg.Done()
-		return nil
-	}
-	bus.Subscribe(TypeTourCreated, cb)
-	bus.Subscribe(TypeCyclistCreated, cb)
 
 	// Block untill 2 events have been received
 	wg.Wait()

@@ -76,7 +76,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			c.JSON(200, *http.SuccessResponse())
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
-			 var command CreateEtappeCommand
+			var command CreateEtappeCommand
 			ok := c.Bind(&command)
 			if ok == false {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
@@ -91,7 +91,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 		})
 		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
 			var command CreateCyclistCommand
-			ok :=c.Bind(&command)
+			ok := c.Bind(&command)
 			if ok == false {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
 				return

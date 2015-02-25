@@ -16,7 +16,7 @@ digraph G {
 		label="Tour-service";
 		// events
 		
-		// comamnds
+		// commands
 		
 			 
 				"TourCreateTour"  [label="CreateTour\ncommand-handler", shape=box];
@@ -42,11 +42,11 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
-		
 			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
-		// comamnds
+			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+		
+		// commands
 		
 			 
 				"GamblerCreateGambler"  [label="CreateGambler\ncommand-handler", shape=box];
@@ -68,17 +68,17 @@ digraph G {
 		label="Score-service";
 		// events
 		
-			"ScoreGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
-		
-			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
-		
 			"ScoreTourCreated" [label="TourCreated\neventhandler", shape=diamond];
 		
 			"ScoreEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
 		
 			"ScoreCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
 		
-		// comamnds
+			"ScoreGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
+		
+			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
+		
+		// commands
 		
 			 
 				"ScoreCreateDayResults"  [label="CreateDayResults\ncommand-handler", shape=box];
@@ -92,6 +92,15 @@ digraph G {
 	}
 
 
+	subgraph clustercollector {
+		
+		label="Collector-service";
+		
+		"Any" [label="Any-eventhandler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\ncommand-handler", shape=box];
+
+    }
+
 	// edges
 	"Browser\nApp" -> "UI" [label="html/css/javascript/HTTP",arrowhead=crow];
 	"Browser\nApp" -> "Proxy" [label="json/HTTP",arrowhead=crow];
@@ -102,6 +111,8 @@ digraph G {
 	"Proxy" -> "GamblerCreateGambler" [label="json/HTTP", lhead=clustergambler, arrowhead=crow];
 
 	"Proxy" -> "ScoreCreateDayResults" [label="json/HTTP", lhead=clusterscore, arrowhead=crow];
+
+	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
 
 
 	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed];

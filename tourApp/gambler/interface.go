@@ -32,8 +32,8 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	OnTourCreated(event events.TourCreated) error
 	OnCyclistCreated(event events.CyclistCreated) error
+	OnTourCreated(event events.TourCreated) error
 }
 
 type EventApplier interface {

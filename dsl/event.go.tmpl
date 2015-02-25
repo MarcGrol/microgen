@@ -8,6 +8,39 @@ import (
     "code.google.com/p/go-uuid/uuid"
 )
 
+type Type int
+const (
+   TypeUnknown Type = iota
+{{range .GetUniqueEvents}} Type{{.NameToFirstUpper}} = {{.Id}}
+{{end}}
+)
+
+func GetAllEventsTypes() []Type {
+   return []Type {
+    {{range .GetUniqueEvents}} Type{{.NameToFirstUpper}},
+    {{end}}
+    } 
+}
+
+func (t Type) String() string {
+    switch( t ) {
+    {{range .GetUniqueEvents}}case Type{{.NameToFirstUpper}}: return "{{.NameToFirstUpper}}"
+    {{end}}
+    }
+    return "unknown"
+}
+
+type Envelope struct {
+    Uuid           string `json:"uuid"`
+    SequenceNumber uint64 `json:"sequenceNumber"`
+    AggregateName string `json:"aggregateName"`
+    AggregateUid string `json:"aggregateUid"`
+    Timestamp time.Time `json:"timestamp"`
+    Type Type `json:"type"`
+{{range .GetUniqueEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
+{{end}}
+}
+
 {{range .GetUniqueEvents}}
 type {{.NameToFirstUpper}} struct {
     {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityName}} {{.TypeName}} `json:"{{.Name}}"`
@@ -27,31 +60,6 @@ func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
 }
 {{end}}
 
-type Type int
-const (
-   TypeUnknown Type = iota
-{{range .GetUniqueEvents}} Type{{.NameToFirstUpper}} = {{.Id}}
-{{end}}
-)
-
-func (t Type) String() string {
-	switch( t ) {
-	{{range .GetUniqueEvents}}case Type{{.NameToFirstUpper}}: return "{{.NameToFirstUpper}}"
-	{{end}}
-	}
-	return "unknown"
-}
-
-type Envelope struct {
-    Uuid           string `json:"uuid"`
-    SequenceNumber uint64 `json:"sequenceNumber"`
-    AggregateName string `json:"aggregateName"`
-    AggregateUid string `json:"aggregateUid"`
-    Timestamp time.Time `json:"timestamp"`
-    Type Type `json:"type"`
-{{range .GetUniqueEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
-{{end}}
-}
 
 type EventHandlerFunc func( Envelope *Envelope ) error
 

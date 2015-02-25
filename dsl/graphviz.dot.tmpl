@@ -18,7 +18,7 @@ digraph G {
 		{{range .GetConsumedEvents}}
 			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\neventhandler", shape=diamond];
 		{{end}}
-		// comamnds
+		// commands
 		{{range .Commands}}
 			{{if not .IsQuery}} 
 				"{{$serviceName}}{{.Name}}"  [label="{{.Name}}\ncommand-handler", shape=box];
@@ -30,6 +30,15 @@ digraph G {
 	}
 {{end}}
 
+	subgraph clustercollector {
+		
+		label="Collector-service";
+		
+		"Any" [label="Any-eventhandler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\ncommand-handler", shape=box];
+
+    }
+
 	// edges
 	"Browser\nApp" -> "UI" [label="html/css/javascript/HTTP",arrowhead=crow];
 	"Browser\nApp" -> "Proxy" [label="json/HTTP",arrowhead=crow];
@@ -37,6 +46,8 @@ digraph G {
 {{range .Services}}
 	"Proxy" -> "{{.Name}}{{.FirstCommand}}" [label="json/HTTP", lhead=cluster{{.NameToLower}}, arrowhead=crow];
 {{end}}
+	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
+
 
 {{ .GraphvizEdgesForEvents }}
 
