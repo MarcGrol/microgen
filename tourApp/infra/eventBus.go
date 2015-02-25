@@ -1,8 +1,9 @@
-package events
+package infra
 
 import (
 	"encoding/json"
 	"github.com/MarcGrol/microgen/bus"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 )
 
@@ -18,9 +19,9 @@ func NewEventBus(applicationName string, consumerName string, address string) *E
 	return mybus
 }
 
-func (bus *EventBus) Subscribe(eventType Type, userCallback EventHandlerFunc) error {
+func (bus *EventBus) Subscribe(eventType events.Type, userCallback events.EventHandlerFunc) error {
 	callback := func(blob []byte) error {
-		var envelope Envelope
+		var envelope events.Envelope
 		err := json.Unmarshal(blob, &envelope)
 		if err != nil {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
@@ -33,7 +34,7 @@ func (bus *EventBus) Subscribe(eventType Type, userCallback EventHandlerFunc) er
 	return bus.nsqBus.Subscribe(bus.getTopicName(eventType), callback)
 }
 
-func (bus *EventBus) Publish(envelope *Envelope) error {
+func (bus *EventBus) Publish(envelope *events.Envelope) error {
 	jsonBlob, err := json.Marshal(envelope)
 	if err != nil {
 		log.Printf("Error marshalling event-envelope (%+v)", err)
@@ -48,6 +49,6 @@ func (bus *EventBus) Publish(envelope *Envelope) error {
 	return err
 }
 
-func (bus *EventBus) getTopicName(eventType Type) string {
+func (bus *EventBus) getTopicName(eventType events.Type) string {
 	return bus.applicationName + "_" + eventType.String()
 }

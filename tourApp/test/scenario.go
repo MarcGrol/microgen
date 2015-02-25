@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"github.com/MarcGrol/microgen/tourApp/infra"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -175,9 +176,9 @@ const (
 	FILENAME = "test.db"
 )
 
-func createRealStore() (*events.EventStore, error) {
+func createRealStore() (*infra.EventStore, error) {
 	os.Remove(DIRNAME + "/" + FILENAME)
-	store := events.NewEventStore(DIRNAME, FILENAME)
+	store := infra.NewEventStore(DIRNAME, FILENAME)
 	err := store.Open()
 	if err != nil {
 		return nil, err
@@ -185,6 +186,6 @@ func createRealStore() (*events.EventStore, error) {
 	return store, nil
 }
 
-func createRealBus(scenarioName string) *events.EventBus {
-	return events.NewEventBus("scenarioTest", scenarioName+"Test", "127.0.0.1")
+func createRealBus(scenarioName string) *infra.EventBus {
+	return infra.NewEventBus("scenarioTest", scenarioName+"Test", "127.0.0.1")
 }

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/http"
+	"github.com/MarcGrol/microgen/tourApp/infra"
 	"github.com/gin-gonic/gin"
 	"os"
 	"strconv"
@@ -24,7 +24,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	return nil
 }
 
-func startStore(baseDir string) (*events.EventStore, error) {
+func startStore(baseDir string) (*infra.EventStore, error) {
 	dataDir := baseDir + "/" + "data"
 
 	// create dir if not exists
@@ -32,7 +32,7 @@ func startStore(baseDir string) (*events.EventStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	store := events.NewEventStore(dataDir, "tour.db")
+	store := infra.NewEventStore(dataDir, "tour.db")
 	err = store.Open()
 	if err != nil {
 		return nil, err
@@ -40,8 +40,8 @@ func startStore(baseDir string) (*events.EventStore, error) {
 	return store, nil
 }
 
-func startBus(busAddress string) *events.EventBus {
-	return events.NewEventBus("tourApp", "tour", busAddress)
+func startBus(busAddress string) *infra.EventBus {
+	return infra.NewEventBus("tourApp", "tour", busAddress)
 }
 
 func startHttp(listenPort int, commandHandler CommandHandler) {
