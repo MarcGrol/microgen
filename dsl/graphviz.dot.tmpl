@@ -16,7 +16,7 @@ digraph G {
 		label="{{.Name}}-service";
 		// events
 		{{range .GetConsumedEvents}}
-			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\neventhandler", shape=diamond];
+			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\nevent-handler", shape=diamond];
 		{{end}}
 		// commands
 		{{range .Commands}}
@@ -31,12 +31,10 @@ digraph G {
 {{end}}
 
 	subgraph clustercollector {
-		
 		label="Collector-service";
 		
-		"Any" [label="Any-eventhandler", shape=diamond];
-		"CollectorSearchEvents"  [label="SearchEvents\ncommand-handler", shape=box];
-
+		"Any" [label="Any\nevent-handler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler", shape=box];
     }
 
 	// edges
