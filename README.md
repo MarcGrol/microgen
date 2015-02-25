@@ -41,14 +41,14 @@ An "application" consists of the following concepts:
 
 ##Technical solution
 - Use a "dsl" to describe your application in terns of "services", "commands", "queries" and "events". Example: [application.go](./application.go)
-- Generate events, interfaces based and a system-overview based on the "description" of application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This to achieve consistent approach and ease error phrone tasks.
+- Generate events, interfaces based and a system-overview based on the dsl that describes the application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This to achieve consistent approach and ease error phrone tasks.
 - Provide implementation for "bus" (=to exchange of events between services)
 - Provide implementation of append-ony "store" for persistence
 - Provide implementation of http handler to process commands.
 - Provide a mechanism for starting and configuring services.
 - Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](./tourApp/tour/logic_test.go)
-- Provide clear and exact documentation that explains how services are related. Example: [graphviz.dot](./tourApp/doc/graphviz.pdf)
 - For each test scenario the "given", "when" and "expect" are recorded and written file. This describes the scenario exactly in json. Example: [scenario_example.json](./tourApp/doc/example_Create_new_gambler_success.txt)
+- Provide clear, exact and up to date documentation that explains how services are related. Example: [graphviz.dot](./tourApp/doc/graphviz.pdf)
 
 ## Obtaining, building, running and testing
 
