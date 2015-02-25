@@ -9,6 +9,7 @@ A tour-de-france gambling application:
 - As an administrator: Add cyclists to a tour (2)
 - As an administrator: Add etappes to a tour (3)
 - As an administrator: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
+- As an administrator: Keep tracj of everything that has happened within the system (5)
 - As a gambler: Create a profile (21)
 - As a gambler: Compose your own team of cyclists for a particular year (22)
 - As a gambler: View scores of my cylists (23)
@@ -27,6 +28,10 @@ Responsible for gamblers and their teams of cyclists (21,22,23)
 
 ### Results-service
 Responsible for calculating and presenting results and scores (4,32,33,34,41)
+
+### Collector-service
+Non functional service that keeps track of everything that has happened. (5)
+
 
 ## Concept
 An "application" consists of the following concepts:
@@ -61,10 +66,11 @@ An "application" consists of the following concepts:
     ./bus/start_nsq.sh
     
     # Start the application
-    ${GOPATH}/bin/microgen -service=tour    -port=8081 -base-dir=.
-    ${GOPATH}/bin/microgen -service=gambler -port=8082 -base-dir=.
-    ${GOPATH}/bin/microgen -service=score   -port=8083 -base-dir=.
-    ${GOPATH}/bin/microgen -service=proxy   -port=8080 -base-dir=.
+    ${GOPATH}/bin/microgen -service=tour      -port=8081 -base-dir=.
+    ${GOPATH}/bin/microgen -service=gambler   -port=8082 -base-dir=.
+    ${GOPATH}/bin/microgen -service=score     -port=8083 -base-dir=.
+    ${GOPATH}/bin/microgen -service=collector -port=8084 -base-dir=.
+    ${GOPATH}/bin/microgen -service=proxy     -port=8080 -base-dir=.
     
     # Fire commands into the application
     curl -X POST --header "Content-type: application/json"  --header "Accept: application/json" --data '{"year":2015}' "http://localhost:8081/api/tour"
