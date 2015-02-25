@@ -47,11 +47,14 @@ An "application" consists of the following concepts:
 
 ## Obtaining, building, running and testing
 
+    # prepare
     go get github.com/MarcGrol/microgen
     cd ${GOPATH}/src/github.com/MarcGrol/microgen
     go fmt ./...            # to format code
     go test ./...           # to run all unit tests
     go install              # to create executable
+    
+    # Sync source-code with application-dsl
     ${GOPATH}/bin/microgen -tool=gen # to generate interfaces based in ./application.go
     
     # Start the bus
