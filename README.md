@@ -69,6 +69,8 @@ An "application" consists of the following concepts:
 ##Technical solution
 - Use a "dsl" to describe your application in terns of "services", "commands", "queries" and "events". Example: [application.go](./application.go)
 - Generate events, interfaces based and a system-overview based on the dsl that describes the application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This to achieve consistent approach and ease error phrone tasks.
+- Use event sourcing. Store events and rebuild current state by replaying events in the order of arrival.
+- Could easily use command-Query seperation if scale requires it.
 - Provide implementation for "bus" (=to exchange of events between services)
 - Provide implementation of append-ony "store" for persistence
 - Provide implementation of http handler to process commands.
