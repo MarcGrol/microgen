@@ -23,11 +23,10 @@ Develop functional services:
  * implement business-logic: handle commands and events
  * attach service to http and event-bus
 
-Combine services to create screens:
+Build screens by combining services:
  * create end-to-end tests
  * develop screens using services
- * 
- 
+
 ## Functionality
 A tour-de-france gambling application:
 - As an administrator: 
@@ -61,10 +60,9 @@ Responsible for calculating and presenting results and scores (4,32,33,34,41)
 ### Collector-service
 Non functional service that keeps track of everything that has happened. (5)
 
-
 ## Concept
 An "application" consists of the following concepts:
- - "service": one or more loosely couples "services"
+ - "service": An application cosnsts of one or more loosely couples "services". each service is responsible for keeping is own data.
  - "commands" and "queries"(with "attributes"): Each service supports zero or more commands and quries. Browsers interact with the system via these commands and queries on a services.
  - "event" (with "attributes"): Each command emits zero or more events. An event is used to exchange of information between services in an async away.
 
