@@ -1,7 +1,8 @@
 # Microgen
 
 ## Goal
-Experiment with microservices using go
+Experiment with microservices using go. 
+The core of "micro" is to keep services small so you do not have to understand thefull big monolyth before you can be effective.
 
 ## Approach
 Specification effort:
