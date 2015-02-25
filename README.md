@@ -39,7 +39,7 @@ An "application" consists of the following concepts:
 - Provide implementation of http handler to process commands.
 - Provide a mechanism for starting and configuring services.
 - Declarative way of testing services. Based on this test spec, documentation and relationships between services can be derived. Example: [logic_test.go](./tourApp/tour/logic_test.go)
-- Provide clear and exact documentation that explains how services are related. Example: [logic_test.go](./tourApp/doc/graphviz.pdf)
+- Provide clear and exact documentation that explains how services are related. Example: [graphviz.dot](./tourApp/doc/graphviz.pdf)
 - For each test scenario the "given", "when" and "expect" are recorded and written to file (./tourapp/doc/). This describes the scenario exactly in json.
 
 ## Obtaining, building, running and testing
