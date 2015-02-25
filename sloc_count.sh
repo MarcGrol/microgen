@@ -10,7 +10,7 @@ printFileCount() {
 
 printHighlighted() {
     printf "\e[1;34m"
-    printf  "  %-40s: %4s files %s\n"  ${1} ${2} ${3}
+    printf  "  %-40s: %4s loc %s\n"  ${1} ${2} ${3}
     printf "\e[0m"
 }
 
@@ -56,7 +56,7 @@ countLogicLinesInDir() {
 countSpecLinesInDir() {
     _DIR=${1}
     _LINE_COUNT=$(find ${_DIR} -name "application.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
-    printLineCount ${_DIR}/application.go ${_LINE_COUNT} 
+    printHighlighted ${_DIR}/application.go ${_LINE_COUNT} 
 }
 
 echo "\nTotal:"

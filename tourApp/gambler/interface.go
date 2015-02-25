@@ -32,13 +32,13 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	OnCyclistCreated(event events.CyclistCreated) error
 	OnTourCreated(event events.TourCreated) error
+	OnCyclistCreated(event events.CyclistCreated) error
 }
 
 type EventApplier interface {
-	ApplyTourCreated(event events.TourCreated)
-	ApplyGamblerCreated(event events.GamblerCreated)
 	ApplyCyclistCreated(event events.CyclistCreated)
 	ApplyGamblerTeamCreated(event events.GamblerTeamCreated)
+	ApplyTourCreated(event events.TourCreated)
+	ApplyGamblerCreated(event events.GamblerCreated)
 }

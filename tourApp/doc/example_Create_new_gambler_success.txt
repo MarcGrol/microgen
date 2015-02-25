@@ -1,0 +1,77 @@
+{
+  "title": "Create new gambler success",
+  "given": [
+    {
+      "uuid": "884c5a9f-3573-4981-bab5-0817c096788d",
+      "sequenceNumber": 1,
+      "aggregateName": "tour",
+      "aggregateUid": "2015",
+      "timestamp": "2015-02-25T15:31:24.692010023+01:00",
+      "type": 1,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": {
+        "year": 2015
+      },
+      "cyclistCreated": null,
+      "etappeCreated": null,
+      "gamblerCreated": null
+    }
+  ],
+  "command": {
+    "gamblerUid": "my uid",
+    "name": "My name",
+    "email": "me@home.nl"
+  },
+  "expect": [
+    {
+      "uuid": "ced54d52-46e0-4302-ac36-e518db1fa01b",
+      "sequenceNumber": 0,
+      "aggregateName": "gambler",
+      "aggregateUid": "my uid",
+      "timestamp": "2015-02-25T15:31:24.69240072+01:00",
+      "type": 4,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": null,
+      "etappeCreated": null,
+      "gamblerCreated": {
+        "gamblerUid": "my uid",
+        "gamblerName": "My name",
+        "gamblerEmail": "me@home.nl",
+        "gamblerImageIUrl": ""
+      }
+    }
+  ],
+  "actual": [
+    {
+      "uuid": "d8462b42-7b1a-4b19-9e2c-24d8b7fe38cf",
+      "sequenceNumber": 2,
+      "aggregateName": "gambler",
+      "aggregateUid": "my uid",
+      "timestamp": "2015-02-25T15:31:24.692419688+01:00",
+      "type": 4,
+      "gamblerTeamCreated": null,
+      "etappeResultsAvailable": null,
+      "cyclistScoreCalculated": null,
+      "gamblerScoreCalculated": null,
+      "tourCreated": null,
+      "cyclistCreated": null,
+      "etappeCreated": null,
+      "gamblerCreated": {
+        "gamblerUid": "my uid",
+        "gamblerName": "My name",
+        "gamblerEmail": "me@home.nl",
+        "gamblerImageIUrl": ""
+      }
+    }
+  ],
+  "err": null,
+  "invalidInputError": false,
+  "notFoundError": false
+}

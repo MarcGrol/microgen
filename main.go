@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/MarcGrol/microgen/dsl"
+	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
@@ -73,6 +74,12 @@ func main() {
 			}
 		} else if *service == "results" {
 			log.Printf("TODO: Starting results")
+		} else if *service == "collector" {
+			err := collector.Start(*httpPort, *busAddress, *baseDir)
+			if err != nil {
+				log.Fatalf("Error starting 'collector'-service on port %d, bus-address:%s and base-dir: %s",
+					*httpPort, *busAddress, *baseDir)
+			}
 		} else {
 			fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
 			printUsage()

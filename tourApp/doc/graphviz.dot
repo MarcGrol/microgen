@@ -42,9 +42,9 @@ digraph G {
 		label="Gambler-service";
 		// events
 		
-			"GamblerTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		
-			"GamblerCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -68,15 +68,15 @@ digraph G {
 		label="Score-service";
 		// events
 		
-			"ScoreTourCreated" [label="TourCreated\neventhandler", shape=diamond];
+			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\nevent-handler", shape=diamond];
 		
-			"ScoreEtappeCreated" [label="EtappeCreated\neventhandler", shape=diamond];
+			"ScoreTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		
-			"ScoreCyclistCreated" [label="CyclistCreated\neventhandler", shape=diamond];
+			"ScoreEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		
-			"ScoreGamblerCreated" [label="GamblerCreated\neventhandler", shape=diamond];
+			"ScoreCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		
-			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\neventhandler", shape=diamond];
+			"ScoreGamblerCreated" [label="GamblerCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -93,12 +93,10 @@ digraph G {
 
 
 	subgraph clustercollector {
-		
 		label="Collector-service";
 		
-		"Any" [label="Any-eventhandler", shape=diamond];
-		"CollectorSearchEvents"  [label="SearchEvents\ncommand-handler", shape=box];
-
+		"Any" [label="Any\nevent-handler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler", shape=box];
     }
 
 	// edges
