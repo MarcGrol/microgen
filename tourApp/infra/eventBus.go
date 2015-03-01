@@ -26,10 +26,10 @@ func (bus *EventBus) Subscribe(eventType events.Type, userCallback events.EventH
 		if err != nil {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
 			return err
-		} else {
-			log.Printf("**** Received event (%+v)", envelope)
-			return userCallback(&envelope)
 		}
+
+		log.Printf("**** Received event (%+v)", envelope)
+		return userCallback(&envelope)
 	}
 	return bus.nsqBus.Subscribe(bus.getTopicName(eventType), callback)
 }
@@ -44,9 +44,11 @@ func (bus *EventBus) Publish(envelope *events.Envelope) error {
 	err = bus.nsqBus.Publish(bus.getTopicName(envelope.Type), jsonBlob)
 	if err != nil {
 		log.Printf("Error publishing event-envelope (%+v)", err)
+		return err
 	}
+
 	log.Printf("**** Published event (%+v)", envelope)
-	return err
+	return nil
 }
 
 func (bus *EventBus) getTopicName(eventType events.Type) string {

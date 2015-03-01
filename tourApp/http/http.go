@@ -32,6 +32,9 @@ func ErrorResponse(code int, message string) *Response {
 }
 
 func HandleError(c *gin.Context, err error) {
+	if err == nil {
+		c.JSON(404, *ErrorResponse(99, "Error must be nil!!!!!!!!!"))
+	}
 	if myerrors.IsNotFoundError(err) {
 		c.JSON(404, *ErrorResponse(1, err.Error()))
 	} else if myerrors.IsInternalError(err) {

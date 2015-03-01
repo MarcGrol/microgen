@@ -42,7 +42,7 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	// apply business logic
 	tourCreatedEvent := events.TourCreated{command.Year}
 
-	//log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
+	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
 
 	// store and emit resulting event
 	return tch.storeAndPublish([]*events.Envelope{tourCreatedEvent.Wrap()})
@@ -120,7 +120,7 @@ func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	return tour, nil
 }
 
-func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) *myerrors.Error {
+func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) error {
 	for _, env := range envelopes {
 		err := tch.store.Store(env)
 		if err != nil {

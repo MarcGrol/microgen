@@ -113,7 +113,7 @@ func doStore(store events.Store, envelopes []*events.Envelope) error {
 	return nil
 }
 
-func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*events.Envelope) *myerrors.Error {
+func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*events.Envelope) error {
 	err := doStore(store, envelopes)
 	if err != nil {
 		return myerrors.NewInternalError(err)

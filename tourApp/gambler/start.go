@@ -67,7 +67,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			}
 			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid, year)
 			if err != nil {
-				http.HandleError(c, appErr)
+				http.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *gambler)

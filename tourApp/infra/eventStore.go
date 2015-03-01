@@ -47,7 +47,7 @@ func (store *EventStore) Store(envelope *events.Envelope) error {
 }
 
 func (store *EventStore) writeEvent(envelope *events.Envelope) error {
-	//log.Printf("write event: %v\n", envelope)
+	log.Printf("write event: %v\n", envelope)
 
 	// serialize event to json
 	jsonBlob, err := json.Marshal(envelope)
@@ -72,10 +72,10 @@ func (store *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error
 		err := json.Unmarshal(blob, &envelope)
 		if err != nil {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
-		} else {
-			//log.Printf("read event: %v\n", envelope)
-			handlerFunc(&envelope)
+			return
 		}
+		log.Printf("read event: %v\n", envelope)
+		handlerFunc(&envelope)
 	}
 	return store.store.Iterate(callback)
 }
