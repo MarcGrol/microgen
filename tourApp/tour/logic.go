@@ -27,7 +27,7 @@ func (tch *TourCommandHandler) validateCreateTourCommand(command CreateTourComma
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) *myerrors.Error {
+func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) error {
 	err := tch.validateCreateTourCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -53,7 +53,7 @@ func (tch *TourCommandHandler) validateCreateCyclistCommand(command CreateCyclis
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) *myerrors.Error {
+func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) error {
 	err := tch.validateCreateCyclistCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -82,7 +82,7 @@ func (tch *TourCommandHandler) validateCreateEtappeCommand(command CreateEtappeC
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) *myerrors.Error {
+func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) error {
 	err := tch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -109,13 +109,13 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	return tch.storeAndPublish([]*events.Envelope{etappeCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, *myerrors.Error) {
+func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	// TODO validate input
 	tour, found := getTourOnYear(tch.store, year)
 	if found == false {
 		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
 	}
-	//log.Printf("GetTour:%+v", tour)
+	log.Printf("GetTour:%+v", tour)
 
 	return tour, nil
 }

@@ -56,7 +56,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 			}
 			tour, err := commandHandler.HandleGetTourQuery(year)
 			if err != nil {
-				http.HandleError(c, err)
+				http.HandleError(c, appErr)
 				return
 			}
 			c.JSON(200, *tour)

@@ -68,8 +68,6 @@ digraph G {
 		label="Score-service";
 		// events
 		
-			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\nevent-handler", shape=diamond];
-		
 			"ScoreTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		
 			"ScoreEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
@@ -77,6 +75,8 @@ digraph G {
 			"ScoreCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		
 			"ScoreGamblerCreated" [label="GamblerCreated\nevent-handler", shape=diamond];
+		
+			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		

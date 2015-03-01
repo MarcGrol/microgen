@@ -47,7 +47,7 @@ func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command CreateGamb
 	return nil
 }
 
-func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) *myerrors.Error {
+func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) error {
 	err := ch.validateCreateGamblerCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -76,7 +76,7 @@ func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command Create
 	return nil
 }
 
-func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) *myerrors.Error {
+func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
 	err := ch.validateCreateGamblerTeamCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -127,7 +127,7 @@ func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelop
 	return nil
 }
 
-func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, *myerrors.Error) {
+func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, error) {
 	// TODO validate input
 	gamblerContext, err := getGamblerContext(ch.store, gamblerUid, year)
 	if err != nil {

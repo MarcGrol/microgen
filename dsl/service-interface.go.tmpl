@@ -5,7 +5,6 @@ package {{.Service.NameToLower}}
 import (
     {{if .Service.HasDateField}}"time"{{end}}
     "{{.Application.Package}}/{{.Application.NameToFirstLower}}/events"
-    "{{.Application.Package}}/myerrors"
 )
 
 // commands
@@ -34,9 +33,9 @@ import (
 type CommandHandler interface {
     {{range .Service.Commands}}
     	{{if .IsQuery}} 
-        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, *myerrors.Error)
+        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, error)
     	{{else}}
-        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) *myerrors.Error
+        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
     	{{end}}
     {{end}}
 }

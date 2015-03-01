@@ -6,6 +6,7 @@ import (
 	"github.com/MarcGrol/microgen/dsl"
 	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
+	"github.com/MarcGrol/microgen/tourApp/proxy"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
 	"os"
@@ -39,7 +40,7 @@ func processArgs() {
 	tool = flag.String("tool", "", "Run in 'tool-mode: 'gen'")
 	templateDir = flag.String("template-dir", ".", "For 'tool'-mode: Directory where templates are located")
 	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
-	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler' or 'result'")
+	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler','result', 'proxy' or 'collector'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
 	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
 
@@ -79,6 +80,11 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error starting 'collector'-service on port %d, bus-address:%s and base-dir: %s",
 					*httpPort, *busAddress, *baseDir)
+			}
+		} else if *service == "proxy" {
+			err := proxy.Start(*httpPort, 8081, 8082, 8083, 8084)
+			if err != nil {
+				log.Fatalf("Error starting 'proxy'-service on port %d", *httpPort)
 			}
 		} else {
 			fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
