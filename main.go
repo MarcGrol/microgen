@@ -82,7 +82,7 @@ func main() {
 					*httpPort, *busAddress, *baseDir)
 			}
 		} else if *service == "proxy" {
-			err := proxy.Start(*httpPort, 8081, 8082, 8083, 8084)
+			err := proxy.Start(*baseDir, *httpPort, 8081, 8082, 8083, 8084)
 			if err != nil {
 				log.Fatalf("Error starting 'proxy'-service on port %d", *httpPort)
 			}

@@ -1,111 +1,116 @@
 package proxy
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"regexp"
 	"net/url"
-	"fmt"
+	"regexp"
 )
 
-func Start(listenPort int, tourPort int, gamblerPort int, scorePort int, collectorPort int) error {
-	server, err := NewServer()
-	if err != nil {
-		log.Fatal(err)
+func Start(baseDir string, listenPort int, tourPort int, gamblerPort int, scorePort int, collectorPort int) error {
+	var err error
+	server := newServer()
+
+	targetHost := "localhost"
+
+	server.addForwardRule("/api/tour", fmt.Sprintf("%s:%d", targetHost, tourPort))
+	server.addForwardRule("/api/gambler", fmt.Sprintf("%s:%d", targetHost, gamblerPort))
+	server.addForwardRule("/api/score", fmt.Sprintf("%s:%d", targetHost, scorePort))
+	server.addForwardRule("/admin/events", fmt.Sprintf("%s:%d", targetHost, collectorPort))
+	server.addServeRule("/static", fmt.Sprintf("%s/tourApp/ui/", baseDir))
+	if server.err != nil {
+		log.Printf("Error registrering handler %s", server.err)
+		return err
 	}
 
-	server.useRules( []Rule {
-		{
-			IfMatches:"/api/tour",
-			Forward:fmt.Sprintf("localhost:%d",tourPort),
-		},
-		{
-			IfMatches:"/api/gambler",
-			Forward:fmt.Sprintf("localhost:%d",gamblerPort),
-		},
-		{
-			IfMatches:"/api/score",
-			Forward:fmt.Sprintf("localhost:%d",scorePort),
-		},
-		{
-			IfMatches:"/admin/events",
-			Forward:fmt.Sprintf("localhost:%d",collectorPort),
-		},
-		{
-			IfMatches:"/ui",
-			Serve:"../ui/",
-		},
-	})
-
-	return http.ListenAndServe(fmt.Sprintf(":%d",listenPort), nil)
+	return server.listenAndServe(listenPort)
 }
 
-func NewServer() (*Server, error) {
-	s := new(Server)
-	return s, nil
+type server struct {
+	err   error
+	rules []*rule
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if handler := s.handler(r); handler != nil {
-		log.Printf( "Serve %s", r.RequestURI)
-		handler.ServeHTTP(w, r)
-		return
-	}
-	log.Printf( "Not found %s", r.RequestURI)
-
-	http.Error(w, "Not found.", http.StatusNotFound)
+func newServer() *server {
+	s := new(server)
+	s.err = nil
+	s.rules = make([]*rule, 0, 10)
+	return s
 }
 
-func (s *Server) handler(req *http.Request) http.Handler {
-	log.Printf( "Got %s", req.RequestURI)
-	for _, rule := range s.rules {
-	    matched,_ := regexp.MatchString(rule.IfMatches, req.RequestURI)
-		if matched {
-			log.Printf( "Matched %s -> forward: %s, serve:%s", rule.IfMatches, rule.Forward, rule.Serve)
-			return rule.handler
+func (s *server) addForwardRule(urlPattern string, targetHost string) {
+	if s.err == nil {
+		_, s.err = url.Parse(targetHost)
+		if s.err != nil {
+			log.Printf("Error parsing url %s:%s", targetHost, s.err)
 		}
-	}
-	return nil
-}
 
-
-func (s *Server) useRules( rules []Rule) {
-	s.rules = rules
-	for _,rule := range rules {
-		log.Printf( "Rule for %s -> forward: %s, serve:%s", rule.IfMatches, rule.Forward, rule.Serve)
-		rule.handler = makeHandler(rule)
+		s.rules = append(s.rules, newForwardRule(urlPattern, targetHost))
 	}
 }
 
-func makeHandler(r Rule) http.Handler {
-	if forw := r.Forward; forw != "" {
-		log.Printf( "Proxy for %s -> forward: %s", r.IfMatches, r.Forward)
-		return &httputil.ReverseProxy{
-				Director: func(req *http.Request) {
-				u,_ := url.Parse(forw)
-				req.URL.Scheme = "http"
-				req.URL.Host = u.Host
-				req.URL.Path = u.Path
-			},
-		}
+func (s *server) addServeRule(urlPattern string, dir string) {
+	if s.err == nil {
+		s.rules = append(s.rules, newServeRule(urlPattern, dir))
 	}
-	if dir := r.Serve; dir != "" {
-		log.Printf( "Proxy for %s -> serve: %s", r.IfMatches, r.Serve)
-		return http.FileServer(http.Dir(dir))
-	}
-	return nil
 }
 
-type Server struct {
-	rules []Rule
-}
-
-type Rule struct {
-	IfMatches string // to match against request Host header
-	Forward string // non-empty if reverse proxy
-	Serve   string // non-empty if file server
+type rule struct {
+	urlPattern string // to match against requestUri
+	forward    string // non-empty if reverse proxy
+	serve      string // non-empty if file server
 
 	handler http.Handler
 }
 
+func newForwardRule(urlPattern string, targetHost string) *rule {
+	rule := new(rule)
+	rule.urlPattern = urlPattern
+	rule.forward = targetHost
+	log.Printf("Create proxy for %s -> forward: %s", rule.urlPattern, rule.forward)
+	rule.handler = &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = rule.forward
+			log.Printf("Forward %s to: %s", req.RequestURI, req.URL.String())
+		},
+	}
+
+	return rule
+}
+
+func newServeRule(urlPattern string, targetDir string) *rule {
+	rule := new(rule)
+	rule.urlPattern = urlPattern
+	rule.serve = targetDir
+	log.Printf("Create file server for %s -> serve: %s", rule.urlPattern, rule.serve)
+	rule.handler = http.StripPrefix(urlPattern, http.FileServer(http.Dir(rule.serve)))
+
+	return rule
+}
+
+func (s *server) handlerForRequest(req *http.Request) http.Handler {
+	for _, rule := range s.rules {
+		matched, _ := regexp.MatchString(rule.urlPattern, req.RequestURI)
+		if matched {
+			//log.Printf("Matched %s -> forward: %s, serve:%s", rule.urlPattern, rule.forward, rule.serve)
+			return rule.handler
+		}
+	}
+	log.Printf("%s not matched", req.RequestURI)
+	return nil
+}
+
+func (s *server) listenAndServe(listenPort int) error {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handler := s.handlerForRequest(r)
+		if handler == nil {
+			http.Error(w, "Not found.", http.StatusNotFound)
+		}
+		log.Printf("Found %s", r.RequestURI)
+		handler.ServeHTTP(w, r)
+	})
+	return http.ListenAndServe(fmt.Sprintf(":%d", listenPort), nil)
+}
