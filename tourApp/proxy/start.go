@@ -21,7 +21,7 @@ func Start(baseDir string, listenPort int, tourPort int, gamblerPort int, scoreP
 	server.addForwardRule("/admin/events", fmt.Sprintf("%s:%d", targetHost, collectorPort))
 	server.addServeRule("/static", fmt.Sprintf("%s/tourApp/ui/", baseDir))
 	if server.err != nil {
-		log.Printf("Error registrering handler %s", server.err)
+		log.Printf("Error registrering handler rule %s", server.err)
 		return err
 	}
 
@@ -86,9 +86,22 @@ func newServeRule(urlPattern string, targetDir string) *rule {
 	rule.urlPattern = urlPattern
 	rule.serve = targetDir
 	log.Printf("Create file server for %s -> serve: %s", rule.urlPattern, rule.serve)
+	// TODO check if directory exists
+	//fullDirPath := targetDir ....
 	rule.handler = http.StripPrefix(urlPattern, http.FileServer(http.Dir(rule.serve)))
 
 	return rule
+}
+
+func (s *server) listenAndServe(listenPort int) error {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handler := s.handlerForRequest(r)
+		if handler == nil {
+			http.Error(w, "Not found.", http.StatusNotFound)
+		}
+		handler.ServeHTTP(w, r)
+	})
+	return http.ListenAndServe(fmt.Sprintf(":%d", listenPort), nil)
 }
 
 func (s *server) handlerForRequest(req *http.Request) http.Handler {
@@ -101,16 +114,4 @@ func (s *server) handlerForRequest(req *http.Request) http.Handler {
 	}
 	log.Printf("%s not matched", req.RequestURI)
 	return nil
-}
-
-func (s *server) listenAndServe(listenPort int) error {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handler := s.handlerForRequest(r)
-		if handler == nil {
-			http.Error(w, "Not found.", http.StatusNotFound)
-		}
-		log.Printf("Found %s", r.RequestURI)
-		handler.ServeHTTP(w, r)
-	})
-	return http.ListenAndServe(fmt.Sprintf(":%d", listenPort), nil)
 }
