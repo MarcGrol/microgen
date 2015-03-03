@@ -50,13 +50,13 @@ A tour-de-france gambling application:
 
 ## Devision of functions in services
 ### Tour-service
-Responsible for managing tours with their etappes and cyclists (1,2,3,4,31)
+Responsible for managing tours with their etappes and cyclists (1,2,3,4,31,32)
 
 ### Gambler-service
 Responsible for gamblers and their teams of cyclists (21,22,23)
 
 ### Score-service
-Responsible for calculating and presenting results and scores (32,33,34,41)
+Responsible for calculating and presenting results and scores (33,34,41)
 
 ### Collector-service
 Non functional service that keeps track of everything that has happened. (5)
