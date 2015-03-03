@@ -4,10 +4,13 @@
 Experiment with microservices using go. 
 
 ## Pros of approach
-The core of "micro" is to keep services small so you do not have to understand the full big monolith before you can be effective. Another advantage of this approach that natural boundaries between services make it easy to keep the system modular. Finally, the application that is chopped into services is easy to scale over multiple machines.
+- The core of "micro" is to keep services small so you do not have to understand the full big monolith before you can be effective. 
+- Another advantage of this approach that natural boundaries between services make it easy to keep the system modular. 
+- Finally, the application that is chopped into services is easy to scale over multiple machines.
 
 ## Cons of approach
-However, in the end you still have to understand the "whole". Clear overview of dependencies between services could help here. Also eventual consistancy introduces new complexity.
+- However, in the end you still have to understand the "whole". Clear overview of dependencies between services could help here. 
+- Also eventual consistancy introduces new headaches.
 
 ## Approach
 Specification effort:
