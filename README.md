@@ -10,7 +10,8 @@ Experiment with microservices using go.
 
 ## Cons of microservice approach
 - However, in the end you still have to understand the "whole". Clear overview of dependencies between services could help here. 
-- Also eventual consistancy introduces new headaches.
+- Wiring together all the loose components is hard; monitoring could help
+- Also eventual consistancy introduces new headaches; Cheating in the UI could help
 
 ## My approach
 Specification effort:
