@@ -70,7 +70,7 @@ Responsible for serving the web-UI and hiding all services behind a single http-
 ## Concept
 An "application" consists of the following concepts:
  - "service": An application cosnsts of one or more loosely couples "services". each service is responsible for keeping is own data.
- - "commands" and "queries"(with "attributes"): Each service supports zero or more commands and quries. Browsers interact with the system via these commands and queries on a services.
+ - "commands" and "queries"(with "attributes"): Each service supports zero or more commands and queries. Browsers interact with the system via these commands and queries on a services.
  - "event" (with "attributes"): Each command emits zero or more events. An event is used to exchange of information between services in an async away.
 
 ##Technical solution
