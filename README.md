@@ -65,7 +65,7 @@ Responsible for calculating and presenting results and scores (31,32, 33,34,41)
 Non functional service that keeps track of everything that has happened. (5)
 
 ### Proxy-service
-Responsible for serving the UI and hiding all services behind a single http-endpoint. Could be the place to apply your non-functionals (ssl-offloading, security, logging, statistics, etc).
+Responsible for serving the web-UI and hiding all services behind a single http-endpoint. Could be the place to apply your non-functionals (ssl-offloading, security, logging, statistics, etc).
 
 ## Concept
 An "application" consists of the following concepts:
