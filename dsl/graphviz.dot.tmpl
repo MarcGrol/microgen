@@ -5,6 +5,7 @@ digraph G {
 
 	subgraph clusterproxy {
         label="Proxy";
+
         "UI";
         "Proxy";
     }
@@ -14,8 +15,9 @@ digraph G {
 	subgraph cluster{{.NameToLower}} {
 		{{$serviceName := .Name}}
 		label="{{.Name}}-service";
+
 		// events
-		{{range .GetConsumedEvents}}
+		{{range .GetConsumedEvents}} 
 			"{{$serviceName}}{{.Name}}" [label="{{.Name}}\nevent-handler", shape=diamond];
 		{{end}}
 		// commands
@@ -26,6 +28,7 @@ digraph G {
 			    "{{$serviceName}}{{.Name}}"  [label="{{.Name}}\nquery-handler"];
 			{{end}}
 		{{end}}
+		// store
 		"{{.Name}}Store" [shape=box, style=filled];
 	}
 {{end}}
@@ -33,22 +36,40 @@ digraph G {
 	subgraph clustercollector {
 		label="Collector-service";
 		
-		"Any" [label="Any\nevent-handler", shape=diamond];
-		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler", shape=box];
+		"Any" [label="All\nevent-handler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler"];
 		"CollectorStore" [shape=box, style=filled];
-
     }
+
+// legend does not really clear things, so skip
+//    subgraph clusterlegend {
+//		label="Legend";
+//		"CommandHandler"  [label="Command-handler", shape=box];
+//		"EventHandler"  [label="Event-handler", shape=diamond];
+//		"QueryHandler"  [label="Query-handler"];
+//		"Store local to service" [shape=box, style=filled];
+//   }
+//	"CommandHandler" -> "EventHandler" [label="event", style=dashed];
+//    "Client" -> "CommandHandler" [label="command over HTTP"];
+//    "Client" -> "QueryHandler" [label="query over HTTP"];
+
 
 	// edges
 	"Browser\nApp" -> "UI" [label="html/css/javascript/HTTP",arrowhead=crow];
 	"Browser\nApp" -> "Proxy" [label="json/HTTP",arrowhead=crow];
 	
+	// edges for comamnds
 {{range .Services}}
-	"Proxy" -> "{{.Name}}{{.FirstCommand}}" [label="json/HTTP", lhead=cluster{{.NameToLower}}, arrowhead=crow];
+	{{$serviceName := .Name}}
+	"Proxy" -> "{{$serviceName}}{{.FirstCommand}}" [label="json/HTTP", lhead=cluster{{.NameToLower}}, arrowhead=crow];
+	// omit other commands and queries for readability
+	{{range .OtherCommands}}
+	//"Proxy" -> "{{$serviceName}}{{.}}" [label="json/HTTP", arrowhead=crow];
+	{{end}}
 {{end}}
 	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
 
-
+	// edges for events
 {{ .GraphvizEdgesForEvents }}
 
 }

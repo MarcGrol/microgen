@@ -142,6 +142,16 @@ func (s Service) FirstCommand() string {
 	return s.Commands[0].Name
 }
 
+func (s Service) OtherCommands() []string {
+	nameList := make([]string, 0, 10)
+	for i, entry := range s.Commands {
+		if i > 0 {
+			nameList = append(nameList, entry.Name)
+		}
+	}
+	return nameList
+}
+
 func (s Service) CommandNames() []string {
 	nameList := make([]string, 0, 10)
 	for _, entry := range s.Commands {

@@ -32,10 +32,8 @@ import (
 
 type CommandHandler interface {
     {{range .Service.Commands}}
-    	{{if .IsQuery}} 
-        Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, error)
-    	{{else}}
-        Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
+    	{{if .IsQuery}} Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, error)
+    	{{else}} Handle{{.NameToFirstUpper}}Command ( command {{.NameToFirstUpper}}Command ) error
     	{{end}}
     {{end}}
 }
