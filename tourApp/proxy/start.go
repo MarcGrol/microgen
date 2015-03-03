@@ -97,7 +97,7 @@ func (s *server) listenAndServe(listenPort int) error {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		handler := s.handlerForRequest(r)
 		if handler == nil {
-			http.Error(w, "Not found.", http.StatusNotFound)
+			http.NotFound(w, r)
 		}
 		handler.ServeHTTP(w, r)
 	})

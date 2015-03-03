@@ -1,8 +1,22 @@
-<html>
-    <head>
-    </head>
-    <body>
-        <h1>Hello gambler</h1>
-    </body>
+<!doctype html>
+<html ng-app>
+	<head>
+		<title>Tour de france</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+    	<script src="./tour.js"></script>
+	</head>
 
+	<body>
+		<div ng-controller="Tour">
+			<h1>Tour of year {{tour.year}}</h1>
+			<h2>Etappes</h2>
+			<ul>
+				<li ng-repeat="etappe in tour.etappes">{{etappe.name}}</li>	
+			</ul>
+			<h2>Cyclists</h2>
+			<ul>
+				<li ng-repeat="cyclist in tour.cyclists">{{cyclist.name}}</li>	
+			</ul>
+		</div>
+	</body>
 </html>
