@@ -72,12 +72,12 @@ countLinesInDir ./tourApp/http
 countLinesInDir ./tourApp/test
 countLinesInDir ./tourApp/infra
 
-echo "\nContracts:"
-countLinesInDir ./tourApp/events "(gen)"
-countFilesInDir ./tourApp/doc "(gen)"
-
 echo "\nApplication specification:"
 countSpecLinesInDir .
+
+echo "\n  Contracts:"
+countLinesInDir ./tourApp/events "(gen)"
+countFilesInDir ./tourApp/doc "(gen)"
 
 echo "\n  Tour-service:"
 countGeneratedLinesInDir ./tourApp/tour "(gen)"
