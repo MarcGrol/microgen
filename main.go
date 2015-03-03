@@ -60,7 +60,7 @@ func processArgs() {
 func main() {
 	processArgs()
 	// We use a single executable that can, based on cli-args, do everything
-	// from running as service, proxy or acg as a tool
+	// from running as service, proxy or act as code-generation tool
 	// Advantage is that application wiuth all its services ships as a single executable
 	if len(*service) > 0 {
 		if *service == "tour" {
