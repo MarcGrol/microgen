@@ -78,12 +78,12 @@ An "application" consists of the following concepts:
 - Generate events, interfaces based and a system-overview based on the dsl that describes the application. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This to achieve consistent approach and ease error phrone tasks.
 - Use event sourcing. Store events and rebuild current state by replaying events in the order of arrival.
 - Could easily use command-Query seperation if scale requires it.
-- Provide implementation for "bus" (=to exchange of events between services)
-- Provide implementation of append-ony "store" for persistence
-- Provide implementation of http handler to process commands.
+- Provided implementation for "bus" (=to exchange of events between services). Current implementatio is based on NSQ.
+- Provided implementation of append-ony "store" for persistence. Current implementation uses the filesystem.
+- Provided implementation of http handler to process commands. Current solution is based on gin-gonic.
 - Provide a mechanism for starting and configuring services.
 - Declarative way of testing services. Example: [logic_test.go](./tourApp/tour/logic_test.go). Based on this test spec, documentation and relationships between services can be derived. In addition to this, each test scenario (= "given", "when" and "expect") is recorded and written to file. This file describes the scenario exactly in json. Example: [scenario_example.json](./tourApp/doc/example_Create_new_gambler_success.txt)
-- Provide clear, exact and up to date documentation that explains how services are related. Example: ![graphviz.pdf](./tourApp/doc/graphviz.pdf)
+- Provide clear, exact and up to date documentation that explains how services are related. Example:  [graphviz.dot](./tourApp/doc/graphviz.dot) and [graphviz.pdf](./tourApp/doc/graphviz.pdf)
 
 ## Obtaining, building, running and testing
 
