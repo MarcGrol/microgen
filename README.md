@@ -9,7 +9,7 @@ The core of "micro" is to keep services small so you do not have to understand t
 Specification effort:
 * Define your screens 
 * Based on screens, determine your commands and queries
-* Group related commands and queries in a service
+* Group related commands and queries in a service if this promotes cohesion
 * Define your events, that exchange information between services.
 * Specify which events a command emits
 * Specify on which events a service depends
