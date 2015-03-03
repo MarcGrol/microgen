@@ -103,6 +103,8 @@ An "application" consists of the following concepts:
 
     go get github.com/MarcGrol/microgen
     cd ${GOPATH}/src/github.com/MarcGrol/microgen
+    
+    ./sloc_count.sh         # get overview of the applications and its compoments
     go test ./...           # to run all unit tests
     go install              # to create executable
     
