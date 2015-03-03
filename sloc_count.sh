@@ -98,7 +98,7 @@ countLogicLinesInDir ./tourApp/collector
 echo "\n  Proxy-service:"
 countLinesInDir ./tourApp/proxy
 
-echo "\nWeb ui:"
+echo "\n  Web ui:"
 countFilesInDir ./tourApp/ui
 
 echo ""
