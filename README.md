@@ -86,7 +86,7 @@ An "application" consists of the following concepts:
 - Provided implementation of http handler to process commands. Current solution is based on gin-gonic.
 - Provide a mechanism for starting and configuring services. Current solution compiles into a single executable. This executable can be configured (using command-line flags) to acts a service a, b or c. This to ease the distribution and deployment.
 - Declarative way of testing services. Example: [logic_test.go](./tourApp/tour/logic_test.go). Based on this test spec, documentation and relationships between services can be derived. In addition to this, each test scenario (= "given", "when" and "expect") is recorded and written to file. This file describes the scenario exactly in json. Example: [scenario_example.json](./tourApp/doc/example_Create_new_gambler_success.txt)
-- Provide clear, exact and up to date documentation that explains how services are related. Example:  [graphviz.dot](./tourApp/doc/graphviz.dot) and ![graphviz.png](./tourApp/doc/graphviz.png)
+- Provide clear, exact and up to date documentation that explains how services are related. Example:  [graphviz.dot](./tourApp/doc/graphviz.dot) and ![screenshot](./tourApp/doc/graphviz.png)
 
 ## Obtaining, building, running and testing
 
