@@ -13,7 +13,7 @@ Experiment with microservices using go.
 - Wiring together all the loose components is hard; service registration could help
 - Monitoring all the loose components is harder
 - Also eventual consistancy introduces new headaches; Cheating in the UI could help
-- Guaranteed and tested interworking of all combinations of all versions is very hard: upgrading as a while could help.
+- Guaranteed and tested interworking of all combinations of all versions of all services is very hard: upgrading as a whole could help.
 
 ## My approach
 Specification effort:
