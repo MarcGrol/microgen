@@ -3,7 +3,7 @@
 ## Goal
 Experiment with microservices using go. 
 
-
+## Why?
 The core of "micro" is to keep services small so you do not have to understand the full big monolyth before you can be effective. Another advantage of this approach that natural boundaries between services make it easy to keep the system modular. Finally, the application is easy to scale over multiple machines.
 
 However, in the end you still have to understand the "whole". Clear overview of dependencies between services could help here. Also eventual consistancy introduces new complexity.
