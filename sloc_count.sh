@@ -95,4 +95,10 @@ echo "\n  Collector-service:"
 countGeneratedLinesInDir ./tourApp/collector
 countLogicLinesInDir ./tourApp/collector
 
+echo "\n  Proxy-service:"
+countLinesInDir ./tourApp/proxy
+
+echo "\nWeb ui:"
+countFilesInDir ./tourApp/ui
+
 echo ""
