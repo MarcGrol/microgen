@@ -59,7 +59,9 @@ func processArgs() {
 
 func main() {
 	processArgs()
-
+	// We use a single executable that can, based on cli-args, do everything
+	// from running as service, proxy or acg as a tool
+	// Advantage is that application wiuth all its services ships as a single executable
 	if len(*service) > 0 {
 		if *service == "tour" {
 			err := tour.Start(*httpPort, *busAddress, *baseDir)
