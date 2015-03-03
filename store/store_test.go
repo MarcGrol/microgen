@@ -15,11 +15,11 @@ func TestStore(t *testing.T) {
 
 	os.Remove(DIRNAME + "/" + FILENAME)
 
-	store := NewSimpleEventStore()
+	store := NewFileBlobStore(DIRNAME, FILENAME)
 
 	{
 		// write and close
-		err := store.Open(DIRNAME, FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		store.Append([]byte("first_record"))
 		store.Close()
@@ -27,7 +27,7 @@ func TestStore(t *testing.T) {
 
 	{
 		// write and close
-		err := store.Open(DIRNAME, FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		err = store.Append([]byte("second_record"))
 		assert.Nil(t, err)
@@ -40,7 +40,7 @@ func TestStore(t *testing.T) {
 
 	{
 		// read all and close
-		err := store.Open(DIRNAME, FILENAME)
+		err := store.Open()
 		assert.Nil(t, err)
 		records := make([][]byte, 0, 10)
 		cb := func(record []byte) {
@@ -64,8 +64,8 @@ func TestStore(t *testing.T) {
 func BenchmarkWrite(b *testing.B) {
 	os.Remove(DIRNAME + "/" + FILENAME)
 
-	store := NewSimpleEventStore()
-	store.Open(DIRNAME, FILENAME)
+	store := NewFileBlobStore(DIRNAME, FILENAME)
+	store.Open()
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {

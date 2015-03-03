@@ -1,7 +1,6 @@
 package gambler
 
 import (
-	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +15,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
 		Command: CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
-		When: func(scenario *test.Scenario) *myerrors.Error {
+		When: func(scenario *test.Scenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerCommand(scenario.Command.(CreateGamblerCommand))
 		},
@@ -27,7 +26,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Nil(t, scenario.Err)
+	assert.Nil(t, scenario.ErrMsg)
 
 	expected := scenario.Expect[0].GamblerCreated
 	actual := scenario.Actual[0].GamblerCreated
@@ -55,7 +54,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
 		},
 		Command: CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
-		When: func(scenario *test.Scenario) *myerrors.Error {
+		When: func(scenario *test.Scenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(CreateGamblerTeamCommand))
 		},
@@ -66,7 +65,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Nil(t, scenario.Err)
+	assert.Nil(t, scenario.ErrMsg)
 
 	expected := scenario.Expect[0].GamblerTeamCreated
 	actual := scenario.Actual[0].GamblerTeamCreated

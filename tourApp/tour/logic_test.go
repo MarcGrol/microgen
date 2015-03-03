@@ -1,7 +1,6 @@
 package tour
 
 import (
-	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
@@ -9,15 +8,13 @@ import (
 	"time"
 )
 
-// 			return service.HandleCreateGamblerCommand(scenario.Command.(CreateGamblerCommand))
-
 func TestCreateTourCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title:   "Create new tour success",
 		Given:   []*events.Envelope{},
 		Command: CreateTourCommand{Year: 2015},
-		When: func(scenario *test.Scenario) *myerrors.Error {
+		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateTourCommand(scenario.Command.(CreateTourCommand))
 		},
@@ -28,7 +25,7 @@ func TestCreateTourCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Nil(t, scenario.Err)
+	assert.Nil(t, scenario.ErrMsg)
 
 	expected := scenario.Expect[0].TourCreated
 	actual := scenario.Actual[0].TourCreated
@@ -55,7 +52,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 			Id:   42,
 			Name: "My name",
 			Team: "My team"},
-		When: func(scenario *test.Scenario) *myerrors.Error {
+		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateCyclistCommand(scenario.Command.(CreateCyclistCommand))
 		},
@@ -70,7 +67,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Nil(t, scenario.Err)
+	assert.Nil(t, scenario.ErrMsg)
 
 	expected := scenario.Expect[0].CyclistCreated
 	actual := scenario.Actual[0].CyclistCreated
@@ -108,7 +105,7 @@ func TestCreateEtappeCommand(t *testing.T) {
 			FinishLocation: "Roubaix",
 			Length:         255,
 			Kind:           3},
-		When: func(scenario *test.Scenario) *myerrors.Error {
+		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateEtappeCommand(scenario.Command.(CreateEtappeCommand))
 		},
@@ -126,7 +123,7 @@ func TestCreateEtappeCommand(t *testing.T) {
 
 	scenario.RunAndVerify(t)
 
-	assert.Nil(t, scenario.Err)
+	assert.Nil(t, scenario.ErrMsg)
 
 	expected := scenario.Expect[0].EtappeCreated
 	actual := scenario.Actual[0].EtappeCreated

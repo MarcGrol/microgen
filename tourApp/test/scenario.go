@@ -18,7 +18,7 @@ type Scenarios struct {
 	Scenarios []Scenario
 }
 
-type ScenarioExecutorFunc func(scenario *Scenario) *myerrors.Error
+type ScenarioExecutorFunc func(scenario *Scenario) error
 
 type Scenario struct {
 	Bus   events.PublishSubscriber `json:"-"`
@@ -30,7 +30,7 @@ type Scenario struct {
 	Command           interface{}          `json:"command"`
 	Expect            []*events.Envelope   `json:"expect"`
 	Actual            []*events.Envelope   `json:"actual"`
-	Err               *myerrors.Error      `json:"err"`
+	ErrMsg            *string              `json:"errMsg"`
 	InvalidInputError bool                 `json:"invalidInputError"`
 	NotFoundError     bool                 `json:"notFoundError"`
 }
@@ -56,9 +56,9 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 	}
 
 	// execute operation on subject
-	s.Err = s.When(s)
+	err := s.When(s)
 
-	if s.Err == nil {
+	if err == nil {
 		// basic ocmpare expected with actual
 		assert.Equal(t, len(s.Expect), len(s.Actual))
 		for idx, actual := range s.Actual {
@@ -67,8 +67,10 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 			assert.Equal(t, s.Expect[idx].Type, actual.Type)
 		}
 	} else {
-		s.InvalidInputError = myerrors.IsInvalidInputError(s.Err)
-		s.NotFoundError = myerrors.IsNotFoundError(s.Err)
+		s.ErrMsg = new(string)
+		*s.ErrMsg = err.Error()
+		s.InvalidInputError = myerrors.IsInvalidInputError(err)
+		s.NotFoundError = myerrors.IsNotFoundError(err)
 	}
 
 	s.Dump(title2filename(s.Title))

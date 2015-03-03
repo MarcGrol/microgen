@@ -11,42 +11,39 @@ import (
 )
 
 type EventStore struct {
-	dirname            string
-	filename           string
-	store              store.SimpleEventStore
+	store              *store.FileBlobStore
 	mutex              sync.RWMutex
 	lastSequenceNumber uint64
 }
 
 func NewEventStore(dirname string, filename string) *EventStore {
-	store := new(EventStore)
-	store.dirname = dirname
-	store.filename = filename
-	return store
+	s := new(EventStore)
+	s.store = store.NewFileBlobStore(dirname, filename)
+	return s
 }
 
-func (store *EventStore) Open() error {
-	store.mutex.Lock()
-	defer store.mutex.Unlock()
+func (s *EventStore) Open() error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	err := store.store.Open(store.dirname, store.filename)
+	err := s.store.Open()
 	if err != nil {
 		return err
 	}
-	store.lastSequenceNumber = store.getLastSequenceNumber()
+	s.lastSequenceNumber = s.getLastSequenceNumber()
 	return nil
 }
 
-func (store *EventStore) Store(envelope *events.Envelope) error {
-	store.mutex.Lock()
-	defer store.mutex.Unlock()
+func (s *EventStore) Store(envelope *events.Envelope) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	store.assignSequenceNumber(envelope)
+	s.assignSequenceNumber(envelope)
 
-	return store.writeEvent(envelope)
+	return s.writeEvent(envelope)
 }
 
-func (store *EventStore) writeEvent(envelope *events.Envelope) error {
+func (s *EventStore) writeEvent(envelope *events.Envelope) error {
 	log.Printf("write event: %v\n", envelope)
 
 	// serialize event to json
@@ -56,17 +53,17 @@ func (store *EventStore) writeEvent(envelope *events.Envelope) error {
 	}
 	//log.Printf("Marshalled envelope of type %d into %d bytes", envelope.Type, len(jsonBlob))
 
-	return store.store.Append(jsonBlob)
+	return s.store.Append(jsonBlob)
 }
 
-func (store *EventStore) Iterate(handlerFunc events.StoredItemHandlerFunc) error {
-	store.mutex.RLock()
-	defer store.mutex.RUnlock()
+func (s *EventStore) Iterate(handlerFunc events.StoredItemHandlerFunc) error {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 
-	return store.iterate(handlerFunc)
+	return s.iterate(handlerFunc)
 }
 
-func (store *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
+func (s *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
 	callback := func(blob []byte) {
 		var envelope events.Envelope
 		err := json.Unmarshal(blob, &envelope)
@@ -77,32 +74,32 @@ func (store *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error
 		log.Printf("read event: %v\n", envelope)
 		handlerFunc(&envelope)
 	}
-	return store.store.Iterate(callback)
+	return s.store.Iterate(callback)
 }
 
-func (store *EventStore) assignSequenceNumber(envelope *events.Envelope) {
-	store.lastSequenceNumber = store.lastSequenceNumber + 1
-	envelope.SequenceNumber = store.lastSequenceNumber
+func (s *EventStore) assignSequenceNumber(envelope *events.Envelope) {
+	s.lastSequenceNumber = s.lastSequenceNumber + 1
+	envelope.SequenceNumber = s.lastSequenceNumber
 }
 
-func (store *EventStore) getLastSequenceNumber() uint64 {
+func (s *EventStore) getLastSequenceNumber() uint64 {
 	var lastIndex uint64 = 0
 
 	callback := func(envelope *events.Envelope) {
 		lastIndex++
 	}
-	store.iterate(callback)
+	s.iterate(callback)
 
 	return lastIndex
 }
 
-func (store *EventStore) Close() {
-	store.mutex.Lock()
-	defer store.mutex.Unlock()
-	store.store.Close()
+func (s *EventStore) Close() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.store.Close()
 }
 
-func (store *EventStore) Get(aggregateName string, aggregateUid string) ([]events.Envelope, error) {
+func (s *EventStore) Get(aggregateName string, aggregateUid string) ([]events.Envelope, error) {
 	envelopes := make([]events.Envelope, 0, 10)
 
 	callback := func(envelope *events.Envelope) {
@@ -110,7 +107,7 @@ func (store *EventStore) Get(aggregateName string, aggregateUid string) ([]event
 			envelopes = append(envelopes, *envelope)
 		}
 	}
-	err := store.Iterate(callback)
+	err := s.Iterate(callback)
 	if err != nil {
 		return nil, err
 	}

@@ -7,21 +7,20 @@ import (
 	"os"
 )
 
-type SimpleEventStore struct {
+type FileBlobStore struct {
 	dirname  string
 	filename string
 	fio      *os.File
 }
 
-func NewSimpleEventStore() *SimpleEventStore {
-	store := new(SimpleEventStore)
+func NewFileBlobStore(dirname string, filename string) *FileBlobStore {
+	store := new(FileBlobStore)
+	store.dirname = dirname
+	store.filename = filename
 	return store
 }
 
-func (store *SimpleEventStore) Open(dirname string, filename string) error {
-	store.dirname = dirname
-	store.filename = filename
-
+func (store *FileBlobStore) Open() error {
 	var err error
 	pathName := store.dirname + "/" + store.filename
 	store.fio, err = os.OpenFile(pathName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -33,7 +32,7 @@ func (store *SimpleEventStore) Open(dirname string, filename string) error {
 	return nil
 }
 
-func (store *SimpleEventStore) Append(blob []byte) error {
+func (store *FileBlobStore) Append(blob []byte) error {
 	_, err := store.fio.Seek(0, os.SEEK_END)
 	if err != nil {
 		log.Printf("Error going to end of file (%v)", err)
@@ -68,7 +67,7 @@ func (store *SimpleEventStore) Append(blob []byte) error {
 
 type BlobHandlerFunc func(blob []byte)
 
-func (store *SimpleEventStore) Iterate(handlerFunc BlobHandlerFunc) error {
+func (store *FileBlobStore) Iterate(handlerFunc BlobHandlerFunc) error {
 	_, err := store.fio.Seek(0, os.SEEK_SET)
 	if err != nil {
 		log.Printf("Error going to start of file (%v)", err)
@@ -86,7 +85,7 @@ func (store *SimpleEventStore) Iterate(handlerFunc BlobHandlerFunc) error {
 	return nil
 }
 
-func (store *SimpleEventStore) readNextEvent() ([]byte, error) {
+func (store *FileBlobStore) readNextEvent() ([]byte, error) {
 
 	// read length
 	var jsonLength int64
@@ -112,7 +111,7 @@ func (store *SimpleEventStore) readNextEvent() ([]byte, error) {
 	return blob, nil
 }
 
-func (store *SimpleEventStore) Close() {
+func (store *FileBlobStore) Close() {
 	if store.fio != nil {
 		//log.Printf("Closed file %s", store.filename)
 		store.fio.Close()
