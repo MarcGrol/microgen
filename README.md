@@ -27,7 +27,7 @@ Develop functional services:
  * implement business-logic: handle commands and events
  * attach service to http and event-bus
 
-Build screens by combining services:
+Build screens from the provided services:
  * create end-to-end tests
  * develop screens using services
 
