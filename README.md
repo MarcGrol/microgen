@@ -78,7 +78,7 @@ An "application" consists of the following concepts:
  - "event" (with "attributes"): Each command emits zero or more events. An event is used to exchange of information between services in an async away.
 
 ##Technical solution
-- Use a "dsl" to describe your application in terns of "services", "commands", "queries" and "events". Example: [application.go](./application.go). Based and this system-description some parts of the system are generated. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This approach is chosen to achieve consistent approach and ease error phrone tasks.
+- Use a "dsl" to describe your application in terns of "services", "commands", "queries" and "events". Example: [application.go](./application.go). Based on this system-description some parts of the system are generated. Example: [events.go](./tourApp/events/events.go) and [interface.go](./tourApp/gambler/interface.go). This approach is chosen to achieve consistent approach and ease error phrone tasks.
 - Use event sourcing. Store events and rebuild current state by replaying events ralated to an aggregate in the order of arrival. Currently the following aggregate are recognized: Tour and Gambler.
 - Could easily use command-Query seperation if scale requires it.
 - Provided implementation for "bus" (=to exchange of events between services). Current implementatio is based on NSQ.
