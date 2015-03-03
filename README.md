@@ -86,23 +86,23 @@ An "application" consists of the following concepts:
 
     # prepare (has following dependencies (use go list -f {{.Deps}}) )
     go get github.com/bitly/go-nsq
-    go get github.com/bitly/go-simplejson
+    # go get github.com/bitly/go-simplejson
     go get github.com/gin-gonic/gin
-    go get github.com/gin-gonic/gin/binding
-    go get github.com/gin-gonic/gin/render
-    go get github.com/julienschmidt/httprouter
-    go get github.com/mreiferson/go-snappystream
+    # go get github.com/gin-gonic/gin/binding
+    # go get github.com/gin-gonic/gin/render
+    # go get github.com/julienschmidt/httprouter
+    # go get github.com/mreiferson/go-snappystream
     go get code.google.com/p/go-uuid/uuid
-    go get code.google.com/p/snappy-go/snappy
+    # go get code.google.com/p/snappy-go/snappy
 
     go get github.com/MarcGrol/microgen
     cd ${GOPATH}/src/github.com/MarcGrol/microgen
-    go fmt ./...            # to format code
     go test ./...           # to run all unit tests
     go install              # to create executable
     
     # Sync source-code with application-dsl
-    ${GOPATH}/bin/microgen -tool=gen -base-dir=. # to generate interfaces based in ./application.go
+    ${GOPATH}/bin/microgen -tool=gen -base-dir=. # to generate interfaces based on ./application.go
+    go fmt ./...            # to re-format generated code
     
     # Start the bus
     ./bus/start_nsq.sh
