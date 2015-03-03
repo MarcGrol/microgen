@@ -49,7 +49,7 @@ A tour-de-france gambling application:
     - View best cyclists of a tour (33)
     - View best gamblers of a tour (34)
 - As a system: 
-    - Notify gambler of new day results (41)
+    - Notify gamblers of new day results (41)
 
 ## Devision of functions in services
 ### Tour-service
