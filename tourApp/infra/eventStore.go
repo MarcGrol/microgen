@@ -71,7 +71,7 @@ func (s *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
 			return
 		}
-		log.Printf("read event: %v\n", envelope)
+		//log.Printf("read event: %v\n", envelope)
 		handlerFunc(&envelope)
 	}
 	return s.store.Iterate(callback)

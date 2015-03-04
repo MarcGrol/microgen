@@ -42,7 +42,7 @@ func (store *FileBlobStore) Append(blob []byte) error {
 	// write length to buffer
 	err = binary.Write(store.fio, binary.BigEndian, int64(len(blob)))
 	if err != nil {
-		log.Printf("error writing size to file %s (%v)", store.filename, err)
+		log.Printf("Error writing size to file %s (%v)", store.filename, err)
 		return err
 	}
 	//log.Printf("Written len %d", len(blob))
@@ -50,7 +50,7 @@ func (store *FileBlobStore) Append(blob []byte) error {
 	// write json blob to buffer
 	_, err = store.fio.Write(blob)
 	if err != nil {
-		log.Printf("error writing blob to file %s (%v)", store.filename, err)
+		log.Printf("Error writing blob to file %s (%v)", store.filename, err)
 		return err
 	}
 	//log.Printf("Write blob %d", written)
@@ -58,7 +58,7 @@ func (store *FileBlobStore) Append(blob []byte) error {
 	// only return when file is on disk
 	err = store.fio.Sync()
 	if err != nil {
-		log.Printf("error syncing file %s (%v)", store.filename, err)
+		log.Printf("Error syncing file %s (%v)", store.filename, err)
 		return err
 	}
 
