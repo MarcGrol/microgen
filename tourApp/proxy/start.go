@@ -25,6 +25,8 @@ func Start(baseDir string, listenPort int, tourPort int, gamblerPort int, scoreP
 		return err
 	}
 
+	serveSingle("/favicon.ico", fmt.Sprintf("%s/tourApp/ui/favicon.ico", baseDir))
+
 	return server.listenAndServe(listenPort)
 }
 
@@ -114,4 +116,10 @@ func (s *server) handlerForRequest(req *http.Request) http.Handler {
 	}
 	log.Printf("%s not matched", req.RequestURI)
 	return nil
+}
+
+func serveSingle(pattern string, filename string) {
+	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filename)
+	})
 }

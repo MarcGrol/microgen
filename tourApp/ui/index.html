@@ -2,21 +2,36 @@
 <html ng-app>
 	<head>
 		<title>Tour de france</title>
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-    	<script src="./tour.js"></script>
+    	<script src="/static/tour.js"></script>
 	</head>
 
 	<body>
-		<div ng-controller="Tour">
+		<div ng-controller="Tour" class="container">
 			<h1>Tour of year {{tour.year}}</h1>
-			<h2>Etappes</h2>
-			<ul>
-				<li ng-repeat="etappe in tour.etappes">{{etappe.name}}</li>	
-			</ul>
-			<h2>Cyclists</h2>
-			<ul>
-				<li ng-repeat="cyclist in tour.cyclists">{{cyclist.name}}</li>	
-			</ul>
+			  <div class="col-md-3">
+					<h2>Etappes</h2>
+					<ul>
+						<li>more item if more data</li>
+						<li ng-repeat="etappe in tour.etappes">{{etappe.name}}</li>	
+					</ul>
+				</div>
+			  <div class="col-md-3">
+				<h2>Best cyclists</h2>
+				<ul>
+					<li>more item if more data</li>
+					<li ng-repeat="cyclist in tour.cyclists">{{cyclist.name}}</li>	
+				</ul>
+			</div>
+			  <div class="col-md-3">
+				<h2>Best gamblers</h2>
+				<ul>
+					<li>more item if more data</li>
+					<li ng-repeat="gambler in gamblers">{{gambler.name}}</li>	
+				</ul>
+			</div>
 		</div>
 	</body>
 </html>
