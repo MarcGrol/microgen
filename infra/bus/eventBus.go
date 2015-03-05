@@ -2,8 +2,8 @@ package bus
 
 import (
 	"encoding/json"
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"log"
 )
 

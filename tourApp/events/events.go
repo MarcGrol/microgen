@@ -5,7 +5,7 @@ package events
 import (
 	"code.google.com/p/go-uuid/uuid"
 	"encoding/json"
-	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"log"
 	"strconv"
 	"time"

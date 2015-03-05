@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"log"
 	"sync"
 )

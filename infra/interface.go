@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/lib/envelope"
 )
 
 type EventHandlerFunc func(Envelope *envelope.Envelope) error

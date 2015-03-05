@@ -3,8 +3,8 @@ package gambler
 import (
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"

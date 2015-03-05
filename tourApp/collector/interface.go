@@ -3,7 +3,7 @@ package collector
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/lib/envelope"
 )
 
 type CommandHandler interface {

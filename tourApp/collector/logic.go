@@ -2,8 +2,8 @@ package collector
 
 import (
 	"errors"
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"log"
 )

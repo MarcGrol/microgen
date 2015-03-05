@@ -3,11 +3,11 @@ package gambler
 import (
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/http"
 	"github.com/MarcGrol/microgen/infra/store"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"

@@ -64,14 +64,13 @@ countLinesInDir .
 countGoFilesInDir .
 
 echo "\nLibraries:"
-countLinesInDir ./dsl
-countLinesInDir ./bus
-countLinesInDir ./store
-countLinesInDir ./myerrors
-countLinesInDir ./test
-countLinesInDir ./http
+countLinesInDir ./tool/dsl
+countLinesInDir ./lib/myerrors
+countLinesInDir ./lib/test
 countLinesInDir ./envelope
-countLinesInDir ./infra
+countLinesInDir ./infra/bus
+countLinesInDir ./infra/store
+countLinesInDir ./infra/http
 
 echo "\nApplication specification:"
 countSpecLinesInDir .

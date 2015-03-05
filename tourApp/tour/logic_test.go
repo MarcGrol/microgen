@@ -1,7 +1,7 @@
 package tour
 
 import (
-	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/test"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"

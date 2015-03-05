@@ -1,8 +1,8 @@
 package infra
 
 import (
-	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra/store"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"os"
