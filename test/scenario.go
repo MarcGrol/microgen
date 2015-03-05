@@ -7,7 +7,6 @@ import (
 	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -22,8 +21,8 @@ type Scenarios struct {
 type ScenarioExecutorFunc func(scenario *Scenario) error
 
 type Scenario struct {
-	Bus   events.PublishSubscriber `json:"-"`
-	Store events.Store             `json:"-"`
+	Bus   infra.PublishSubscriber `json:"-"`
+	Store infra.Store             `json:"-"`
 
 	Title             string               `json:"title"`
 	Given             []*envelope.Envelope `json:"given"`
@@ -104,19 +103,19 @@ func (s *Scenario) Dump(filename string) error {
 }
 
 type FakeBus struct {
-	callbacks     map[string]events.EventHandlerFunc
+	callbacks     map[string]infra.EventHandlerFunc
 	published     map[string][]envelope.Envelope
 	undeliverable map[string][]envelope.Envelope
 }
 
 func NewFakeBus() *FakeBus {
 	bus := new(FakeBus)
-	bus.callbacks = make(map[string]events.EventHandlerFunc)
+	bus.callbacks = make(map[string]infra.EventHandlerFunc)
 	bus.undeliverable = make(map[string][]envelope.Envelope)
 	return bus
 }
 
-func (bus *FakeBus) Subscribe(eventTypeName string, callback events.EventHandlerFunc) error {
+func (bus *FakeBus) Subscribe(eventTypeName string, callback infra.EventHandlerFunc) error {
 	bus.callbacks[eventTypeName] = callback
 	//log.Printf("FakeBus: subscribed to: %s", eventType.String())
 	return nil
@@ -151,7 +150,7 @@ func (store *FakeStore) Store(envelope *envelope.Envelope) error {
 	return nil
 }
 
-func (store *FakeStore) Iterate(callback events.StoredItemHandlerFunc) error {
+func (store *FakeStore) Iterate(callback infra.StoredItemHandlerFunc) error {
 	for _, envelope := range store.stored {
 		callback(&envelope)
 	}

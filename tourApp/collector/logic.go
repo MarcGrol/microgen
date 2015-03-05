@@ -3,16 +3,16 @@ package collector
 import (
 	"errors"
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 )
 
 type CollectorEventHandler struct {
-	store events.Store
+	store infra.Store
 }
 
-func NewCollectorEventHandler(store events.Store) EventHandler {
+func NewCollectorEventHandler(store infra.Store) EventHandler {
 	handler := new(CollectorEventHandler)
 	handler.store = store
 	return handler
@@ -24,18 +24,18 @@ func (eh *CollectorEventHandler) OnAnyEvent(envelop *envelope.Envelope) error {
 }
 
 type CollectorCommandHandler struct {
-	bus   events.PublishSubscriber
-	store events.Store
+	bus   infra.PublishSubscriber
+	store infra.Store
 }
 
-func NewCollectorCommandHandler(bus events.PublishSubscriber, store events.Store) CommandHandler {
+func NewCollectorCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
 	handler := new(CollectorCommandHandler)
 	handler.bus = bus
 	handler.store = store
 	return handler
 }
 
-func doStore(store events.Store, envelopes []*envelope.Envelope) error {
+func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
 		err := store.Store(env)
 		if err != nil {

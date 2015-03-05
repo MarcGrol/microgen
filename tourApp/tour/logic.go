@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -12,11 +13,11 @@ import (
 )
 
 type TourCommandHandler struct {
-	bus   events.PublishSubscriber
-	store events.Store
+	bus   infra.PublishSubscriber
+	store infra.Store
 }
 
-func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) CommandHandler {
+func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
 	handler := new(TourCommandHandler)
 	handler.bus = bus
 	handler.store = store
@@ -135,7 +136,7 @@ func (tch *TourCommandHandler) storeAndPublish(envelopes []*envelope.Envelope) e
 	return nil
 }
 
-func getTourOnYear(store events.Store, year int) (*Tour, bool) {
+func getTourOnYear(store infra.Store, year int) (*Tour, bool) {
 	tourRelatedEvents, err := store.Get("tour", strconv.Itoa(year))
 	if err != nil || len(tourRelatedEvents) == 0 {
 		return nil, false

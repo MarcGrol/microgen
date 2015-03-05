@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/store"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 	"sync"
 )
@@ -57,14 +56,14 @@ func (s *EventStore) writeEvent(envelope *envelope.Envelope) error {
 	return s.store.Append(jsonBlob)
 }
 
-func (s *EventStore) Iterate(handlerFunc events.StoredItemHandlerFunc) error {
+func (s *EventStore) Iterate(handlerFunc StoredItemHandlerFunc) error {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	return s.iterate(handlerFunc)
 }
 
-func (s *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
+func (s *EventStore) iterate(handlerFunc StoredItemHandlerFunc) error {
 	callback := func(blob []byte) {
 		var envelope envelope.Envelope
 		err := json.Unmarshal(blob, &envelope)

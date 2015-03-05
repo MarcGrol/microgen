@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/MarcGrol/microgen/bus"
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 )
 
@@ -20,7 +19,7 @@ func NewEventBus(applicationName string, consumerName string, address string) *E
 	return mybus
 }
 
-func (bus *EventBus) Subscribe(eventTypeName string, userCallback events.EventHandlerFunc) error {
+func (bus *EventBus) Subscribe(eventTypeName string, userCallback EventHandlerFunc) error {
 	var envelop envelope.Envelope
 	callback := func(blob []byte) error {
 		err := json.Unmarshal(blob, &envelop)

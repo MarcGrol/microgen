@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -11,10 +12,10 @@ import (
 )
 
 type GamblerEventHandler struct {
-	store events.Store
+	store infra.Store
 }
 
-func NewGamblerEventHandler(store events.Store) EventHandler {
+func NewGamblerEventHandler(store infra.Store) EventHandler {
 	handler := new(GamblerEventHandler)
 	handler.store = store
 	return handler
@@ -32,11 +33,11 @@ func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) er
 }
 
 type GamblerCommandHandler struct {
-	bus   events.PublishSubscriber
-	store events.Store
+	bus   infra.PublishSubscriber
+	store infra.Store
 }
 
-func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) CommandHandler {
+func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
 	handler := new(GamblerCommandHandler)
 	handler.bus = bus
 	handler.store = store
@@ -102,7 +103,7 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func doStore(store events.Store, envelopes []*envelope.Envelope) error {
+func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
 		err := store.Store(env)
 		if err != nil {
@@ -114,7 +115,7 @@ func doStore(store events.Store, envelopes []*envelope.Envelope) error {
 	return nil
 }
 
-func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*envelope.Envelope) error {
+func doStoreAndPublish(store infra.Store, bus infra.PublishSubscriber, envelopes []*envelope.Envelope) error {
 	err := doStore(store, envelopes)
 	if err != nil {
 		return myerrors.NewInternalError(err)
@@ -143,7 +144,7 @@ func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year i
 	return gamblerContext.Gambler, nil
 }
 
-func getGamblerContext(store events.Store, gamblerUid string, year int) (*GamblerContext, error) {
+func getGamblerContext(store infra.Store, gamblerUid string, year int) (*GamblerContext, error) {
 	context := NewGamblerContext()
 
 	tourRelatedEvents, err := store.Get("tour", strconv.Itoa(year))

@@ -2,6 +2,7 @@ package infra
 
 import (
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -17,7 +18,7 @@ func TestStore(t *testing.T) {
 
 	os.Remove(DIRNAME + "/" + FILENAME)
 
-	store := NewEventStore(DIRNAME, FILENAME)
+	store := infra.NewEventStore(DIRNAME, FILENAME)
 
 	{
 		// write and close
@@ -101,7 +102,7 @@ func TestStore(t *testing.T) {
 func BenchmarkWrite(b *testing.B) {
 	os.Remove(DIRNAME + FILENAME)
 
-	store := NewEventStore(DIRNAME, FILENAME)
+	store := infra.NewEventStore(DIRNAME, FILENAME)
 	store.Open()
 
 	event := &events.CyclistCreated{

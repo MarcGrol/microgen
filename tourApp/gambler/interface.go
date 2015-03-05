@@ -36,8 +36,8 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
+	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyGamblerCreated(event *events.GamblerCreated)
-	ApplyCyclistCreated(event *events.CyclistCreated)
 }
