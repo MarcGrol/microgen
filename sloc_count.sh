@@ -68,9 +68,10 @@ countLinesInDir ./dsl
 countLinesInDir ./bus
 countLinesInDir ./store
 countLinesInDir ./myerrors
-countLinesInDir ./tourApp/http
-countLinesInDir ./tourApp/test
-countLinesInDir ./tourApp/infra
+countLinesInDir ./test
+countLinesInDir ./http
+countLinesInDir ./envelope
+countLinesInDir ./infra
 
 echo "\nApplication specification:"
 countSpecLinesInDir .

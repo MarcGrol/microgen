@@ -2,8 +2,8 @@ package tour
 
 import (
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/test"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
