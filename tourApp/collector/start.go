@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/http"
-	"github.com/MarcGrol/microgen/tourApp/infra"
 	"github.com/gin-gonic/gin"
 	"os"
 )
