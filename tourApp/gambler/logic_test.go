@@ -1,6 +1,7 @@
 package gambler
 
 import (
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
@@ -11,15 +12,15 @@ func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new gambler success",
-		Given: []*events.Envelope{
+		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		Command: CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
+		Command: &CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
 		When: func(scenario *test.Scenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateGamblerCommand(scenario.Command.(CreateGamblerCommand))
+			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
 		},
-		Expect: []*events.Envelope{
+		Expect: []*envelope.Envelope{
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
 		},
 	}
@@ -28,8 +29,12 @@ func TestCreateGamblerCommand(t *testing.T) {
 
 	assert.Nil(t, scenario.ErrMsg)
 
-	expected := scenario.Expect[0].GamblerCreated
-	actual := scenario.Actual[0].GamblerCreated
+	expected, ok := events.GetIfIsGamblerCreated(scenario.Expect[0])
+	assert.True(t, ok)
+	assert.NotNil(t, expected)
+	actual, ok := events.GetIfIsGamblerCreated(scenario.Actual[0])
+	assert.True(t, ok)
+	assert.NotNil(t, actual)
 	assert.Equal(t, expected.GamblerUid, actual.GamblerUid)
 	assert.Equal(t, expected.GamblerName, actual.GamblerName)
 	assert.Equal(t, expected.GamblerEmail, actual.GamblerEmail)
@@ -47,18 +52,18 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new gambler team success",
-		Given: []*events.Envelope{
+		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 			(&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "cyclist 1", CyclistTeam: "team 1"}).Wrap(),
 			(&events.CyclistCreated{Year: 2015, CyclistId: 2, CyclistName: "cyclist 2", CyclistTeam: "team 2"}).Wrap(),
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
 		},
-		Command: CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
+		Command: &CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
 		When: func(scenario *test.Scenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateGamblerTeamCommand(scenario.Command.(CreateGamblerTeamCommand))
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
-		Expect: []*events.Envelope{
+		Expect: []*envelope.Envelope{
 			(&events.GamblerTeamCreated{GamblerUid: "my uid", Year: 2015, GamblerCyclists: []int{1, 2}}).Wrap(),
 		},
 	}
@@ -67,8 +72,8 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 
 	assert.Nil(t, scenario.ErrMsg)
 
-	expected := scenario.Expect[0].GamblerTeamCreated
-	actual := scenario.Actual[0].GamblerTeamCreated
+	expected := events.UnWrapGamblerTeamCreated(scenario.Expect[0])
+	actual := events.UnWrapGamblerTeamCreated(scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 	assert.Equal(t, expected.GamblerUid, actual.GamblerUid)
 	assert.Equal(t, 2, len(actual.GamblerCyclists))

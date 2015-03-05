@@ -3,6 +3,7 @@ package collector
 import (
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/http"
 	"github.com/MarcGrol/microgen/tourApp/infra"
@@ -43,7 +44,7 @@ func startBus(busAddress string, eventHandler EventHandler) *infra.EventBus {
 	bus := infra.NewEventBus("tourApp", "collector", busAddress)
 
 	for _, eventType := range events.GetAllEventsTypes() {
-		bus.Subscribe(eventType, func(envelope *events.Envelope) error {
+		bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
 			return eventHandler.OnAnyEvent(envelope)
 		})
 	}

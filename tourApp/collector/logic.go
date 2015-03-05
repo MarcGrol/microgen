@@ -2,6 +2,7 @@ package collector
 
 import (
 	"errors"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -17,9 +18,9 @@ func NewCollectorEventHandler(store events.Store) EventHandler {
 	return handler
 }
 
-func (eh *CollectorEventHandler) OnAnyEvent(envelope *events.Envelope) error {
-	log.Printf("OnEvent: envelope: %+v", envelope)
-	return doStore(eh.store, []*events.Envelope{envelope})
+func (eh *CollectorEventHandler) OnAnyEvent(envelop *envelope.Envelope) error {
+	log.Printf("OnEvent: envelope: %+v", envelop)
+	return doStore(eh.store, []*envelope.Envelope{envelop})
 }
 
 type CollectorCommandHandler struct {
@@ -34,7 +35,7 @@ func NewCollectorCommandHandler(bus events.PublishSubscriber, store events.Store
 	return handler
 }
 
-func doStore(store events.Store, envelopes []*events.Envelope) error {
+func doStore(store events.Store, envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
 		err := store.Store(env)
 		if err != nil {
@@ -60,5 +61,5 @@ func (ch *CollectorCommandHandler) HandleSearchQuery(eventType string, aggregate
 }
 
 type SearchResults struct {
-	Events []events.Envelope `json:"events"`
+	Events []envelope.Envelope `json:"events"`
 }

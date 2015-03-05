@@ -21,9 +21,9 @@ type CreateGamblerTeamCommand struct {
 }
 
 type CommandHandler interface {
-	HandleCreateGamblerCommand(command CreateGamblerCommand) error
+	HandleCreateGamblerCommand(command *CreateGamblerCommand) error
 
-	HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error
+	HandleCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error
 
 	HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, error)
 }
@@ -31,13 +31,13 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	OnTourCreated(event events.TourCreated) error
-	OnCyclistCreated(event events.CyclistCreated) error
+	OnTourCreated(event *events.TourCreated) error
+	OnCyclistCreated(event *events.CyclistCreated) error
 }
 
 type EventApplier interface {
-	ApplyCyclistCreated(event events.CyclistCreated)
-	ApplyGamblerTeamCreated(event events.GamblerTeamCreated)
-	ApplyTourCreated(event events.TourCreated)
-	ApplyGamblerCreated(event events.GamblerCreated)
+	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
+	ApplyTourCreated(event *events.TourCreated)
+	ApplyGamblerCreated(event *events.GamblerCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
 }

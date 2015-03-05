@@ -3,8 +3,8 @@ package collector
 // Generated automatically by microgen: do not edit manually
 
 import (
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
 type CommandHandler interface {
@@ -12,5 +12,5 @@ type CommandHandler interface {
 }
 
 type EventHandler interface {
-	OnAnyEvent(event *events.Envelope) error
+	OnAnyEvent(event *envelope.Envelope) error
 }

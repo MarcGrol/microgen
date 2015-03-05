@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/infra"
@@ -25,11 +26,11 @@ type Scenario struct {
 	Store events.Store             `json:"-"`
 
 	Title             string               `json:"title"`
-	Given             []*events.Envelope   `json:"given"`
+	Given             []*envelope.Envelope `json:"given"`
 	When              ScenarioExecutorFunc `json:"-"`
 	Command           interface{}          `json:"command"`
-	Expect            []*events.Envelope   `json:"expect"`
-	Actual            []*events.Envelope   `json:"actual"`
+	Expect            []*envelope.Envelope `json:"expect"`
+	Actual            []*envelope.Envelope `json:"actual"`
 	ErrMsg            *string              `json:"errMsg"`
 	InvalidInputError bool                 `json:"invalidInputError"`
 	NotFoundError     bool                 `json:"notFoundError"`
@@ -46,13 +47,13 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 	}
 
 	// subscribe to all expected topics to catch published evemts
-	s.Actual = make([]*events.Envelope, 0, 10)
-	callback := func(envelope *events.Envelope) error {
+	s.Actual = make([]*envelope.Envelope, 0, 10)
+	callback := func(envelope *envelope.Envelope) error {
 		s.Actual = append(s.Actual, envelope)
 		return nil
 	}
 	for _, expected := range s.Expect {
-		s.Bus.Subscribe(expected.Type, callback)
+		s.Bus.Subscribe(expected.EventTypeName, callback)
 	}
 
 	// execute operation on subject
@@ -64,7 +65,7 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 		for idx, actual := range s.Actual {
 			assert.Equal(t, s.Expect[idx].AggregateName, actual.AggregateName)
 			assert.Equal(t, s.Expect[idx].AggregateUid, actual.AggregateUid)
-			assert.Equal(t, s.Expect[idx].Type, actual.Type)
+			assert.Equal(t, s.Expect[idx].EventTypeName, actual.EventTypeName)
 		}
 	} else {
 		s.ErrMsg = new(string)
@@ -103,47 +104,47 @@ func (s *Scenario) Dump(filename string) error {
 }
 
 type FakeBus struct {
-	callbacks     map[events.Type]events.EventHandlerFunc
-	published     map[events.Type][]events.Envelope
-	undeliverable map[events.Type][]events.Envelope
+	callbacks     map[string]events.EventHandlerFunc
+	published     map[string][]envelope.Envelope
+	undeliverable map[string][]envelope.Envelope
 }
 
 func NewFakeBus() *FakeBus {
 	bus := new(FakeBus)
-	bus.callbacks = make(map[events.Type]events.EventHandlerFunc)
-	bus.undeliverable = make(map[events.Type][]events.Envelope)
+	bus.callbacks = make(map[string]events.EventHandlerFunc)
+	bus.undeliverable = make(map[string][]envelope.Envelope)
 	return bus
 }
 
-func (bus *FakeBus) Subscribe(eventType events.Type, callback events.EventHandlerFunc) error {
-	bus.callbacks[eventType] = callback
+func (bus *FakeBus) Subscribe(eventTypeName string, callback events.EventHandlerFunc) error {
+	bus.callbacks[eventTypeName] = callback
 	//log.Printf("FakeBus: subscribed to: %s", eventType.String())
 	return nil
 }
 
-func (bus *FakeBus) Publish(envelope *events.Envelope) error {
-	callback, ok := bus.callbacks[envelope.Type]
+func (bus *FakeBus) Publish(envelop *envelope.Envelope) error {
+	callback, ok := bus.callbacks[envelop.EventTypeName]
 	if ok == false {
-		bus.undeliverable[envelope.Type] = append(bus.undeliverable[envelope.Type], *envelope)
+		bus.undeliverable[envelop.EventTypeName] = append(bus.undeliverable[envelop.EventTypeName], *envelop)
 		//log.Printf("FakeBus: undeliverable: %v", envelope)
-		return errors.New(fmt.Sprintf("Received event on non-subscribed channel %s", envelope.Type.String()))
+		return errors.New(fmt.Sprintf("Received event on non-subscribed channel %s", envelop.EventTypeName))
 	} else {
-		callback(envelope)
+		callback(envelop)
 	}
 	return nil
 }
 
 type FakeStore struct {
-	stored []events.Envelope
+	stored []envelope.Envelope
 }
 
 func NewFakeStore() *FakeStore {
 	store := new(FakeStore)
-	store.stored = make([]events.Envelope, 0, 10)
+	store.stored = make([]envelope.Envelope, 0, 10)
 	return store
 }
 
-func (store *FakeStore) Store(envelope *events.Envelope) error {
+func (store *FakeStore) Store(envelope *envelope.Envelope) error {
 	envelope.SequenceNumber = uint64(len(store.stored) + 1)
 	store.stored = append(store.stored, *envelope)
 	//log.Printf("FakeStore: stored: %v", envelope)
@@ -157,12 +158,12 @@ func (store *FakeStore) Iterate(callback events.StoredItemHandlerFunc) error {
 	return nil
 }
 
-func (store *FakeStore) Get(aggregateName string, aggregateUid string) ([]events.Envelope, error) {
-	envelopes := make([]events.Envelope, 0, 10)
+func (store *FakeStore) Get(aggregateName string, aggregateUid string) ([]envelope.Envelope, error) {
+	envelopes := make([]envelope.Envelope, 0, 10)
 
-	callback := func(envelope *events.Envelope) {
-		if envelope.AggregateName == aggregateName && envelope.AggregateUid == aggregateUid {
-			envelopes = append(envelopes, *envelope)
+	callback := func(envelop *envelope.Envelope) {
+		if envelop.AggregateName == aggregateName && envelop.AggregateUid == aggregateUid {
+			envelopes = append(envelopes, *envelop)
 		}
 	}
 	err := store.Iterate(callback)

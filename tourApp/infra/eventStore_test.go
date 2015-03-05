@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -22,7 +23,7 @@ func TestStore(t *testing.T) {
 		// write and close
 		err := store.Open()
 		assert.Nil(t, err)
-		tourCreatedEvent := events.TourCreated{Year: 2015}
+		tourCreatedEvent := &events.TourCreated{Year: 2015}
 		store.Store(tourCreatedEvent.Wrap())
 		store.Close()
 	}
@@ -31,29 +32,33 @@ func TestStore(t *testing.T) {
 		// write and close
 		err := store.Open()
 		assert.Nil(t, err)
-		cyclistCreatedEvent := events.CyclistCreated{
-			Year:        2015,
-			CyclistId:   42,
-			CyclistName: "Lance",
-			CyclistTeam: "Rabo"}
-		err = store.Store(cyclistCreatedEvent.Wrap())
-		assert.Nil(t, err)
-		cyclistCreatedEvent2 := events.CyclistCreated{
-			Year:        2016,
-			CyclistId:   43,
-			CyclistName: "Michael Boogerd",
-			CyclistTeam: "Rabo"}
-		err = store.Store(cyclistCreatedEvent2.Wrap())
-		assert.Nil(t, err)
-		store.Close()
+		{
+			cyclistCreatedEvent := &events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   42,
+				CyclistName: "Lance",
+				CyclistTeam: "Rabo"}
+			err = store.Store(cyclistCreatedEvent.Wrap())
+			assert.Nil(t, err)
+		}
+		{
+			cyclistCreatedEvent2 := &events.CyclistCreated{
+				Year:        2016,
+				CyclistId:   43,
+				CyclistName: "Michael Boogerd",
+				CyclistTeam: "Rabo"}
+			err = store.Store(cyclistCreatedEvent2.Wrap())
+			assert.Nil(t, err)
+			store.Close()
+		}
 	}
 
 	{
 		// read all and close
 		err := store.Open()
 		assert.Nil(t, err)
-		envelopes := make([]*events.Envelope, 0, 2)
-		cb := func(envelope *events.Envelope) {
+		envelopes := make([]*envelope.Envelope, 0, 2)
+		cb := func(envelope *envelope.Envelope) {
 			envelopes = append(envelopes, envelope)
 		}
 		store.Iterate(cb)
@@ -62,24 +67,30 @@ func TestStore(t *testing.T) {
 		assert.Equal(t, uint64(1), envelopes[0].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[0].AggregateName)
 		assert.Equal(t, "2015", envelopes[0].AggregateUid)
-		assert.Equal(t, events.TypeTourCreated, envelopes[0].Type)
-		assert.Equal(t, 2015, envelopes[0].TourCreated.Year)
+		tourCreated, ok := events.GetIfIsTourCreated(envelopes[0])
+		assert.True(t, ok)
+		assert.NotNil(t, tourCreated)
+		assert.Equal(t, 2015, tourCreated.Year)
 
 		assert.Equal(t, uint64(2), envelopes[1].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[1].AggregateName)
 		assert.Equal(t, "2015", envelopes[1].AggregateUid)
-		assert.Equal(t, events.TypeCyclistCreated, envelopes[1].Type)
-		assert.Equal(t, 42, envelopes[1].CyclistCreated.CyclistId)
-		assert.Equal(t, "Lance", envelopes[1].CyclistCreated.CyclistName)
-		assert.Equal(t, "Rabo", envelopes[1].CyclistCreated.CyclistTeam)
+		cyclistCreated, ok := events.GetIfIsCyclistCreated(envelopes[1])
+		assert.True(t, ok)
+		assert.NotNil(t, cyclistCreated)
+		assert.Equal(t, 42, cyclistCreated.CyclistId)
+		assert.Equal(t, "Lance", cyclistCreated.CyclistName)
+		assert.Equal(t, "Rabo", cyclistCreated.CyclistTeam)
 
 		assert.Equal(t, uint64(3), envelopes[2].SequenceNumber)
 		assert.Equal(t, "tour", envelopes[2].AggregateName)
 		assert.Equal(t, "2016", envelopes[2].AggregateUid)
-		assert.Equal(t, events.TypeCyclistCreated, envelopes[2].Type)
-		assert.Equal(t, 43, envelopes[2].CyclistCreated.CyclistId)
-		assert.Equal(t, "Michael Boogerd", envelopes[2].CyclistCreated.CyclistName)
-		assert.Equal(t, "Rabo", envelopes[2].CyclistCreated.CyclistTeam)
+		assert.True(t, ok)
+		cyclistCreated2, ok := events.GetIfIsCyclistCreated(envelopes[2])
+		assert.NotNil(t, cyclistCreated2)
+		assert.Equal(t, 43, cyclistCreated2.CyclistId)
+		assert.Equal(t, "Michael Boogerd", cyclistCreated2.CyclistName)
+		assert.Equal(t, "Rabo", cyclistCreated2.CyclistTeam)
 
 		store.Close()
 	}
@@ -93,15 +104,15 @@ func BenchmarkWrite(b *testing.B) {
 	store := NewEventStore(DIRNAME, FILENAME)
 	store.Open()
 
-	envelope := (&events.CyclistCreated{
+	event := &events.CyclistCreated{
 		Year:        2015,
 		CyclistId:   42,
 		CyclistName: "Lance",
-		CyclistTeam: "Rabo"}).Wrap()
+		CyclistTeam: "Rabo"}
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		store.Store(envelope)
-		reader := func(envelope *events.Envelope) {
+		store.Store(event.Wrap())
+		reader := func(envelop *envelope.Envelope) {
 		}
 		store.Iterate(reader)
 	}

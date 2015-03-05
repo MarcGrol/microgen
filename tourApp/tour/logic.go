@@ -3,6 +3,7 @@ package tour
 import (
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -22,12 +23,12 @@ func NewTourCommandHandler(bus events.PublishSubscriber, store events.Store) Com
 	return handler
 }
 
-func (tch *TourCommandHandler) validateCreateTourCommand(command CreateTourCommand) error {
+func (tch *TourCommandHandler) validateCreateTourCommand(command *CreateTourCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand) error {
+func (tch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand) error {
 	err := tch.validateCreateTourCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -45,15 +46,15 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command CreateTourCommand
 	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*events.Envelope{tourCreatedEvent.Wrap()})
+	return tch.storeAndPublish([]*envelope.Envelope{tourCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) validateCreateCyclistCommand(command CreateCyclistCommand) error {
+func (tch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclistCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistCommand) error {
+func (tch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistCommand) error {
 	err := tch.validateCreateCyclistCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -74,15 +75,15 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command CreateCyclistC
 	//log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*events.Envelope{cyclistCreatedEvent.Wrap()})
+	return tch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) validateCreateEtappeCommand(command CreateEtappeCommand) error {
+func (tch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCommand) error {
+func (tch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
 	err := tch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -106,7 +107,7 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command CreateEtappeCom
 	//log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*events.Envelope{etappeCreatedEvent.Wrap()})
+	return tch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
 }
 
 func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
@@ -120,7 +121,7 @@ func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	return tour, nil
 }
 
-func (tch *TourCommandHandler) storeAndPublish(envelopes []*events.Envelope) error {
+func (tch *TourCommandHandler) storeAndPublish(envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
 		err := tch.store.Store(env)
 		if err != nil {
@@ -141,15 +142,18 @@ func getTourOnYear(store events.Store, year int) (*Tour, bool) {
 	}
 
 	tour := NewTour()
-	for _, envelope := range tourRelatedEvents {
-		if envelope.Type == events.TypeTourCreated {
-			tour.ApplyTourCreated(*envelope.TourCreated)
-		} else if envelope.Type == events.TypeEtappeCreated {
-			tour.ApplyEtappeCreated(*envelope.EtappeCreated)
-		} else if envelope.Type == events.TypeCyclistCreated {
-			tour.ApplyCyclistCreated(*envelope.CyclistCreated)
+	for _, envelop := range tourRelatedEvents {
+		if events.IsTourCreated(&envelop) {
+			event := events.UnWrapTourCreated(&envelop)
+			tour.ApplyTourCreated(event)
+		} else if events.IsEtappeCreated(&envelop) {
+			event := events.UnWrapEtappeCreated(&envelop)
+			tour.ApplyEtappeCreated(event)
+		} else if events.IsCyclistCreated(&envelop) {
+			event := events.UnWrapCyclistCreated(&envelop)
+			tour.ApplyCyclistCreated(event)
 		} else {
-			log.Panicf("getTourOnYear: Unexpected event %s", envelope.Type.String())
+			log.Panicf("getTourOnYear: Unexpected event %s", envelop.EventTypeName)
 		}
 	}
 
@@ -184,7 +188,7 @@ func NewTour() *Tour {
 	return tour
 }
 
-func (t *Tour) ApplyTourCreated(event events.TourCreated) {
+func (t *Tour) ApplyTourCreated(event *events.TourCreated) {
 
 	t.Year = event.Year
 
@@ -193,7 +197,7 @@ func (t *Tour) ApplyTourCreated(event events.TourCreated) {
 	return
 }
 
-func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) {
+func (t *Tour) ApplyCyclistCreated(event *events.CyclistCreated) {
 
 	cyclist := new(Cyclist)
 	cyclist.Number = event.CyclistId
@@ -206,7 +210,7 @@ func (t *Tour) ApplyCyclistCreated(event events.CyclistCreated) {
 	return
 }
 
-func (t *Tour) ApplyEtappeCreated(event events.EtappeCreated) {
+func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
 
 	etappe := new(Etappe)
 

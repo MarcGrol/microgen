@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/store"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -34,7 +35,7 @@ func (s *EventStore) Open() error {
 	return nil
 }
 
-func (s *EventStore) Store(envelope *events.Envelope) error {
+func (s *EventStore) Store(envelope *envelope.Envelope) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -43,7 +44,7 @@ func (s *EventStore) Store(envelope *events.Envelope) error {
 	return s.writeEvent(envelope)
 }
 
-func (s *EventStore) writeEvent(envelope *events.Envelope) error {
+func (s *EventStore) writeEvent(envelope *envelope.Envelope) error {
 	log.Printf("write event: %v\n", envelope)
 
 	// serialize event to json
@@ -65,7 +66,7 @@ func (s *EventStore) Iterate(handlerFunc events.StoredItemHandlerFunc) error {
 
 func (s *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
 	callback := func(blob []byte) {
-		var envelope events.Envelope
+		var envelope envelope.Envelope
 		err := json.Unmarshal(blob, &envelope)
 		if err != nil {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
@@ -77,7 +78,7 @@ func (s *EventStore) iterate(handlerFunc events.StoredItemHandlerFunc) error {
 	return s.store.Iterate(callback)
 }
 
-func (s *EventStore) assignSequenceNumber(envelope *events.Envelope) {
+func (s *EventStore) assignSequenceNumber(envelope *envelope.Envelope) {
 	s.lastSequenceNumber = s.lastSequenceNumber + 1
 	envelope.SequenceNumber = s.lastSequenceNumber
 }
@@ -85,7 +86,7 @@ func (s *EventStore) assignSequenceNumber(envelope *events.Envelope) {
 func (s *EventStore) getLastSequenceNumber() uint64 {
 	var lastIndex uint64 = 0
 
-	callback := func(envelope *events.Envelope) {
+	callback := func(envelope *envelope.Envelope) {
 		lastIndex++
 	}
 	s.iterate(callback)
@@ -99,10 +100,10 @@ func (s *EventStore) Close() {
 	s.store.Close()
 }
 
-func (s *EventStore) Get(aggregateName string, aggregateUid string) ([]events.Envelope, error) {
-	envelopes := make([]events.Envelope, 0, 10)
+func (s *EventStore) Get(aggregateName string, aggregateUid string) ([]envelope.Envelope, error) {
+	envelopes := make([]envelope.Envelope, 0, 10)
 
-	callback := func(envelope *events.Envelope) {
+	callback := func(envelope *envelope.Envelope) {
 		if envelope.AggregateName == aggregateName && envelope.AggregateUid == aggregateUid {
 			envelopes = append(envelopes, *envelope)
 		}

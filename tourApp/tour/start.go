@@ -68,7 +68,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
 				return
 			}
-			err := commandHandler.HandleCreateTourCommand(command)
+			err := commandHandler.HandleCreateTourCommand(&command)
 			if err != nil {
 				http.HandleError(c, err)
 				return
@@ -82,7 +82,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
 				return
 			}
-			err := commandHandler.HandleCreateEtappeCommand(command)
+			err := commandHandler.HandleCreateEtappeCommand(&command)
 			if err != nil {
 				http.HandleError(c, err)
 				return
@@ -96,7 +96,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
 				return
 			}
-			err := commandHandler.HandleCreateCyclistCommand(command)
+			err := commandHandler.HandleCreateCyclistCommand(&command)
 			if err != nil {
 				http.HandleError(c, err)
 				return

@@ -3,6 +3,7 @@ package gambler
 import (
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
@@ -19,15 +20,15 @@ func NewGamblerEventHandler(store events.Store) EventHandler {
 	return handler
 }
 
-func (eh *GamblerEventHandler) OnTourCreated(event events.TourCreated) error {
+func (eh *GamblerEventHandler) OnTourCreated(event *events.TourCreated) error {
 	log.Printf("OnTourCreated: event: %+v", event)
-	return doStore(eh.store, []*events.Envelope{event.Wrap()})
+	return doStore(eh.store, []*envelope.Envelope{event.Wrap()})
 }
 
-func (eh *GamblerEventHandler) OnCyclistCreated(event events.CyclistCreated) error {
+func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) error {
 
 	log.Printf("OnCyclistCreated: event: %+v", event)
-	return doStore(eh.store, []*events.Envelope{event.Wrap()})
+	return doStore(eh.store, []*envelope.Envelope{event.Wrap()})
 }
 
 type GamblerCommandHandler struct {
@@ -42,12 +43,12 @@ func NewGamblerCommandHandler(bus events.PublishSubscriber, store events.Store) 
 	return handler
 }
 
-func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command CreateGamblerCommand) error {
+func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command *CreateGamblerCommand) error {
 	// TODO
 	return nil
 }
 
-func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamblerCommand) error {
+func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGamblerCommand) error {
 	err := ch.validateCreateGamblerCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -68,15 +69,15 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command CreateGamble
 		GamblerEmail: command.Email}
 
 	// store and emit resulting event
-	return doStoreAndPublish(ch.store, ch.bus, []*events.Envelope{gamblerCreatedEvent.Wrap()})
+	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerCreatedEvent.Wrap()})
 }
 
-func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
+func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
 	// TODO
 	return nil
 }
 
-func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGamblerTeamCommand) error {
+func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
 	err := ch.validateCreateGamblerTeamCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -98,10 +99,10 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command CreateGa
 		Year:            command.Year,
 		GamblerCyclists: command.CyclistIds}
 
-	return doStoreAndPublish(ch.store, ch.bus, []*events.Envelope{gamblerTeamCreatedEvent.Wrap()})
+	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func doStore(store events.Store, envelopes []*events.Envelope) error {
+func doStore(store events.Store, envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
 		err := store.Store(env)
 		if err != nil {
@@ -113,7 +114,7 @@ func doStore(store events.Store, envelopes []*events.Envelope) error {
 	return nil
 }
 
-func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*events.Envelope) error {
+func doStoreAndPublish(store events.Store, bus events.PublishSubscriber, envelopes []*envelope.Envelope) error {
 	err := doStore(store, envelopes)
 	if err != nil {
 		return myerrors.NewInternalError(err)
@@ -155,23 +156,27 @@ func getGamblerContext(store events.Store, gamblerUid string, year int) (*Gamble
 		return context, err
 	}
 
-	for _, envelope := range tourRelatedEvents {
-		if envelope.Type == events.TypeTourCreated {
-			context.ApplyTourCreated(*envelope.TourCreated)
-		} else if envelope.Type == events.TypeCyclistCreated {
-			context.ApplyCyclistCreated(*envelope.CyclistCreated)
+	for _, envelop := range tourRelatedEvents {
+		if events.IsTourCreated(&envelop) {
+			event := events.UnWrapTourCreated(&envelop)
+			context.ApplyTourCreated(event)
+		} else if events.IsCyclistCreated(&envelop) {
+			event := events.UnWrapCyclistCreated(&envelop)
+			context.ApplyCyclistCreated(event)
 		} else {
-			log.Panicf("getGamblerOnUid(tour): Unexpected event %s", envelope.Type.String())
+			log.Panicf("getGamblerOnUid(tour): Unexpected event %s", envelop.EventTypeName)
 		}
 	}
 
-	for _, envelope := range gamblerRelatedEvents {
-		if envelope.Type == events.TypeGamblerCreated {
-			context.ApplyGamblerCreated(*envelope.GamblerCreated)
-		} else if envelope.Type == events.TypeGamblerTeamCreated {
-			context.ApplyGamblerTeamCreated(*envelope.GamblerTeamCreated)
+	for _, envelop := range gamblerRelatedEvents {
+		if events.IsGamblerCreated(&envelop) {
+			event := events.UnWrapGamblerCreated(&envelop)
+			context.ApplyGamblerCreated(event)
+		} else if events.IsGamblerTeamCreated(&envelop) {
+			event := events.UnWrapGamblerTeamCreated(&envelop)
+			context.ApplyGamblerTeamCreated(event)
 		} else {
-			log.Panicf("getGamblerOnUid(gambler): Unexpected event %s", envelope.Type.String())
+			log.Panicf("getGamblerOnUid(gambler): Unexpected event %s", envelop.EventTypeName)
 		}
 	}
 
@@ -214,7 +219,7 @@ type Cyclist struct {
 	Team string
 }
 
-func (context *GamblerContext) ApplyTourCreated(event events.TourCreated) {
+func (context *GamblerContext) ApplyTourCreated(event *events.TourCreated) {
 	//log.Printf("ApplyTourCreated: context before: %+v, event: %+v", context, event)
 
 	context.Year = new(int)
@@ -225,7 +230,7 @@ func (context *GamblerContext) ApplyTourCreated(event events.TourCreated) {
 	return
 }
 
-func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated) {
+func (context *GamblerContext) ApplyCyclistCreated(event *events.CyclistCreated) {
 	//log.Printf("ApplyCyclistCreated: context before: %+v, event: %+v", context, event)
 
 	context.cyclistsForTour[event.CyclistId] =
@@ -236,7 +241,7 @@ func (context *GamblerContext) ApplyCyclistCreated(event events.CyclistCreated) 
 	return
 }
 
-func (context *GamblerContext) ApplyGamblerCreated(event events.GamblerCreated) {
+func (context *GamblerContext) ApplyGamblerCreated(event *events.GamblerCreated) {
 	//log.Printf("ApplyGamblerCreated: context before: %+v, event: %+v", context, event)
 
 	context.Gambler = NewGambler(event.GamblerUid, event.GamblerName, event.GamblerEmail)
@@ -246,7 +251,7 @@ func (context *GamblerContext) ApplyGamblerCreated(event events.GamblerCreated) 
 	return
 }
 
-func (context *GamblerContext) ApplyGamblerTeamCreated(event events.GamblerTeamCreated) {
+func (context *GamblerContext) ApplyGamblerTeamCreated(event *events.GamblerTeamCreated) {
 	//log.Printf("ApplyGamblerTeamCreated: context: %+v, event: %+v", context, event)
 
 	for _, cyclistId := range event.GamblerCyclists {

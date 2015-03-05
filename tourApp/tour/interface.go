@@ -31,11 +31,11 @@ type CreateEtappeCommand struct {
 }
 
 type CommandHandler interface {
-	HandleCreateTourCommand(command CreateTourCommand) error
+	HandleCreateTourCommand(command *CreateTourCommand) error
 
-	HandleCreateCyclistCommand(command CreateCyclistCommand) error
+	HandleCreateCyclistCommand(command *CreateCyclistCommand) error
 
-	HandleCreateEtappeCommand(command CreateEtappeCommand) error
+	HandleCreateEtappeCommand(command *CreateEtappeCommand) error
 
 	HandleGetTourQuery(year int) (*Tour, error)
 }
@@ -46,7 +46,7 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyTourCreated(event events.TourCreated)
-	ApplyCyclistCreated(event events.CyclistCreated)
-	ApplyEtappeCreated(event events.EtappeCreated)
+	ApplyTourCreated(event *events.TourCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
+	ApplyEtappeCreated(event *events.EtappeCreated)
 }

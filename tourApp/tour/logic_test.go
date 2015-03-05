@@ -1,6 +1,7 @@
 package tour
 
 import (
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/test"
 	"github.com/stretchr/testify/assert"
@@ -12,13 +13,13 @@ func TestCreateTourCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title:   "Create new tour success",
-		Given:   []*events.Envelope{},
-		Command: CreateTourCommand{Year: 2015},
+		Given:   []*envelope.Envelope{},
+		Command: &CreateTourCommand{Year: 2015},
 		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateTourCommand(scenario.Command.(CreateTourCommand))
+			return service.HandleCreateTourCommand(scenario.Command.(*CreateTourCommand))
 		},
-		Expect: []*events.Envelope{
+		Expect: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
 	}
@@ -27,8 +28,8 @@ func TestCreateTourCommand(t *testing.T) {
 
 	assert.Nil(t, scenario.ErrMsg)
 
-	expected := scenario.Expect[0].TourCreated
-	actual := scenario.Actual[0].TourCreated
+	expected := events.UnWrapTourCreated(scenario.Expect[0])
+	actual := events.UnWrapTourCreated(scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 
 	// Test query
@@ -44,19 +45,19 @@ func TestCreateCyclistCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new cyclist success",
-		Given: []*events.Envelope{
+		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		Command: CreateCyclistCommand{
+		Command: &CreateCyclistCommand{
 			Year: 2015,
 			Id:   42,
 			Name: "My name",
 			Team: "My team"},
 		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateCyclistCommand(scenario.Command.(CreateCyclistCommand))
+			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
 		},
-		Expect: []*events.Envelope{
+		Expect: []*envelope.Envelope{
 			(&events.CyclistCreated{
 				Year:        2015,
 				CyclistId:   42,
@@ -69,8 +70,8 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 	assert.Nil(t, scenario.ErrMsg)
 
-	expected := scenario.Expect[0].CyclistCreated
-	actual := scenario.Actual[0].CyclistCreated
+	expected := events.UnWrapCyclistCreated(scenario.Expect[0])
+	actual := events.UnWrapCyclistCreated(scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 	assert.Equal(t, expected.CyclistId, actual.CyclistId)
 	assert.Equal(t, expected.CyclistName, actual.CyclistName)
@@ -94,10 +95,10 @@ func TestCreateEtappeCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.Scenario{
 		Title: "Create new etappe success",
-		Given: []*events.Envelope{
+		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
-		Command: CreateEtappeCommand{
+		Command: &CreateEtappeCommand{
 			Year:           2015,
 			Id:             2,
 			Date:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
@@ -107,9 +108,9 @@ func TestCreateEtappeCommand(t *testing.T) {
 			Kind:           3},
 		When: func(scenario *test.Scenario) error {
 			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
-			return service.HandleCreateEtappeCommand(scenario.Command.(CreateEtappeCommand))
+			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
 		},
-		Expect: []*events.Envelope{
+		Expect: []*envelope.Envelope{
 			(&events.EtappeCreated{
 				Year:                 2015,
 				EtappeId:             2,
@@ -125,8 +126,8 @@ func TestCreateEtappeCommand(t *testing.T) {
 
 	assert.Nil(t, scenario.ErrMsg)
 
-	expected := scenario.Expect[0].EtappeCreated
-	actual := scenario.Actual[0].EtappeCreated
+	expected := events.UnWrapEtappeCreated(scenario.Expect[0])
+	actual := events.UnWrapEtappeCreated(scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 	assert.Equal(t, expected.EtappeId, actual.EtappeId)
 	assert.Equal(t, expected.EtappeDate.Year(), actual.EtappeDate.Year())

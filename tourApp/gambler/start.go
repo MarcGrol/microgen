@@ -3,6 +3,7 @@ package gambler
 import (
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/MarcGrol/microgen/tourApp/http"
@@ -44,12 +45,20 @@ func startStore(baseDir string) (*infra.EventStore, error) {
 func startBus(busAddress string, eventHandler EventHandler) *infra.EventBus {
 	bus := infra.NewEventBus("tourApp", "gambler", busAddress)
 
-	bus.Subscribe(events.TypeTourCreated, func(envelope *events.Envelope) error {
-		return eventHandler.OnTourCreated(*envelope.TourCreated)
-	})
-	bus.Subscribe(events.TypeCyclistCreated, func(envelope *events.Envelope) error {
-		return eventHandler.OnCyclistCreated(*envelope.CyclistCreated)
-	})
+	{
+		var t events.Type = events.TypeTourCreated
+		bus.Subscribe(t.String(), func(envelop *envelope.Envelope) error {
+			event := events.UnWrapTourCreated(envelop)
+			return eventHandler.OnTourCreated(event)
+		})
+	}
+	{
+		var t events.Type = events.TypeCyclistCreated
+		bus.Subscribe(t.String(), func(envelop *envelope.Envelope) error {
+			event := events.UnWrapCyclistCreated(envelop)
+			return eventHandler.OnCyclistCreated(event)
+		})
+	}
 
 	return bus
 }
@@ -79,7 +88,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
 				return
 			}
-			err := commandHandler.HandleCreateGamblerCommand(command)
+			err := commandHandler.HandleCreateGamblerCommand(&command)
 			if err != nil {
 				http.HandleError(c, err)
 				return
@@ -93,7 +102,7 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
 				return
 			}
-			err := commandHandler.HandleCreateGamblerTeamCommand(command)
+			err := commandHandler.HandleCreateGamblerTeamCommand(&command)
 			if err != nil {
 				http.HandleError(c, err)
 				return

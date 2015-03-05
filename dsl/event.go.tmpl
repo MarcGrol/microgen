@@ -5,7 +5,10 @@ package events
 import (
     "time"
     "strconv"
+    "encoding/json"
     "code.google.com/p/go-uuid/uuid"
+    "github.com/MarcGrol/microgen/envelope"
+    "log"
 )
 
 type Type int
@@ -30,48 +33,73 @@ func (t Type) String() string {
     return "unknown"
 }
 
-type Envelope struct {
-    Uuid           string `json:"uuid"`
-    SequenceNumber uint64 `json:"sequenceNumber"`
-    AggregateName string `json:"aggregateName"`
-    AggregateUid string `json:"aggregateUid"`
-    Timestamp time.Time `json:"timestamp"`
-    Type Type `json:"type"`
-{{range .GetUniqueEvents}} {{.NameToFirstUpper}} *{{.NameToFirstUpper}} `json:"{{.NameToFirstLower}}"`
-{{end}}
-}
-
 {{range .GetUniqueEvents}}
 type {{.NameToFirstUpper}} struct {
     {{range .Attributes}} {{.NameToFirstUpper}} {{.MultiplicityName}} {{.TypeName}} `json:"{{.Name}}"`
     {{end}}
 }
 
-func (event *{{.NameToFirstUpper}}) Wrap() *Envelope {
-    envelope := new(Envelope)
-    envelope.Type = Type{{.NameToFirstUpper}}
-    envelope.{{.NameToFirstUpper}} = event
-    envelope.AggregateName = "{{.AggregateName}}"
-	envelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}{{end}}
+func (event *{{.NameToFirstUpper}}) Wrap()  *envelope.Envelope {
+    var err error
+    var t Type = Type{{.NameToFirstUpper}}
+
+    envelope := new(envelope.Envelope)
+    envelope.Uuid = uuid.New()
     envelope.SequenceNumber = 0 // Set later by event-store
     envelope.Timestamp = time.Now()
-    envelope.Uuid = uuid.New()
-    return envelope
+    envelope.AggregateName = "{{.AggregateName}}"
+	envelope.AggregateUid = {{if .HasAggregateFieldTypeInt }}strconv.Itoa(event.{{.AggregateFieldNameToFirstUpper}}){{else}}event.{{.AggregateFieldNameToFirstUpper}}
+    {{end}}
+    envelope.EventTypeName = t.String()
+    blob, err := json.Marshal(event)
+    if err != nil {
+        log.Printf("Error marshalling event payload %+v", err)
+        return nil //, err
+    }
+    envelope.EventData = string(blob)
+    return envelope //, nil    
+}
+
+func Is{{.NameToFirstUpper}}(envelope *envelope.Envelope) bool {
+    var t Type = Type{{.NameToFirstUpper}}
+    return envelope.EventTypeName == t.String()
+}
+
+func GetIfIs{{.NameToFirstUpper}}(envelop *envelope.Envelope) (*{{.NameToFirstUpper}},bool) {
+    if Is{{.NameToFirstUpper}}(envelop) == false {
+        return nil, false
+    }
+    event :=  UnWrap{{.NameToFirstUpper}}(envelop)
+    return event,true
+}
+
+func UnWrap{{.NameToFirstUpper}}(envelop *envelope.Envelope) *{{.NameToFirstUpper}} {
+    if Is{{.NameToFirstUpper}}(envelop) == false {
+        return nil
+    }
+    var event {{.NameToFirstUpper}}
+    err := json.Unmarshal([]byte(envelop.EventData), &event)
+    if err != nil {
+        log.Printf("Error unmarshalling event payload %+v", err)
+        return nil
+    }
+
+    return &event
 }
 {{end}}
 
 
-type EventHandlerFunc func( Envelope *Envelope ) error
+type EventHandlerFunc func( Envelope *envelope.Envelope ) error
 
 type PublishSubscriber interface {
-    Subscribe( eventType Type, callback EventHandlerFunc ) error
-    Publish( envelope *Envelope ) error
+    Subscribe( eventTypeName string, callback EventHandlerFunc ) error
+    Publish( envelope *envelope.Envelope ) error
 }
 
-type StoredItemHandlerFunc func( envelope *Envelope )
+type StoredItemHandlerFunc func( envelope *envelope.Envelope )
 
 type Store interface {
-    Store( envelope *Envelope ) error
+    Store( envelope *envelope.Envelope ) error
     Iterate( callback StoredItemHandlerFunc ) error
-    Get( aggregateName string, aggregateUid string ) ([]Envelope,error)
+    Get( aggregateName string, aggregateUid string ) ([]envelope.Envelope,error)
 }
