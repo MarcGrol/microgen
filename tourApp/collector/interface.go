@@ -4,11 +4,10 @@ package collector
 
 import (
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/myerrors"
 )
 
 type CommandHandler interface {
-	HandleSearchQuery(eventType string, aggregateType string, aggregateUid string) (*SearchResults, *myerrors.Error)
+	HandleSearchQuery(eventType string, aggregateType string, aggregateUid string) (*SearchResults, error)
 }
 
 type EventHandler interface {

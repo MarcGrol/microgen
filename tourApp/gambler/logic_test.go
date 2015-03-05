@@ -2,7 +2,7 @@ package gambler
 
 import (
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/test"
+	"github.com/MarcGrol/microgen/lib/test"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"testing"

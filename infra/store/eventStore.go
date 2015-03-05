@@ -1,24 +1,24 @@
-package infra
+package store
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/store"
+	"github.com/MarcGrol/microgen/infra"
 	"log"
 	"sync"
 )
 
 type EventStore struct {
-	store              *store.FileBlobStore
+	store              *FileBlobStore
 	mutex              sync.RWMutex
 	lastSequenceNumber uint64
 }
 
 func NewEventStore(dirname string, filename string) *EventStore {
 	s := new(EventStore)
-	s.store = store.NewFileBlobStore(dirname, filename)
+	s.store = NewFileBlobStore(dirname, filename)
 	return s
 }
 
@@ -56,14 +56,14 @@ func (s *EventStore) writeEvent(envelope *envelope.Envelope) error {
 	return s.store.Append(jsonBlob)
 }
 
-func (s *EventStore) Iterate(handlerFunc StoredItemHandlerFunc) error {
+func (s *EventStore) Iterate(handlerFunc infra.StoredItemHandlerFunc) error {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	return s.iterate(handlerFunc)
 }
 
-func (s *EventStore) iterate(handlerFunc StoredItemHandlerFunc) error {
+func (s *EventStore) iterate(handlerFunc infra.StoredItemHandlerFunc) error {
 	callback := func(blob []byte) {
 		var envelope envelope.Envelope
 		err := json.Unmarshal(blob, &envelope)

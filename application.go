@@ -1,272 +1,272 @@
 package main
 
 import (
-	"github.com/MarcGrol/microgen/dsl"
+	"github.com/MarcGrol/microgen/tool/dsl"
 )
 
 var (
-	tourCreated = spec.Event{
+	tourCreated = dsl.Event{
 		Id:   1,
 		Name: "TourCreated",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	cyclistCreated = spec.Event{
+	cyclistCreated = dsl.Event{
 		Id:   2,
 		Name: "CyclistCreated",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "cyclistId", Type: spec.TypeInt},
-			{Name: "cyclistName", Type: spec.TypeString},
-			{Name: "cyclistTeam", Type: spec.TypeString},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "cyclistId", Type: dsl.TypeInt},
+			{Name: "cyclistName", Type: dsl.TypeString},
+			{Name: "cyclistTeam", Type: dsl.TypeString},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	etappeCreated = spec.Event{
+	etappeCreated = dsl.Event{
 		Id:   3,
 		Name: "EtappeCreated",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "etappeId", Type: spec.TypeInt},
-			{Name: "etappeDate", Type: spec.TypeTimestamp},
-			{Name: "etappeStartLocation", Type: spec.TypeString},
-			{Name: "etappeFinishLocation", Type: spec.TypeString},
-			{Name: "etappeLength", Type: spec.TypeInt},
-			{Name: "etappeKind", Type: spec.TypeInt},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "etappeId", Type: dsl.TypeInt},
+			{Name: "etappeDate", Type: dsl.TypeTimestamp},
+			{Name: "etappeStartLocation", Type: dsl.TypeString},
+			{Name: "etappeFinishLocation", Type: dsl.TypeString},
+			{Name: "etappeLength", Type: dsl.TypeInt},
+			{Name: "etappeKind", Type: dsl.TypeInt},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	gamblerCreated = spec.Event{
+	gamblerCreated = dsl.Event{
 		Id:   4,
 		Name: "GamblerCreated",
-		Attributes: []spec.Attribute{
-			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-			{Name: "gamblerName", Type: spec.TypeString},
-			{Name: "gamblerEmail", Type: spec.TypeString},
-			{Name: "gamblerImageIUrl", Type: spec.TypeString},
+		Attributes: []dsl.Attribute{
+			{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+			{Name: "gamblerName", Type: dsl.TypeString},
+			{Name: "gamblerEmail", Type: dsl.TypeString},
+			{Name: "gamblerImageIUrl", Type: dsl.TypeString},
 		},
 		AggregateName:      "gambler",
 		AggregateFieldName: "gamblerUid",
 	}
 
-	gamblerTeamCreated = spec.Event{
+	gamblerTeamCreated = dsl.Event{
 		Id:   5,
 		Name: "GamblerTeamCreated",
-		Attributes: []spec.Attribute{
-			{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-			{Name: "year", Type: spec.TypeInt},
-			{Name: "gamblerCyclists", Type: spec.TypeInt, Cardinality: spec.Multiple},
+		Attributes: []dsl.Attribute{
+			{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+			{Name: "year", Type: dsl.TypeInt},
+			{Name: "gamblerCyclists", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
 		},
 		AggregateName:      "gambler",
 		AggregateFieldName: "gamblerUid",
 	}
 
-	etappeStarted = spec.Event{
+	etappeStarted = dsl.Event{
 		Id:   6,
 		Name: "EtappeStarted",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "etappeId", Type: spec.TypeInt},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "etappeId", Type: dsl.TypeInt},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	etappeResultsCreated = spec.Event{
+	etappeResultsCreated = dsl.Event{
 		Id:   7,
 		Name: "EtappeResultsAvailable",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "lastEtappeId", Type: spec.TypeInt},
-			{Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-			{Name: "bestAllrondersCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-			{Name: "bestSprintersCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-			{Name: "bestClimberCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "lastEtappeId", Type: dsl.TypeInt},
+			{Name: "bestDayCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+			{Name: "bestAllrondersCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+			{Name: "bestSprintersCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+			{Name: "bestClimberCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	cyclistScoreCalculated = spec.Event{
+	cyclistScoreCalculated = dsl.Event{
 		Id:   8,
 		Name: "CyclistScoreCalculated",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "cyclistId", Type: spec.TypeInt},
-			{Name: "lastEtappeId", Type: spec.TypeInt},
-			{Name: "newScore", Type: spec.TypeInt},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "cyclistId", Type: dsl.TypeInt},
+			{Name: "lastEtappeId", Type: dsl.TypeInt},
+			{Name: "newScore", Type: dsl.TypeInt},
 		},
 		AggregateName:      "tour",
 		AggregateFieldName: "year",
 	}
 
-	gamblerScoreCalculated = spec.Event{
+	gamblerScoreCalculated = dsl.Event{
 		Id:   9,
 		Name: "GamblerScoreCalculated",
-		Attributes: []spec.Attribute{
-			{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-			{Name: "gamblerUid", Type: spec.TypeString},
-			{Name: "lastEtappeId", Type: spec.TypeInt},
-			{Name: "newScore", Type: spec.TypeInt},
+		Attributes: []dsl.Attribute{
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "gamblerUid", Type: dsl.TypeString},
+			{Name: "lastEtappeId", Type: dsl.TypeInt},
+			{Name: "newScore", Type: dsl.TypeInt},
 		},
 		AggregateName:      "gambler",
 		AggregateFieldName: "gamblerUid",
 	}
 
-	application = spec.Application{
+	application = dsl.Application{
 		Name:    "tourApp",
 		Package: "github.com/MarcGrol/microgen",
-		Services: []spec.Service{
+		Services: []dsl.Service{
 			{
 				Name: "Tour",
-				Commands: []spec.Command{
+				Commands: []dsl.Command{
 					{
 						Name:   "CreateTour",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/tour",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{},
-						ProducesEvents: []spec.Event{tourCreated},
+						ConsumesEvents: []dsl.Event{},
+						ProducesEvents: []dsl.Event{tourCreated},
 					},
 					{
 						Name:   "CreateCyclist",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/tour/:year/cyclist",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "team", Type: spec.TypeString, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "id", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "name", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "team", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated},
-						ProducesEvents: []spec.Event{cyclistCreated},
+						ConsumesEvents: []dsl.Event{tourCreated},
+						ProducesEvents: []dsl.Event{cyclistCreated},
 					},
 					{
 						Name:   "CreateEtappe",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/tour/:year/etappe",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "id", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "date", Type: spec.TypeTimestamp, Cardinality: spec.Mandatory},
-								{Name: "startLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "finishLocation", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "length", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "kind", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "id", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "date", Type: dsl.TypeTimestamp, Cardinality: dsl.Mandatory},
+								{Name: "startLocation", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "finishLocation", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "length", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "kind", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated},
-						ProducesEvents: []spec.Event{etappeCreated},
+						ConsumesEvents: []dsl.Event{tourCreated},
+						ProducesEvents: []dsl.Event{etappeCreated},
 					},
 					{
 						Name:   "GetTour",
-						Method: spec.Get,
+						Method: dsl.Get,
 						Url:    "/tour/:year",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 							},
 						},
 						OutputName:     "*Tour",
-						ConsumesEvents: []spec.Event{},
-						ProducesEvents: []spec.Event{},
+						ConsumesEvents: []dsl.Event{},
+						ProducesEvents: []dsl.Event{},
 					},
 				},
 			},
 			{
 				Name: "Gambler",
-				Commands: []spec.Command{
+				Commands: []dsl.Command{
 					{
 						Name:   "CreateGambler",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/gambler",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "name", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "email", Type: spec.TypeString, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "name", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "email", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated},
-						ProducesEvents: []spec.Event{gamblerCreated},
+						ConsumesEvents: []dsl.Event{tourCreated},
+						ProducesEvents: []dsl.Event{gamblerCreated},
 					},
 					{
 						Name:   "CreateGamblerTeam",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/gambler/:gamblerUid/team",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "cyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "cyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated},
-						ProducesEvents: []spec.Event{gamblerTeamCreated},
+						ConsumesEvents: []dsl.Event{tourCreated, cyclistCreated},
+						ProducesEvents: []dsl.Event{gamblerTeamCreated},
 					},
 					{
 						Name:   "GetGambler",
-						Method: spec.Get,
+						Method: dsl.Get,
 						Url:    "/gambler/:gamblerUid",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 							},
 						},
 						OutputName:     "*Gambler",
-						ConsumesEvents: []spec.Event{tourCreated, gamblerCreated, gamblerTeamCreated},
-						ProducesEvents: []spec.Event{},
+						ConsumesEvents: []dsl.Event{tourCreated, gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []dsl.Event{},
 					},
 				},
 			},
 			{
 				Name: "Score",
-				Commands: []spec.Command{
+				Commands: []dsl.Command{
 					{
 						Name:   "CreateDayResults",
-						Method: spec.Post,
+						Method: dsl.Post,
 						Url:    "/tour/:year/results",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "year", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "etappeId", Type: spec.TypeInt, Cardinality: spec.Mandatory},
-								{Name: "bestDayCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-								{Name: "bestAllroundCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-								{Name: "bestClimbCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
-								{Name: "bestSprintCyclistIds", Type: spec.TypeInt, Cardinality: spec.Multiple},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "etappeId", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "bestDayCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestAllroundCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestClimbCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestSprintCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
 							},
 						},
-						ConsumesEvents: []spec.Event{tourCreated, etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
-						ProducesEvents: []spec.Event{etappeResultsCreated, cyclistScoreCalculated, gamblerScoreCalculated},
+						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []dsl.Event{etappeResultsCreated, cyclistScoreCalculated, gamblerScoreCalculated},
 					},
 					{
 						Name:   "GetResults",
-						Method: spec.Get,
+						Method: dsl.Get,
 						Url:    "/tour/:year/results",
-						Input: spec.Entity{
-							Attributes: []spec.Attribute{
-								{Name: "gamblerUid", Type: spec.TypeString, Cardinality: spec.Mandatory},
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 							},
 						},
 						OutputName:     "*Results",
-						ConsumesEvents: []spec.Event{tourCreated, cyclistCreated, etappeCreated, gamblerCreated, gamblerTeamCreated},
-						ProducesEvents: []spec.Event{},
+						ConsumesEvents: []dsl.Event{tourCreated, cyclistCreated, etappeCreated, gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []dsl.Event{},
 					},
 				},
 			},

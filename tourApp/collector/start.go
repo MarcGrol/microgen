@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/http"
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/infra/bus"
+	"github.com/MarcGrol/microgen/infra/http"
+	"github.com/MarcGrol/microgen/infra/store"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
 	"os"
@@ -24,7 +26,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	return nil
 }
 
-func startStore(baseDir string) (*infra.EventStore, error) {
+func startStore(baseDir string) (infra.Store, error) {
 	dataDir := baseDir + "/" + "data"
 
 	// create dir if not exists
@@ -32,16 +34,16 @@ func startStore(baseDir string) (*infra.EventStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	store := infra.NewEventStore(dataDir, "collector.db")
-	err = store.Open()
+	st := store.NewEventStore(dataDir, "collector.db")
+	err = st.Open()
 	if err != nil {
 		return nil, err
 	}
-	return store, nil
+	return st, nil
 }
 
-func startBus(busAddress string, eventHandler EventHandler) *infra.EventBus {
-	bus := infra.NewEventBus("tourApp", "collector", busAddress)
+func startBus(busAddress string, eventHandler EventHandler) infra.PublishSubscriber {
+	bus := bus.NewEventBus("tourApp", "collector", busAddress)
 
 	for _, eventType := range events.GetAllEventsTypes() {
 		bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {

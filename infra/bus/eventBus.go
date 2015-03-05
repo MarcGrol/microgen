@@ -1,25 +1,25 @@
-package infra
+package bus
 
 import (
 	"encoding/json"
-	"github.com/MarcGrol/microgen/bus"
 	"github.com/MarcGrol/microgen/envelope"
+	"github.com/MarcGrol/microgen/infra"
 	"log"
 )
 
 type EventBus struct {
-	nsqBus          *bus.NsqBus
+	nsqBus          *NsqBus
 	applicationName string
 }
 
 func NewEventBus(applicationName string, consumerName string, address string) *EventBus {
 	mybus := new(EventBus)
-	mybus.nsqBus = bus.NewNsqBus(consumerName, address)
+	mybus.nsqBus = NewNsqBus(consumerName, address)
 	mybus.applicationName = applicationName
 	return mybus
 }
 
-func (bus *EventBus) Subscribe(eventTypeName string, userCallback EventHandlerFunc) error {
+func (bus *EventBus) Subscribe(eventTypeName string, userCallback infra.EventHandlerFunc) error {
 	var envelop envelope.Envelope
 	callback := func(blob []byte) error {
 		err := json.Unmarshal(blob, &envelop)

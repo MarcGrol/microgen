@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/MarcGrol/microgen/dsl"
+	"github.com/MarcGrol/microgen/tool/dsl"
 	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
 	"github.com/MarcGrol/microgen/tourApp/proxy"
@@ -99,7 +99,7 @@ func main() {
 		}
 	} else if len(*tool) > 0 {
 		if *tool == "gen" {
-			err := spec.GenerateApplication(application, *baseDir)
+			err := dsl.GenerateApplication(application, *baseDir)
 			if err != nil {
 				log.Fatalf("Error generating application: %s", err)
 			}

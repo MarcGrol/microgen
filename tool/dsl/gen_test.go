@@ -1,4 +1,4 @@
-package spec
+package dsl
 
 import (
 	"github.com/stretchr/testify/assert"

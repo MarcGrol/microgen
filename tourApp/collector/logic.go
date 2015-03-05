@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
-	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/lib/myerrors"
 	"log"
 )
 
@@ -47,7 +47,7 @@ func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
 	return nil
 }
 
-func (ch *CollectorCommandHandler) HandleSearchQuery(eventType string, aggregateType string, aggregateUid string) (*SearchResults, *myerrors.Error) {
+func (ch *CollectorCommandHandler) HandleSearchQuery(eventType string, aggregateType string, aggregateUid string) (*SearchResults, error) {
 	var err *myerrors.Error = nil
 
 	results := new(SearchResults)

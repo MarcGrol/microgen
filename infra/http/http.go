@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/gin-gonic/gin"
 )
 

@@ -2,7 +2,7 @@ package infra
 
 import (
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/infra/store"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -18,20 +18,20 @@ func TestStore(t *testing.T) {
 
 	os.Remove(DIRNAME + "/" + FILENAME)
 
-	store := infra.NewEventStore(DIRNAME, FILENAME)
+	st := store.NewEventStore(DIRNAME, FILENAME)
 
 	{
 		// write and close
-		err := store.Open()
+		err := st.Open()
 		assert.Nil(t, err)
 		tourCreatedEvent := &events.TourCreated{Year: 2015}
-		store.Store(tourCreatedEvent.Wrap())
-		store.Close()
+		st.Store(tourCreatedEvent.Wrap())
+		st.Close()
 	}
 
 	{
 		// write and close
-		err := store.Open()
+		err := st.Open()
 		assert.Nil(t, err)
 		{
 			cyclistCreatedEvent := &events.CyclistCreated{
@@ -39,7 +39,7 @@ func TestStore(t *testing.T) {
 				CyclistId:   42,
 				CyclistName: "Lance",
 				CyclistTeam: "Rabo"}
-			err = store.Store(cyclistCreatedEvent.Wrap())
+			err = st.Store(cyclistCreatedEvent.Wrap())
 			assert.Nil(t, err)
 		}
 		{
@@ -48,21 +48,21 @@ func TestStore(t *testing.T) {
 				CyclistId:   43,
 				CyclistName: "Michael Boogerd",
 				CyclistTeam: "Rabo"}
-			err = store.Store(cyclistCreatedEvent2.Wrap())
+			err = st.Store(cyclistCreatedEvent2.Wrap())
 			assert.Nil(t, err)
-			store.Close()
+			st.Close()
 		}
 	}
 
 	{
 		// read all and close
-		err := store.Open()
+		err := st.Open()
 		assert.Nil(t, err)
 		envelopes := make([]*envelope.Envelope, 0, 2)
 		cb := func(envelope *envelope.Envelope) {
 			envelopes = append(envelopes, envelope)
 		}
-		store.Iterate(cb)
+		st.Iterate(cb)
 		assert.Equal(t, 3, len(envelopes))
 
 		assert.Equal(t, uint64(1), envelopes[0].SequenceNumber)
@@ -93,16 +93,15 @@ func TestStore(t *testing.T) {
 		assert.Equal(t, "Michael Boogerd", cyclistCreated2.CyclistName)
 		assert.Equal(t, "Rabo", cyclistCreated2.CyclistTeam)
 
-		store.Close()
+		st.Close()
 	}
 
-	store.Close()
 }
 
 func BenchmarkWrite(b *testing.B) {
 	os.Remove(DIRNAME + FILENAME)
 
-	store := infra.NewEventStore(DIRNAME, FILENAME)
+	store := store.NewEventStore(DIRNAME, FILENAME)
 	store.Open()
 
 	event := &events.CyclistCreated{

@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
-	"github.com/MarcGrol/microgen/http"
 	"github.com/MarcGrol/microgen/infra"
-	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/infra/bus"
+	"github.com/MarcGrol/microgen/infra/http"
+	"github.com/MarcGrol/microgen/infra/store"
+	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
 	"os"
@@ -26,7 +28,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	return nil
 }
 
-func startStore(baseDir string) (*infra.EventStore, error) {
+func startStore(baseDir string) (infra.Store, error) {
 	dataDir := baseDir + "/" + "data"
 
 	// create dir if not exists
@@ -34,16 +36,16 @@ func startStore(baseDir string) (*infra.EventStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	store := infra.NewEventStore(dataDir, "gambler.db")
-	err = store.Open()
+	st := store.NewEventStore(dataDir, "gambler.db")
+	err = st.Open()
 	if err != nil {
 		return nil, err
 	}
-	return store, nil
+	return st, nil
 }
 
-func startBus(busAddress string, eventHandler EventHandler) *infra.EventBus {
-	bus := infra.NewEventBus("tourApp", "gambler", busAddress)
+func startBus(busAddress string, eventHandler EventHandler) infra.PublishSubscriber {
+	bus := bus.NewEventBus("tourApp", "gambler", busAddress)
 
 	{
 		var t events.Type = events.TypeTourCreated

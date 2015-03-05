@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/envelope"
 	"github.com/MarcGrol/microgen/infra"
-	"github.com/MarcGrol/microgen/myerrors"
+	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 	"strconv"
