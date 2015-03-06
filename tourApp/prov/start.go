@@ -1,10 +1,7 @@
 package prov
 
-import (
-	"log"
-)
+import ()
 
 func Start(targetHost string) error {
-	log.Printf("Start provisioning")
 	return provision2012(targetHost)
 }

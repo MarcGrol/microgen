@@ -12,6 +12,15 @@ import (
 	"time"
 )
 
+type EtappeKind int
+
+const (
+	Flat      = 1
+	Hilly     = 2
+	Mountains = 3
+	TimeTrial = 4
+)
+
 type TourCommandHandler struct {
 	bus   infra.PublishSubscriber
 	store infra.Store

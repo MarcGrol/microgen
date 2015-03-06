@@ -1,4 +1,4 @@
-package prov
+package client
 
 import (
 	"bytes"
@@ -12,28 +12,15 @@ import (
 	"time"
 )
 
-type EtappeKind int
-
-const (
-	Flat      = 1
-	Hilly     = 2
-	Mountains = 3
-	TimeTrial = 4
-)
-
-type Provisioner struct {
+type Client struct {
 	hostname string
-	err      error
+	Err      error
 }
 
-func NewProvisioner(hostname string) *Provisioner {
-	p := new(Provisioner)
-	p.hostname = hostname
-	return p
-}
-
-func date(year int, month time.Month, day int) time.Time {
-	return time.Date(year, month, day, 9, 0, 0, 0, time.Local)
+func NewClient(hostname string) *Client {
+	c := new(Client)
+	c.hostname = hostname
+	return c
 }
 
 type Response struct {
@@ -46,20 +33,20 @@ type ErrorDescriptor struct {
 	Message string `json:"message"`
 }
 
-func (p *Provisioner) CreateTour(year int) error {
-	if p.err != nil {
+func (c *Client) CreateTour(year int) error {
+	if c.Err != nil {
 		log.Printf("Create tour %d", year)
 		command := &tour.CreateTourCommand{Year: year}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d", p.hostname, year)
+		url := fmt.Sprintf("http://%s/api/tour/%d", c.hostname, year)
 
-		p.err = doPost(url, command)
+		c.Err = doPost(url, command)
 	}
-	return p.err
+	return c.Err
 }
 
-func (p *Provisioner) CreateCyclist(year int, number int, name string, team string) error {
-	if p.err == nil {
+func (c *Client) CreateCyclist(year int, number int, name string, team string) error {
+	if c.Err == nil {
 		log.Printf("Create cyclist %s", name)
 		command := &tour.CreateCyclistCommand{
 			Year: year,
@@ -67,15 +54,15 @@ func (p *Provisioner) CreateCyclist(year int, number int, name string, team stri
 			Name: name,
 			Team: team}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d/cyclist", p.hostname, year)
+		url := fmt.Sprintf("http://%s/api/tour/%d/cyclist", c.hostname, year)
 
-		p.err = doPost(url, command)
+		c.Err = doPost(url, command)
 	}
-	return p.err
+	return c.Err
 }
 
-func (p *Provisioner) CreateEtappe(year int, number int, timestamp time.Time, start string, end string, length int, kind int) error {
-	if p.err == nil {
+func (c *Client) CreateEtappe(year int, number int, timestamp time.Time, start string, end string, length int, kind int) error {
+	if c.Err == nil {
 		log.Printf("Create etappe to %s", end)
 		command := &tour.CreateEtappeCommand{
 			Year:           year,
@@ -86,31 +73,31 @@ func (p *Provisioner) CreateEtappe(year int, number int, timestamp time.Time, st
 			Length:         length,
 			Kind:           kind}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d/etappe", p.hostname, year)
+		url := fmt.Sprintf("http://%s/api/tour/%d/etappe", c.hostname, year)
 
-		p.err = doPost(url, command)
+		c.Err = doPost(url, command)
 
 	}
-	return p.err
+	return c.Err
 }
 
-func (p *Provisioner) CreateGambler(gamblerUid string, name string, email string) error {
-	if p.err == nil {
+func (c *Client) CreateGambler(gamblerUid string, name string, email string) error {
+	if c.Err == nil {
 		log.Printf("Create gambler %s", name)
 		command := &gambler.CreateGamblerCommand{
 			GamblerUid: gamblerUid,
 			Name:       name,
 			Email:      email}
 
-		url := fmt.Sprintf("http://%s/api/gambler", p.hostname)
+		url := fmt.Sprintf("http://%s/api/gambler", c.hostname)
 
-		p.err = doPost(url, command)
+		c.Err = doPost(url, command)
 	}
-	return p.err
+	return c.Err
 }
 
-func (p *Provisioner) CreateGamblerTeam(year int, gamblerUid string, cyclistsIds []int) error {
-	if p.err == nil {
+func (c *Client) CreateGamblerTeam(year int, gamblerUid string, cyclistsIds []int) error {
+	if c.Err == nil {
 		log.Printf("Create team for gambler %s", gamblerUid)
 		command := &gambler.CreateGamblerTeamCommand{
 			GamblerUid: gamblerUid,
@@ -118,12 +105,12 @@ func (p *Provisioner) CreateGamblerTeam(year int, gamblerUid string, cyclistsIds
 			CyclistIds: cyclistsIds}
 		// gambler/:gamblerUid/year/:year/team
 
-		url := fmt.Sprintf("http://%s/api/gambler/%s/year/%d/team", p.hostname, gamblerUid, year)
+		url := fmt.Sprintf("http://%s/api/gambler/%s/year/%d/team", c.hostname, gamblerUid, year)
 
-		p.err = doPost(url, command)
+		c.Err = doPost(url, command)
 
 	}
-	return p.err
+	return c.Err
 }
 
 func doPost(url string, command interface{}) error {
@@ -136,7 +123,7 @@ func doPost(url string, command interface{}) error {
 
 	log.Printf("Posting on url %s:%v", url, requestBody)
 
-	// perform http call
+	// perform httc call
 	httpResponse, err := http.Post(url, "application/json", requestBody)
 	if err != nil {
 		log.Printf("Error posting request %+v", err)
@@ -145,7 +132,7 @@ func doPost(url string, command interface{}) error {
 
 	// evaluate response
 	if httpResponse.StatusCode != http.StatusOK {
-		errMsg := fmt.Sprintf("Http error creating tour: %d", httpResponse.Status)
+		errMsg := fmt.Sprintf("Httc error creating tour: %d", httpResponse.Status)
 		log.Printf(errMsg)
 		err = errors.New(errMsg)
 		return err

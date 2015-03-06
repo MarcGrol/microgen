@@ -63,11 +63,11 @@ echo "\nTotal:"
 countLinesInDir .
 countGoFilesInDir .
 
-echo "\nLibraries:"
+echo "\nTools and libraries:"
 countLinesInDir ./tool/dsl
 countLinesInDir ./lib/myerrors
 countLinesInDir ./lib/test
-countLinesInDir ./envelope
+countLinesInDir ./lib/envelope
 countLinesInDir ./infra/bus
 countLinesInDir ./infra/store
 countLinesInDir ./infra/http
@@ -97,6 +97,9 @@ countLogicLinesInDir ./tourApp/collector
 
 echo "\n  Proxy-service:"
 countLinesInDir ./tourApp/proxy
+
+echo "\n  Provisioning-tool:"
+countLinesInDir ./tourApp/prov
 
 echo "\n  Web ui:"
 countFilesInDir ./tourApp/ui
