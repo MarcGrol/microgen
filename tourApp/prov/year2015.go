@@ -258,7 +258,7 @@ func provision2012(targetHost string) error {
 		client.CreateGamblerTeam(year, "mgrol", []int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 	*/
 	if client.Err != nil {
-		log.Printf("Error provisioning %s", client.Err)
+		log.Printf("Error provisioning data: %s", client.Err)
 		return client.Err
 	}
 	return nil

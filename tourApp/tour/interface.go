@@ -21,13 +21,13 @@ type CreateCyclistCommand struct {
 }
 
 type CreateEtappeCommand struct {
-	Year           int       `json:"year" binding:"required"`
-	Id             int       `json:"id" binding:"required"`
-	Date           time.Time `json:"thedate" binding:"required"`
-	StartLocation  string    `json:"startLocation" binding:"required"`
-	FinishLocation string    `json:"finishLocation" binding:"required"`
-	Length         int       `json:"length" binding:"required"`
-	Kind           int       `json:"kind" binding:"required"`
+	Year           int       `json:"year"`
+	Id             int       `json:"id"`
+	Date           time.Time `json:"thedate"`
+	StartLocation  string    `json:"startLocation"`
+	FinishLocation string    `json:"finishLocation"`
+	Length         int       `json:"length"`
+	Kind           int       `json:"kind"`
 }
 
 type CommandHandler interface {

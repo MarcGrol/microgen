@@ -34,11 +34,11 @@ type ErrorDescriptor struct {
 }
 
 func (c *Client) CreateTour(year int) error {
-	if c.Err != nil {
+	if c.Err == nil {
 		log.Printf("Create tour %d", year)
 		command := &tour.CreateTourCommand{Year: year}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d", c.hostname, year)
+		url := fmt.Sprintf("http://%s/api/tour", c.hostname)
 
 		c.Err = doPost(url, command)
 	}
@@ -121,7 +121,7 @@ func doPost(url string, command interface{}) error {
 		return err
 	}
 
-	log.Printf("Posting on url %s:%v", url, requestBody)
+	log.Printf("Posting on url '%s' <- %v", url, requestBody)
 
 	// perform httc call
 	httpResponse, err := http.Post(url, "application/json", requestBody)
@@ -132,30 +132,30 @@ func doPost(url string, command interface{}) error {
 
 	// evaluate response
 	if httpResponse.StatusCode != http.StatusOK {
-		errMsg := fmt.Sprintf("Httc error creating tour: %d", httpResponse.Status)
+		errMsg := fmt.Sprintf("Http error: %d (%+v)", httpResponse.StatusCode, httpResponse.Status)
 		log.Printf(errMsg)
-		err = errors.New(errMsg)
-		return err
+		// err = errors.New(errMsg)
+		// return err
 	}
 
 	// decode response
 	dec := json.NewDecoder(httpResponse.Body)
 	var applicationResponse Response
-	err = dec.Decode(applicationResponse)
+	err = dec.Decode(&applicationResponse)
 	if err != nil {
-		log.Printf("Error unmarshalling response %+v", err)
+		log.Printf("Error unmarshalling response: %+v", err)
 		return err
 	}
 
 	// evaluate application status
 	if applicationResponse.Status == false {
-		errMsg := fmt.Sprintf("Error creating tour: %s", applicationResponse.Error.Message)
+		errMsg := fmt.Sprintf("Applicative error: %s", applicationResponse.Error.Message)
 		log.Printf(errMsg)
 		err = errors.New(errMsg)
 		return err
 	}
 
-	log.Printf("Succesfully perform POST on url %s", url)
+	log.Printf("Succesfully performed POST on url %s", url)
 
 	return nil
 }

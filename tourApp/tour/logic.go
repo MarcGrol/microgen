@@ -94,6 +94,7 @@ func (tch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappe
 }
 
 func (tch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
+	log.Printf("create etappe command: %+v", command)
 	err := tch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
