@@ -127,6 +127,8 @@ An "application" consists of the following concepts:
     
     # Fire commands into the application
     curl -X POST --header "Content-type: application/json"  --header "Accept: application/json" --data '{"year":2015}' "http://localhost:8080/api/tour"
+    curl -X POST --header "Content-type: application/json"  --header "Accept: application/json" --data '{"year":2015,"id":9,"name":"VAN GARDEREN Tejay","team":"BMC"}}' "http://localhost:8080/api/tour/2015/cyclist"
+
     curl -X GET  --header "Accept: application/json"  "http://localhost:8080/api/tour/2015"
     
     # Open UI in browser
