@@ -18,6 +18,8 @@ type CreateDayResultsCommand struct {
 }
 
 type CommandHandler interface {
+	Start(listenPort int)
+
 	HandleCreateDayResultsCommand(command *CreateDayResultsCommand) error
 
 	HandleGetResultsQuery(gamblerUid string) (*Results, error)
@@ -26,6 +28,7 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
+	Start()
 	OnTourCreated(event *events.TourCreated) error
 	OnEtappeCreated(event *events.EtappeCreated) error
 	OnCyclistCreated(event *events.CyclistCreated) error
@@ -34,12 +37,12 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyEtappeCreated(event *events.EtappeCreated)
-	ApplyCyclistCreated(event *events.CyclistCreated)
-	ApplyGamblerCreated(event *events.GamblerCreated)
 	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
 	ApplyEtappeResultsAvailable(event *events.EtappeResultsAvailable)
 	ApplyCyclistScoreCalculated(event *events.CyclistScoreCalculated)
 	ApplyGamblerScoreCalculated(event *events.GamblerScoreCalculated)
 	ApplyTourCreated(event *events.TourCreated)
+	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
+	ApplyGamblerCreated(event *events.GamblerCreated)
 }

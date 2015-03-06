@@ -12,11 +12,25 @@ import (
 )
 
 type GamblerEventHandler struct {
+	bus   infra.PublishSubscriber
 	store infra.Store
 }
 
-func NewGamblerEventHandler(store infra.Store) EventHandler {
+func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store) *GamblerEventHandler {
 	handler := new(GamblerEventHandler)
+	handler.bus = bus
+	handler.store = store
+	return handler
+}
+
+type GamblerCommandHandler struct {
+	bus   infra.PublishSubscriber
+	store infra.Store
+}
+
+func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) *GamblerCommandHandler {
+	handler := new(GamblerCommandHandler)
+	handler.bus = bus
 	handler.store = store
 	return handler
 }
@@ -30,18 +44,6 @@ func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) er
 
 	log.Printf("OnCyclistCreated: event: %+v", event)
 	return doStore(eh.store, []*envelope.Envelope{event.Wrap()})
-}
-
-type GamblerCommandHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-}
-
-func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
-	handler := new(GamblerCommandHandler)
-	handler.bus = bus
-	handler.store = store
-	return handler
 }
 
 func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command *CreateGamblerCommand) error {

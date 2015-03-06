@@ -31,6 +31,7 @@ import (
 {{end}}
 
 type CommandHandler interface {
+    Start( listenPort int)
     {{range .Service.Commands}}
     	{{if .IsQuery}} Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, error)
     	{{else}} Handle{{.NameToFirstUpper}}Command ( command *{{.NameToFirstUpper}}Command ) error
@@ -41,6 +42,7 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
+    Start()
     {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} ) error
     {{end}}
 }

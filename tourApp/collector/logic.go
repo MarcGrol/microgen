@@ -8,31 +8,9 @@ import (
 	"log"
 )
 
-type CollectorEventHandler struct {
-	store infra.Store
-}
-
-func NewCollectorEventHandler(store infra.Store) EventHandler {
-	handler := new(CollectorEventHandler)
-	handler.store = store
-	return handler
-}
-
 func (eh *CollectorEventHandler) OnAnyEvent(envelop *envelope.Envelope) error {
 	log.Printf("OnEvent: envelope: %+v", envelop)
 	return doStore(eh.store, []*envelope.Envelope{envelop})
-}
-
-type CollectorCommandHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-}
-
-func NewCollectorCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
-	handler := new(CollectorCommandHandler)
-	handler.bus = bus
-	handler.store = store
-	return handler
 }
 
 func doStore(store infra.Store, envelopes []*envelope.Envelope) error {

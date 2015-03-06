@@ -14,19 +14,28 @@ import (
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
-	store, err := startStore(baseDir)
+	//start store
+	store, err := createStore(baseDir)
 	if err != nil {
 		return err
 	}
-	bus := startBus(busAddress)
-	if bus == nil {
-		return errors.New("Error starting bus")
+
+	// create and start event bus
+	bus, err := createBus(busAddress)
+	if err != nil {
+		return err
 	}
-	startHttp(listenPort, NewTourCommandHandler(bus, store))
+
+	// no event-handler
+
+	// command-handler: start web-server: blocking call
+	commandHandler := NewTourCommandHandler(bus, store)
+	commandHandler.Start(listenPort)
+
 	return nil
 }
 
-func startStore(baseDir string) (infra.Store, error) {
+func createStore(baseDir string) (infra.Store, error) {
 	dataDir := baseDir + "/" + "data"
 
 	// create dir if not exists
@@ -42,11 +51,15 @@ func startStore(baseDir string) (infra.Store, error) {
 	return st, nil
 }
 
-func startBus(busAddress string) infra.PublishSubscriber {
-	return bus.NewEventBus("tourApp", "tour", busAddress)
+func createBus(busAddress string) (infra.PublishSubscriber, error) {
+	bus := bus.NewEventBus("tourApp", "tour", busAddress)
+	if bus == nil {
+		return nil, errors.New("Error starting bus")
+	}
+	return bus, nil
 }
 
-func startHttp(listenPort int, commandHandler CommandHandler) {
+func (commandHandler *TourCommandHandler) Start(listenPort int) {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{

@@ -29,7 +29,7 @@ func (bus *NsqBus) Subscribe(topic string, callback BlobHandlerFunc) error {
 }
 
 func (bus *NsqBus) startConsumer(topic string, userCallback BlobHandlerFunc) error {
-	log.Printf("Connecting using topic %s anc channel %s", topic, bus.consumerName)
+	log.Printf("Connecting using topic '%s' and channel '%s'", topic, bus.consumerName)
 	consumer, err := nsq.NewConsumer(topic, bus.consumerName, bus.config)
 	if err != nil {
 		log.Printf("Error creating nsq consumer %s/%s (%+v)", topic, bus.consumerName, err)

@@ -1,7 +1,7 @@
 package infra
 
-/*
 import (
+	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
@@ -10,7 +10,7 @@ import (
 )
 
 func TestPublishSubscribe(t *testing.T) {
-	bus := NewEventBus("tourdefrance", "unittest", "127.0.0.1")
+	bus := bus.NewEventBus("tourdefrance", "unittest", "127.0.0.1")
 
 	wg := &sync.WaitGroup{}
 
@@ -68,4 +68,3 @@ func TestPublishSubscribe(t *testing.T) {
 		assert.Equal(t, "Rabo", actual.CyclistTeam)
 	}
 }
-*/

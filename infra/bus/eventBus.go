@@ -20,18 +20,18 @@ func NewEventBus(applicationName string, consumerName string, address string) *E
 }
 
 func (bus *EventBus) Subscribe(eventTypeName string, userCallback infra.EventHandlerFunc) error {
-	var envelop envelope.Envelope
+	envelop := new(envelope.Envelope)
 	callback := func(blob []byte) error {
-		err := json.Unmarshal(blob, &envelop)
+		err := json.Unmarshal(blob, envelop)
 		if err != nil {
 			log.Printf("Error unmarshalling json blob (%+v)", err)
 			return err
 		}
 
 		log.Printf("**** Received event (%+v)", envelop)
-		return userCallback(&envelop)
+		return userCallback(envelop)
 	}
-	return bus.nsqBus.Subscribe(bus.getTopicName(&envelop), callback)
+	return bus.nsqBus.Subscribe(bus.getTopicName(eventTypeName), callback)
 }
 
 func (bus *EventBus) Publish(envelope *envelope.Envelope) error {
@@ -41,7 +41,7 @@ func (bus *EventBus) Publish(envelope *envelope.Envelope) error {
 		return err
 	}
 	//log.Printf("Marshalled event of type %d (%s)", envelope.Type, jsonBlob)
-	err = bus.nsqBus.Publish(bus.getTopicName(envelope), jsonBlob)
+	err = bus.nsqBus.Publish(bus.getTopicName(envelope.EventTypeName), jsonBlob)
 	if err != nil {
 		log.Printf("Error publishing event-envelope (%+v)", err)
 		return err
@@ -51,6 +51,6 @@ func (bus *EventBus) Publish(envelope *envelope.Envelope) error {
 	return nil
 }
 
-func (bus *EventBus) getTopicName(envelope *envelope.Envelope) string {
-	return bus.applicationName + "_" + envelope.EventTypeName
+func (bus *EventBus) getTopicName(eventName string) string {
+	return bus.applicationName + "_" + eventName
 }

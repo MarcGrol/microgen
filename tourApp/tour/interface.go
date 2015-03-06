@@ -23,7 +23,7 @@ type CreateCyclistCommand struct {
 type CreateEtappeCommand struct {
 	Year           int       `json:"year" binding:"required"`
 	Id             int       `json:"id" binding:"required"`
-	Date           time.Time `json:"date" binding:"required"`
+	Date           time.Time `json:"thedate" binding:"required"`
 	StartLocation  string    `json:"startLocation" binding:"required"`
 	FinishLocation string    `json:"finishLocation" binding:"required"`
 	Length         int       `json:"length" binding:"required"`
@@ -31,6 +31,8 @@ type CreateEtappeCommand struct {
 }
 
 type CommandHandler interface {
+	Start(listenPort int)
+
 	HandleCreateTourCommand(command *CreateTourCommand) error
 
 	HandleCreateCyclistCommand(command *CreateCyclistCommand) error
@@ -43,6 +45,7 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
+	Start()
 }
 
 type EventApplier interface {

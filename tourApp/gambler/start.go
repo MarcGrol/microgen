@@ -7,65 +7,63 @@ import (
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/http"
 	"github.com/MarcGrol/microgen/infra/store"
-	"github.com/MarcGrol/microgen/lib/envelope"
+	//"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
+	//"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
 	"os"
 	"strconv"
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
-	store, err := startStore(baseDir)
+
+	//start store
+	store, err := createStore(baseDir)
 	if err != nil {
 		return err
 	}
-	bus := startBus(busAddress, NewGamblerEventHandler(store))
-	if bus == nil {
-		return errors.New("Error starting bus")
+
+	// create and start event bus
+	bus, err := createBus(busAddress)
+	if err != nil {
+		return err
 	}
-	startHttp(listenPort, NewGamblerCommandHandler(bus, store))
+
+	// event-handler
+	eventHandler := NewGamblerEventHandler(bus, store)
+	err = eventHandler.Start()
+	if err != nil {
+		return err
+	}
+
+	// command-handler: start web-server: blocking call
+	commandHandler := NewGamblerCommandHandler(bus, store)
+	commandHandler.Start(listenPort)
+
 	return nil
 }
 
-func startStore(baseDir string) (infra.Store, error) {
-	dataDir := baseDir + "/" + "data"
-
-	// create dir if not exists
-	err := os.MkdirAll(dataDir, 0777)
-	if err != nil {
-		return nil, err
-	}
-	st := store.NewEventStore(dataDir, "gambler.db")
-	err = st.Open()
-	if err != nil {
-		return nil, err
-	}
-	return st, nil
+func (eventHandler *GamblerEventHandler) Start() error {
+	// {
+	// 	var t events.Type = events.TypeTourCreated
+	// 	topic := t.String()
+	// 	eventHandler.bus.Subscribe(topic, func(envelop *envelope.Envelope) error {
+	// 		event := events.UnWrapTourCreated(envelop)
+	// 		return eventHandler.OnTourCreated(event)
+	// 	})
+	// }
+	// {
+	// 	var t events.Type = events.TypeCyclistCreated
+	// 	topic := t.String()
+	// 	eventHandler.bus.Subscribe(topic, func(envelop *envelope.Envelope) error {
+	// 		event := events.UnWrapCyclistCreated(envelop)
+	// 		return eventHandler.OnCyclistCreated(event)
+	// 	})
+	// }
+	return nil
 }
 
-func startBus(busAddress string, eventHandler EventHandler) infra.PublishSubscriber {
-	bus := bus.NewEventBus("tourApp", "gambler", busAddress)
-
-	{
-		var t events.Type = events.TypeTourCreated
-		bus.Subscribe(t.String(), func(envelop *envelope.Envelope) error {
-			event := events.UnWrapTourCreated(envelop)
-			return eventHandler.OnTourCreated(event)
-		})
-	}
-	{
-		var t events.Type = events.TypeCyclistCreated
-		bus.Subscribe(t.String(), func(envelop *envelope.Envelope) error {
-			event := events.UnWrapCyclistCreated(envelop)
-			return eventHandler.OnCyclistCreated(event)
-		})
-	}
-
-	return bus
-}
-
-func startHttp(listenPort int, commandHandler CommandHandler) {
+func (commandHandler *GamblerCommandHandler) Start(listenPort int) {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -114,4 +112,28 @@ func startHttp(listenPort int, commandHandler CommandHandler) {
 	}
 
 	engine.Run(fmt.Sprintf(":%d", listenPort))
+}
+
+func createStore(baseDir string) (infra.Store, error) {
+	dataDir := baseDir + "/" + "data"
+
+	// create dir if not exists
+	err := os.MkdirAll(dataDir, 0777)
+	if err != nil {
+		return nil, err
+	}
+	st := store.NewEventStore(dataDir, "gambler.db")
+	err = st.Open()
+	if err != nil {
+		return nil, err
+	}
+	return st, nil
+}
+
+func createBus(busAddress string) (infra.PublishSubscriber, error) {
+	bus := bus.NewEventBus("tourApp", "gambler", busAddress)
+	if bus == nil {
+		return nil, errors.New("Error starting bus")
+	}
+	return bus, nil
 }

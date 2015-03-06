@@ -6,6 +6,7 @@ import (
 	"github.com/MarcGrol/microgen/tool/dsl"
 	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
+	"github.com/MarcGrol/microgen/tourApp/prov"
 	"github.com/MarcGrol/microgen/tourApp/proxy"
 	"github.com/MarcGrol/microgen/tourApp/score"
 	"github.com/MarcGrol/microgen/tourApp/tour"
@@ -22,7 +23,7 @@ var service *string
 var httpPort *int
 var busAddress *string
 var baseDir *string
-var templateDir *string
+var targetHostPort *string
 
 func printUsage() {
 	fmt.Fprintf(os.Stderr, "\nUsage:\n")
@@ -38,12 +39,12 @@ func printVersion() {
 }
 
 func processArgs() {
-	tool = flag.String("tool", "", "Run in 'tool-mode: 'gen'")
-	templateDir = flag.String("template-dir", ".", "For 'tool'-mode: Directory where templates are located")
+	tool = flag.String("tool", "", "Run in 'tool-mode: 'gen' pr 'prov'")
 	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
 	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler','score', 'proxy' or 'collector'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
 	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
+	targetHostPort = flag.String("target-host", "localhost:8080", "For tool 'prov': Hostname where the application is running")
 
 	help := flag.Bool("help", false, "Usage information")
 	version := flag.Bool("version", false, "Version information")
@@ -102,6 +103,11 @@ func main() {
 			err := dsl.GenerateApplication(application, *baseDir)
 			if err != nil {
 				log.Fatalf("Error generating application: %s", err)
+			}
+		} else if *tool == "prov" {
+			err := prov.Start(*targetHostPort)
+			if err != nil {
+				log.Fatalf("Error provisioning application: %s", err)
 			}
 		} else {
 			fmt.Fprintf(os.Stderr, "Unrecognized tool name: %s", *tool)

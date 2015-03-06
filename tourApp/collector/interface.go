@@ -7,9 +7,11 @@ import (
 )
 
 type CommandHandler interface {
+	Start(listenPort int) error
 	HandleSearchQuery(eventType string, aggregateType string, aggregateUid string) (*SearchResults, error)
 }
 
 type EventHandler interface {
+	Start() error
 	OnAnyEvent(event *envelope.Envelope) error
 }
