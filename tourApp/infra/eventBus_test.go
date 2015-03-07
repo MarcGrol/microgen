@@ -10,7 +10,7 @@ import (
 )
 
 func TestPublishSubscribe(t *testing.T) {
-	bus := bus.NewEventBus("tourdefrance", "unittest", "127.0.0.1")
+	bus := bus.NewEventBus("tourAppUnitestTest", "unittest", "127.0.0.1")
 
 	wg := &sync.WaitGroup{}
 

@@ -1,9 +1,22 @@
 #!/bin/sh
 
-nohup nsqlookupd > /tmp/nsqlookupd.log & 
-nohup nsqd --lookupd-tcp-address=127.0.0.1:4160 > /tmp/nsq.log &
+MICROGEN_ROOT=${GOPATH}/src/github.com/MarcGrol/microgen/
+
+mkdir -p ${MICROGEN_ROOT}/log
+nohup nsqlookupd > ${MICROGEN_ROOT}/log/nsqlookupd.log & 
+nohup nsqd --lookupd-tcp-address=127.0.0.1:4160 > ${MICROGEN_ROOT}/log/nsq.log &
 nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > /tmp/nsqadmin.log &
 
+# create topics if needed
+
+curl -X POST localhost:4161/topic/create?topic=tourApp_TourCreated
+curl -X POST localhost:4161/topic/create?topic=tourApp_EtappeCreated
+curl -X POST localhost:4161/topic/create?topic=tourApp_CyclistCreated
+curl -X POST localhost:4161/topic/create?topic=tourApp_EtappeResultsAvailable
+curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerCreated
+curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerTeamCreated
+curl -X POST localhost:4161/topic/create?topic=tourApp_CyclistScoreCalculated
+curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerScoreCalculated
 
 #
 # stats
