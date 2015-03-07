@@ -1,11 +1,14 @@
-#!/bin/sh
+#!/bin/sh -x
 
 MICROGEN_ROOT=${GOPATH}/src/github.com/MarcGrol/microgen/
 
 mkdir -p ${MICROGEN_ROOT}/log
 nohup nsqlookupd > ${MICROGEN_ROOT}/log/nsqlookupd.log & 
 nohup nsqd --lookupd-tcp-address=127.0.0.1:4160 > ${MICROGEN_ROOT}/log/nsq.log &
-nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > /tmp/nsqadmin.log &
+nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > ${MICROGEN_ROOT}/log/nsqadmin.log &
+
+sleep 1
+ps -eaf|grep nsq
 
 # create topics if needed
 

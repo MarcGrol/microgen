@@ -1,4 +1,5 @@
 tourApp/doc/*.json
+*.log
 *.dat
 *.db
 *.sublime*
