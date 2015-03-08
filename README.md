@@ -39,24 +39,24 @@ Build screens from the provided services:
  * develop screens using services
 
 ## Functionality
-A tour-de-france gambling application:
-- As an administrator: 
-    - Create a tour for a particular year (1)
-    - Add cyclists to a tour (2)
-    - Add etappes to a tour (3)
-    - Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
+A tour-de-france application:
+- Tour: 
+    - As organiser: Create a tour for a particular year (1)
+    - As organiser: Add cyclists to a tour (2)
+    - As organiser: Add etappes to a tour (3)
+    - As organiser: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
+    - As organiser: Mark cyclist as "abandonnee"
+    - As anybody: View tours with their cyclists, etappes and results (5)
+- Gambling: 
+    - As gambler: Create a profile (21)
+    - As gambler: Compose your own team of cyclists for a particular year (22)
+    - As gambler: View As gambler: scores of my cylists (23)
+    - As anybody: View All gamblers with their scores and teams (24)
+- News: 
+    - As journalist: Create a news item (31)
+    - View timeline of tour and news events
+- System administration: 
     - Keep track of everything that has happened within the system (5)
-- As a gambler: 
-    - Create a profile (21)
-    - Compose your own team of cyclists for a particular year (22)
-    - View scores of my cylists (23)
-- As anybody: 
-    - View tours with their cyclists (31)
-    - View etappes and results (32)
-    - View best cyclists of a tour (33)
-    - View best gamblers of a tour (34)
-- As a system: 
-    - Notify gamblers of new day results (41)
 
 ## Devision of functions in services
 ### Tour-service
