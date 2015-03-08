@@ -41,32 +41,33 @@ Build screens from the provided services:
 ## Functionality
 A tour-de-france application:
 - Tour: 
-    - As organiser: Create a tour for a particular year (1)
-    - As organiser: Add cyclists to a tour (2)
-    - As organiser: Add etappes to a tour (3)
-    - As organiser: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
-    - As organiser: Mark cyclist as "abandonnee"
-    - As anybody: View tours with their cyclists, etappes and results (5)
+    - As event-organiser: Create a tour for a particular year (1)
+    - As event-organiser: Add cyclists to a tour (2)
+    - As event-organiser: Add etappes to a tour (3)
+    - As event-organiser: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
+    - As event-organiser: Mark cyclist as "abandonnee" (5)
+    - As anybody: View tours with their cyclists, etappes and results (6)
 - Gambling: 
     - As gambler: Create a profile (21)
-    - As gambler: Compose your own team of cyclists for a particular year (22)
+    - As gambler: Compose a team of cyclists for a particular year (22)
     - As gambler: View As gambler: scores of my cylists (23)
     - As anybody: View All gamblers with their scores and teams (24)
 - News: 
     - As journalist: Create a news item (31)
-    - View timeline of tour and news events
+    - As anybody: View timeline of tour events and news events (32)
 - System administration: 
-    - Keep track of everything that has happened within the system (5)
+    - Keep track of everything that has happens within the system (50)
 
 ## Devision of functions in services
 ### Tour-service
-Responsible for managing tours with their etappes and cyclists (1,2,3,4)
+Responsible for managing tours with their etappes and cyclists (1,2,3,4,5,6)
 
 ### Gambler-service
-Responsible for gamblers and their teams of cyclists (21,22,23)
+Responsible for gamblers and their teams of cyclists (21,22,23,24) and
+Responsible for calculating and presenting results and scores (31,32)
 
-### Score-service
-Responsible for calculating and presenting results and scores (31,32, 33,34,41)
+### News-service
+Responsible for providing a timeline of tour and news events
 
 ### Collector-service
 Non functional service that keeps track of everything that has happened. (5)
