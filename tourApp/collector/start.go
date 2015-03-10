@@ -7,8 +7,8 @@ import (
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/http"
 	"github.com/MarcGrol/microgen/infra/store"
-	"github.com/MarcGrol/microgen/lib/envelope"
-	"github.com/MarcGrol/microgen/tourApp/events"
+	//"github.com/MarcGrol/microgen/lib/envelope"
+	//"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
 	"os"
 )
@@ -35,41 +35,6 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	// command-handler: start web-server: blocking call
 	commandHandler := NewCollectorCommandHandler(bus, store)
 	commandHandler.Start(listenPort)
-
-	return nil
-}
-
-type CollectorCommandHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-}
-
-func NewCollectorCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
-	handler := new(CollectorCommandHandler)
-	handler.bus = bus
-	handler.store = store
-	return handler
-}
-
-type CollectorEventHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-}
-
-func NewCollectorEventHandler(bus infra.PublishSubscriber, store infra.Store) EventHandler {
-	handler := new(CollectorEventHandler)
-	handler.bus = bus
-	handler.store = store
-	return handler
-}
-
-func (eventHandler *CollectorEventHandler) Start() error {
-
-	for _, eventType := range events.GetAllEventsTypes() {
-		eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
-			return eventHandler.OnAnyEvent(envelope)
-		})
-	}
 
 	return nil
 }

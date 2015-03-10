@@ -27,36 +27,14 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	}
 
 	// no event-handler
+	eventHandler := NewTourEventHandler(bus, store)
+	eventHandler.Start()
 
 	// command-handler: start web-server: blocking call
 	commandHandler := NewTourCommandHandler(bus, store)
 	commandHandler.Start(listenPort)
 
 	return nil
-}
-
-func createStore(baseDir string) (infra.Store, error) {
-	dataDir := baseDir + "/" + "data"
-
-	// create dir if not exists
-	err := os.MkdirAll(dataDir, 0777)
-	if err != nil {
-		return nil, err
-	}
-	st := store.NewEventStore(dataDir, "tour.db")
-	err = st.Open()
-	if err != nil {
-		return nil, err
-	}
-	return st, nil
-}
-
-func createBus(busAddress string) (infra.PublishSubscriber, error) {
-	bus := bus.NewEventBus("tourApp", "tour", busAddress)
-	if bus == nil {
-		return nil, errors.New("Error starting bus")
-	}
-	return bus, nil
 }
 
 func (commandHandler *TourCommandHandler) Start(listenPort int) {
@@ -121,4 +99,28 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) {
 	}
 
 	engine.Run(fmt.Sprintf(":%d", listenPort))
+}
+
+func createStore(baseDir string) (infra.Store, error) {
+	dataDir := baseDir + "/" + "data"
+
+	// create dir if not exists
+	err := os.MkdirAll(dataDir, 0777)
+	if err != nil {
+		return nil, err
+	}
+	st := store.NewEventStore(dataDir, "tour.db")
+	err = st.Open()
+	if err != nil {
+		return nil, err
+	}
+	return st, nil
+}
+
+func createBus(busAddress string) (infra.PublishSubscriber, error) {
+	bus := bus.NewEventBus("tourApp", "tour", busAddress)
+	if bus == nil {
+		return nil, errors.New("Error starting bus")
+	}
+	return bus, nil
 }

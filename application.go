@@ -82,7 +82,7 @@ var (
 
 	etappeResultsCreated = dsl.Event{
 		Id:   7,
-		Name: "EtappeResultsAvailable",
+		Name: "EtappeResultsCreated",
 		Attributes: []dsl.Attribute{
 			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 			{Name: "lastEtappeId", Type: dsl.TypeInt},
@@ -119,6 +119,20 @@ var (
 		},
 		AggregateName:      "gambler",
 		AggregateFieldName: "gamblerUid",
+	}
+
+	newsItemCreated = dsl.Event{
+		Id:   10,
+		Name: "NewsItemCreated",
+		Attributes: []dsl.Attribute{
+			{Name: "uid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+			{Name: "timestamp", Type: dsl.TypeTimestamp, Cardinality: dsl.Mandatory},
+			{Name: "message", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+			{Name: "sender", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+		},
+		AggregateName:      "news",
+		AggregateFieldName: "uid",
 	}
 
 	application = dsl.Application{
@@ -174,6 +188,23 @@ var (
 						ProducesEvents: []dsl.Event{etappeCreated},
 					},
 					{
+						Name:   "CreateEtappeResults",
+						Method: dsl.Post,
+						Url:    "/tour/:year/etappe/:etappeId/results",
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "etappeId", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+								{Name: "bestDayCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestAllroundCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestClimbCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "bestSprintCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+							},
+						},
+						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated},
+						ProducesEvents: []dsl.Event{etappeResultsCreated},
+					},
+					{
 						Name:   "GetTour",
 						Method: dsl.Get,
 						Url:    "/tour/:year",
@@ -183,7 +214,7 @@ var (
 							},
 						},
 						OutputName:     "*Tour",
-						ConsumesEvents: []dsl.Event{},
+						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated, etappeResultsCreated},
 						ProducesEvents: []dsl.Event{},
 					},
 				},
@@ -230,42 +261,70 @@ var (
 							},
 						},
 						OutputName:     "*Gambler",
-						ConsumesEvents: []dsl.Event{tourCreated, gamblerCreated, gamblerTeamCreated},
+						ConsumesEvents: []dsl.Event{gamblerCreated, gamblerTeamCreated},
+						ProducesEvents: []dsl.Event{},
+					},
+					{
+						Name:   "GetResults",
+						Method: dsl.Get,
+						Url:    "/results",
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
+							},
+						},
+						OutputName:     "*Results",
+						ConsumesEvents: []dsl.Event{tourCreated, cyclistCreated, etappeCreated, gamblerCreated, gamblerTeamCreated, etappeResultsCreated},
 						ProducesEvents: []dsl.Event{},
 					},
 				},
 			},
 			{
-				Name: "Score",
+				Name: "News",
 				Commands: []dsl.Command{
 					{
-						Name:   "CreateDayResults",
+						Name:   "CreateNewsItem",
 						Method: dsl.Post,
-						Url:    "/tour/:year/results",
+						Url:    "/news",
 						Input: dsl.Entity{
 							Attributes: []dsl.Attribute{
 								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
-								{Name: "etappeId", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
-								{Name: "bestDayCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
-								{Name: "bestAllroundCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
-								{Name: "bestClimbCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
-								{Name: "bestSprintCyclistIds", Type: dsl.TypeInt, Cardinality: dsl.Multiple},
+								{Name: "timestamp", Type: dsl.TypeTimestamp, Cardinality: dsl.Mandatory},
+								{Name: "message", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "sender", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated, gamblerCreated, gamblerTeamCreated},
-						ProducesEvents: []dsl.Event{etappeResultsCreated, cyclistScoreCalculated, gamblerScoreCalculated},
+						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated, etappeResultsCreated},
+						ProducesEvents: []dsl.Event{newsItemCreated},
 					},
 					{
-						Name:   "GetResults",
+						Name:   "GetNews",
 						Method: dsl.Get,
-						Url:    "/tour/:year/results",
+						Url:    "/news",
 						Input: dsl.Entity{
 							Attributes: []dsl.Attribute{
-								{Name: "gamblerUid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+								{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 							},
 						},
-						OutputName:     "*Results",
-						ConsumesEvents: []dsl.Event{tourCreated, cyclistCreated, etappeCreated, gamblerCreated, gamblerTeamCreated},
+						OutputName:     "*News",
+						ConsumesEvents: []dsl.Event{tourCreated, etappeCreated, cyclistCreated, etappeResultsCreated, newsItemCreated},
+						ProducesEvents: []dsl.Event{},
+					},
+				},
+			},
+			{
+				Name: "Notification",
+				Commands: []dsl.Command{
+					{
+						Name:   "SubscribeToNotifications",
+						Method: dsl.Post,
+						Url:    "/notification",
+						Input: dsl.Entity{
+							Attributes: []dsl.Attribute{
+								{Name: "email", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
+							},
+						},
+						ConsumesEvents: []dsl.Event{etappeResultsCreated, newsItemCreated},
 						ProducesEvents: []dsl.Event{},
 					},
 				},

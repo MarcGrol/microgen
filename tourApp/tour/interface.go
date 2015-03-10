@@ -21,13 +21,22 @@ type CreateCyclistCommand struct {
 }
 
 type CreateEtappeCommand struct {
-	Year           int       `json:"year"`
-	Id             int       `json:"id"`
-	Date           time.Time `json:"thedate"`
-	StartLocation  string    `json:"startLocation"`
-	FinishLocation string    `json:"finishLocation"`
-	Length         int       `json:"length"`
-	Kind           int       `json:"kind"`
+	Year           int       `json:"year" binding:"required"`
+	Id             int       `json:"id" binding:"required"`
+	Date           time.Time `json:"date" binding:"required"`
+	StartLocation  string    `json:"startLocation" binding:"required"`
+	FinishLocation string    `json:"finishLocation" binding:"required"`
+	Length         int       `json:"length" binding:"required"`
+	Kind           int       `json:"kind" binding:"required"`
+}
+
+type CreateEtappeResultsCommand struct {
+	Year                   int   `json:"year" binding:"required"`
+	EtappeId               int   `json:"etappeId" binding:"required"`
+	BestDayCyclistIds      []int `json:"bestDayCyclistIds" `
+	BestAllroundCyclistIds []int `json:"bestAllroundCyclistIds" `
+	BestClimbCyclistIds    []int `json:"bestClimbCyclistIds" `
+	BestSprintCyclistIds   []int `json:"bestSprintCyclistIds" `
 }
 
 type CommandHandler interface {
@@ -38,6 +47,8 @@ type CommandHandler interface {
 	HandleCreateCyclistCommand(command *CreateCyclistCommand) error
 
 	HandleCreateEtappeCommand(command *CreateEtappeCommand) error
+
+	HandleCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error
 
 	HandleGetTourQuery(year int) (*Tour, error)
 }
@@ -52,4 +63,5 @@ type EventApplier interface {
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 }

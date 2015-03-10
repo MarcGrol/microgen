@@ -21,6 +21,23 @@ const (
 	TimeTrial = 4
 )
 
+type TourEventHandler struct {
+	bus   infra.PublishSubscriber
+	store infra.Store
+}
+
+func NewTourEventHandler(bus infra.PublishSubscriber, store infra.Store) *TourEventHandler {
+	handler := new(TourEventHandler)
+	handler.bus = bus
+	handler.store = store
+	return handler
+}
+
+func (eventHandler *TourEventHandler) Start() error {
+	// subscribe to events?
+	return nil
+}
+
 type TourCommandHandler struct {
 	bus   infra.PublishSubscriber
 	store infra.Store
@@ -33,19 +50,19 @@ func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store) Comma
 	return handler
 }
 
-func (tch *TourCommandHandler) validateCreateTourCommand(command *CreateTourCommand) error {
+func (ch *TourCommandHandler) validateCreateTourCommand(command *CreateTourCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand) error {
-	err := tch.validateCreateTourCommand(command)
+func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand) error {
+	err := ch.validateCreateTourCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(tch.store, command.Year)
+	_, found := getTourOnYear(ch.store, command.Year)
 	if found == true {
 		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("Tour %d already exists", command.Year)))
 	}
@@ -56,22 +73,22 @@ func (tch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourComman
 	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*envelope.Envelope{tourCreatedEvent.Wrap()})
+	return ch.storeAndPublish([]*envelope.Envelope{tourCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclistCommand) error {
+func (ch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclistCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistCommand) error {
-	err := tch.validateCreateCyclistCommand(command)
+func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistCommand) error {
+	err := ch.validateCreateCyclistCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(tch.store, command.Year)
+	_, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
 	}
@@ -85,23 +102,23 @@ func (tch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclist
 	//log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
+	return ch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeCommand) error {
+func (ch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeCommand) error {
 	// TODO
 	return nil
 }
 
-func (tch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
+func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
 	log.Printf("create etappe command: %+v", command)
-	err := tch.validateCreateEtappeCommand(command)
+	err := ch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(tch.store, command.Year)
+	_, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
 	}
@@ -118,12 +135,16 @@ func (tch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCo
 	//log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
 
 	// store and emit resulting event
-	return tch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
+	return ch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
 }
 
-func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
+func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error {
+	return errors.New("HandleCreateEtappeResultsCommand not implemented")
+}
+
+func (ch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	// TODO validate input
-	tour, found := getTourOnYear(tch.store, year)
+	tour, found := getTourOnYear(ch.store, year)
 	if found == false {
 		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
 	}
@@ -132,13 +153,13 @@ func (tch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	return tour, nil
 }
 
-func (tch *TourCommandHandler) storeAndPublish(envelopes []*envelope.Envelope) error {
+func (ch *TourCommandHandler) storeAndPublish(envelopes []*envelope.Envelope) error {
 	for _, env := range envelopes {
-		err := tch.store.Store(env)
+		err := ch.store.Store(env)
 		if err != nil {
 			return myerrors.NewInternalError(err)
 		}
-		err = tch.bus.Publish(env)
+		err = ch.bus.Publish(env)
 		if err != nil {
 			return myerrors.NewInternalError(err)
 		}
@@ -236,4 +257,9 @@ func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
 	//log.Printf("ApplyEtappeCreated after:%+v -> %+v", event, t)
 
 	return
+}
+
+func (t *Tour) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
+	log.Fatal("ApplyEtappeResultsCreated not implemented")
+
 }

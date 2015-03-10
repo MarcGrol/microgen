@@ -97,22 +97,25 @@ func (app Application) GetConsumingServiceNamesForEvent(eventName string) []stri
 }
 
 func (app Application) GraphvizEdgesForEvents() string {
-	edges := make([]string, 0, 10)
-	for _, service := range app.Services {
-		for _, command := range service.Commands {
+	edges := make(map[string]string)
+	for _, fromService := range app.Services {
+		for _, command := range fromService.Commands {
 			for _, event := range command.ProducesEvents {
-				for _, s := range app.ServicesThatConsumeEvent(event) {
-					edge := fmt.Sprintf("\t\"%s%s\" -> \"%s%s\" [label=\"%s-event\", style=dashed];\n",
-						service.Name,
+				for _, toService := range app.ServicesThatConsumeEvent(event) {
+					edge := fmt.Sprintf("\t\"%s%s\" -> \"%s%s\" [label=\"events/NSQ\", ltail=\"cluster%s\", lhead=\"cluster%s\",style=dashed];\n",
+						fromService.Name,
 						command.Name,
-						s.Name,
+						toService.Name,
 						event.Name,
-						event.Name)
-					edges = append(edges, edge)
+						fromService.NameToLower(),
+						toService.NameToLower())
+					// lhead=clustercollector, arrowhead=crow
+					edges[fmt.Sprintf("%s-%s", fromService, toService)] = edge
 				}
 			}
 		}
 	}
+
 	var allEdgesAsString string
 	for _, e := range edges {
 		allEdgesAsString = allEdgesAsString + e
@@ -192,6 +195,10 @@ func (service Service) GetConsumedEvents() []Event {
 	return externalEvents
 }
 
+func (service Service) ConsumesEvents() bool {
+	return len(service.GetConsumedEvents()) > 0
+}
+
 func (serv Service) HasDateField() bool {
 	status := false
 	for _, command := range serv.Commands {
@@ -203,6 +210,10 @@ func (serv Service) HasDateField() bool {
 		}
 	}
 	return status
+}
+
+func (s Service) NameToFirstUpper() string {
+	return strings.Title(s.Name)
 }
 
 func (serv Service) NameToLower() string {

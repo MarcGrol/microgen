@@ -8,19 +8,8 @@ import (
 
 // commands
 
-type CreateDayResultsCommand struct {
-	Year                   int   `json:"year" binding:"required"`
-	EtappeId               int   `json:"etappeId" binding:"required"`
-	BestDayCyclistIds      []int `json:"bestDayCyclistIds" `
-	BestAllroundCyclistIds []int `json:"bestAllroundCyclistIds" `
-	BestClimbCyclistIds    []int `json:"bestClimbCyclistIds" `
-	BestSprintCyclistIds   []int `json:"bestSprintCyclistIds" `
-}
-
 type CommandHandler interface {
 	Start(listenPort int)
-
-	HandleCreateDayResultsCommand(command *CreateDayResultsCommand) error
 
 	HandleGetResultsQuery(gamblerUid string) (*Results, error)
 }
@@ -29,20 +18,17 @@ type CommandHandler interface {
 
 type EventHandler interface {
 	Start()
-	OnTourCreated(event *events.TourCreated) error
-	OnEtappeCreated(event *events.EtappeCreated) error
 	OnCyclistCreated(event *events.CyclistCreated) error
+	OnEtappeCreated(event *events.EtappeCreated) error
 	OnGamblerCreated(event *events.GamblerCreated) error
 	OnGamblerTeamCreated(event *events.GamblerTeamCreated) error
+	OnTourCreated(event *events.TourCreated) error
 }
 
 type EventApplier interface {
-	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
-	ApplyEtappeResultsAvailable(event *events.EtappeResultsAvailable)
-	ApplyCyclistScoreCalculated(event *events.CyclistScoreCalculated)
-	ApplyGamblerScoreCalculated(event *events.GamblerScoreCalculated)
 	ApplyTourCreated(event *events.TourCreated)
-	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
+	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyGamblerCreated(event *events.GamblerCreated)
+	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
 }

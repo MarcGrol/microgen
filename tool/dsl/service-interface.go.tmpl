@@ -5,6 +5,7 @@ package {{.Service.NameToLower}}
 import (
     {{if .Service.HasDateField}}"time"{{end}}
     "{{.Application.Package}}/{{.Application.NameToFirstLower}}/events"
+    {{if .Service.ConsumesEvents}}"{{.Application.Package}}/lib/envelope"{{end}}
 )
 
 // commands
@@ -16,17 +17,6 @@ import (
 	{{end}}
 	}
 
-    {{/*
-    func (command {{.NameToFirstUpper}}Command) BasicValidate() error {
-        {{range .Input.Attributes}}
-        {{ if .IsInt}} // command.{{.NameToFirstUpper}} int {{end}}
-        {{ if .IsString}} // command.{{.NameToFirstUpper}} string {{end}}
-        {{ if .IsBoolean}} // command.{{.NameToFirstUpper}} bool {{end}}
-        {{ if .IsTimestamp}} // command.{{.NameToFirstUpper}} time.Time {{end}}
-        {{end}}
-        return nil
-    }
-    */}}
   {{end}}
 {{end}}
 
@@ -43,6 +33,8 @@ type CommandHandler interface {
 
 type EventHandler interface {
     Start()
+    {{if .Service.ConsumesEvents}}OnEnvelope( envelop *envelope.Envelope) error
+    {{end}}
     {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} ) error
     {{end}}
 }

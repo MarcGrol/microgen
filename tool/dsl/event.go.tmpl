@@ -18,12 +18,21 @@ const (
 {{end}}
 )
 
-func GetAllEventsTypes() []Type {
+func GetAllEventTypes() []Type {
    return []Type {
     {{range .GetUniqueEvents}} Type{{.NameToFirstUpper}},
     {{end}}
     } 
 }
+
+{{range .Services}}
+func Get{{.NameToFirstUpper}}EventTypes() []Type {
+   return []Type {
+    {{range .GetProducedEvents}}Type{{.NameToFirstUpper}},
+    {{end}}
+    } 
+}
+{{end}}
 
 func (t Type) String() string {
     switch( t ) {

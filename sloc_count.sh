@@ -87,9 +87,13 @@ echo "\n  Gambler-service:"
 countGeneratedLinesInDir ./tourApp/gambler "(gen)"
 countLogicLinesInDir ./tourApp/gambler
 
-echo "\n  Score-service:"
-countGeneratedLinesInDir ./tourApp/score "(gen)"
-countLogicLinesInDir ./tourApp/score
+echo "\n  News-service:"
+countGeneratedLinesInDir ./tourApp/news "(gen)"
+countLogicLinesInDir ./tourApp/news
+
+echo "\n  Notification-service:"
+countGeneratedLinesInDir ./tourApp/notification "(gen)"
+countLogicLinesInDir ./tourApp/notification
 
 echo "\n  Collector-service:"
 countGeneratedLinesInDir ./tourApp/collector
@@ -99,6 +103,7 @@ echo "\n  Proxy-service:"
 countLinesInDir ./tourApp/proxy
 
 echo "\n  Provisioning-tool:"
+countLinesInDir ./tourApp/client
 countLinesInDir ./tourApp/prov
 
 echo "\n  Web ui:"

@@ -23,6 +23,71 @@ func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store) *Gam
 	return handler
 }
 
+func (eventHandler *GamblerEventHandler) Start() error {
+	for _, eventType := range events.GetTourEventTypes() {
+		eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
+			return eventHandler.OnEnvelope(envelope)
+		})
+	}
+	/*
+
+		{
+			var topic events.Type = events.TypeTourCreated
+			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
+				event := events.UnWrapTourCreated(envelop)
+				return eventHandler.OnTourCreated(event)
+			})
+		}
+		{
+			var topic events.Type = events.TypeCyclistCreated
+			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
+				event := events.UnWrapCyclistCreated(envelop)
+				return eventHandler.OnCyclistCreated(event)
+			})
+		}
+		{
+			var topic events.Type = events.TypeEtappeCreated
+			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
+				event := events.UnWrapEtappeCreated(envelop)
+				return eventHandler.OnEtappeCreated(event)
+			})
+		}
+		{
+			var topic events.Type = events.TypeEtappeResultsCreated
+			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
+				event := events.UnWrapEtappeResultsCreated(envelop)
+				return eventHandler.OnEtappeResultsCreated(event)
+			})
+		}
+	*/
+	return nil
+}
+
+func (eh *GamblerEventHandler) OnEnvelope(envelop *envelope.Envelope) error {
+	return doStore(eh.store, []*envelope.Envelope{envelop})
+}
+
+func (eh *GamblerEventHandler) OnTourCreated(event *events.TourCreated) error {
+	log.Printf("OnTourCreated: event: %+v", event)
+	return nil
+}
+
+func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) error {
+
+	log.Printf("OnCyclistCreated: event: %+v", event)
+	return nil
+}
+
+func (eh *GamblerEventHandler) OnEtappeCreated(event *events.EtappeCreated) error {
+	log.Printf("OnEtappeCreated: event: %+v", event)
+	return nil
+}
+
+func (eh *GamblerEventHandler) OnEtappeResultsCreated(event *events.EtappeResultsCreated) error {
+	log.Printf("OnEtappeResultsCreated: event: %+v", event)
+	return nil
+}
+
 type GamblerCommandHandler struct {
 	bus   infra.PublishSubscriber
 	store infra.Store
@@ -33,17 +98,6 @@ func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) *G
 	handler.bus = bus
 	handler.store = store
 	return handler
-}
-
-func (eh *GamblerEventHandler) OnTourCreated(event *events.TourCreated) error {
-	log.Printf("OnTourCreated: event: %+v", event)
-	return doStore(eh.store, []*envelope.Envelope{event.Wrap()})
-}
-
-func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) error {
-
-	log.Printf("OnCyclistCreated: event: %+v", event)
-	return doStore(eh.store, []*envelope.Envelope{event.Wrap()})
 }
 
 func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command *CreateGamblerCommand) error {
@@ -146,6 +200,10 @@ func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year i
 	return gamblerContext.Gambler, nil
 }
 
+func (ch *GamblerCommandHandler) HandleGetResultsQuery(year int) (*Results, error) {
+	return nil, errors.New("HandleGetResultsQuery not implemented")
+}
+
 func getGamblerContext(store infra.Store, gamblerUid string, year int) (*GamblerContext, error) {
 	context := NewGamblerContext()
 
@@ -161,11 +219,13 @@ func getGamblerContext(store infra.Store, gamblerUid string, year int) (*Gambler
 
 	for _, envelop := range tourRelatedEvents {
 		if events.IsTourCreated(&envelop) {
-			event := events.UnWrapTourCreated(&envelop)
-			context.ApplyTourCreated(event)
+			context.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
 		} else if events.IsCyclistCreated(&envelop) {
-			event := events.UnWrapCyclistCreated(&envelop)
-			context.ApplyCyclistCreated(event)
+			context.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+		} else if events.IsEtappeCreated(&envelop) {
+			context.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		} else if events.IsEtappeResultsCreated(&envelop) {
+			context.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
 		} else {
 			log.Panicf("getGamblerOnUid(tour): Unexpected event %s", envelop.EventTypeName)
 		}
@@ -266,4 +326,17 @@ func (context *GamblerContext) ApplyGamblerTeamCreated(event *events.GamblerTeam
 
 	//log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
 	return
+}
+
+func (context *GamblerContext) ApplyEtappeCreated(event *events.EtappeCreated) {
+	log.Fatal("gambler.ApplyEtappeCreated not implemented")
+}
+
+func (context *GamblerContext) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
+	log.Fatal("gambler.ApplyEtappeResultsCreated not implemented")
+}
+
+type Results struct {
+	BestGamblers []Gambler
+	BestCyclists []Cyclist
 }

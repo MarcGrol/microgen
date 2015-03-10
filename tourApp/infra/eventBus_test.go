@@ -1,5 +1,6 @@
 package infra
 
+/*
 import (
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/lib/envelope"
@@ -68,3 +69,4 @@ func TestPublishSubscribe(t *testing.T) {
 		assert.Equal(t, "Rabo", actual.CyclistTeam)
 	}
 }
+*/

@@ -7,9 +7,9 @@ import (
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/http"
 	"github.com/MarcGrol/microgen/infra/store"
-	"github.com/MarcGrol/microgen/lib/envelope"
+	//"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/events"
+	//"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/gin-gonic/gin"
 	"os"
 	"strconv"
@@ -40,24 +40,6 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	commandHandler := NewGamblerCommandHandler(bus, store)
 	commandHandler.Start(listenPort)
 
-	return nil
-}
-
-func (eventHandler *GamblerEventHandler) Start() error {
-	{
-		var topic events.Type = events.TypeTourCreated
-		eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-			event := events.UnWrapTourCreated(envelop)
-			return eventHandler.OnTourCreated(event)
-		})
-	}
-	{
-		var topic events.Type = events.TypeCyclistCreated
-		eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-			event := events.UnWrapCyclistCreated(envelop)
-			return eventHandler.OnCyclistCreated(event)
-		})
-	}
 	return nil
 }
 

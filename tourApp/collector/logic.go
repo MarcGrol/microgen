@@ -5,8 +5,44 @@ import (
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/MarcGrol/microgen/tourApp/events"
 	"log"
 )
+
+type CollectorCommandHandler struct {
+	bus   infra.PublishSubscriber
+	store infra.Store
+}
+
+func NewCollectorCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
+	handler := new(CollectorCommandHandler)
+	handler.bus = bus
+	handler.store = store
+	return handler
+}
+
+type CollectorEventHandler struct {
+	bus   infra.PublishSubscriber
+	store infra.Store
+}
+
+func NewCollectorEventHandler(bus infra.PublishSubscriber, store infra.Store) EventHandler {
+	handler := new(CollectorEventHandler)
+	handler.bus = bus
+	handler.store = store
+	return handler
+}
+
+func (eventHandler *CollectorEventHandler) Start() error {
+
+	for _, eventType := range events.GetAllEventTypes() {
+		eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
+			return eventHandler.OnAnyEvent(envelope)
+		})
+	}
+
+	return nil
+}
 
 func (eh *CollectorEventHandler) OnAnyEvent(envelop *envelope.Envelope) error {
 	log.Printf("OnEvent: envelope: %+v", envelop)

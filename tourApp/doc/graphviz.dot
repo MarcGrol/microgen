@@ -32,6 +32,10 @@ digraph G {
 				"TourCreateEtappe"  [label="CreateEtappe\ncommand-handler", shape=box];
 			
 		
+			 
+				"TourCreateEtappeResults"  [label="CreateEtappeResults\ncommand-handler", shape=box];
+			
+		
 			
 			    "TourGetTour"  [label="GetTour\nquery-handler"];
 			
@@ -46,9 +50,13 @@ digraph G {
 
 		// events
 		 
-			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
-		 
 			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
+		 
+			"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
+		 
+			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
+		 
+			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -64,38 +72,60 @@ digraph G {
 			    "GamblerGetGambler"  [label="GetGambler\nquery-handler"];
 			
 		
+			
+			    "GamblerGetResults"  [label="GetResults\nquery-handler"];
+			
+		
 		// store
 		"GamblerStore" [shape=box, style=filled];
 	}
 
-	subgraph clusterscore {
+	subgraph clusternews {
 		
-		label="Score-service";
+		label="News-service";
 
 		// events
 		 
-			"ScoreCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
+			"NewsTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
-			"ScoreGamblerCreated" [label="GamblerCreated\nevent-handler", shape=diamond];
+			"NewsEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		 
-			"ScoreGamblerTeamCreated" [label="GamblerTeamCreated\nevent-handler", shape=diamond];
+			"NewsCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
-			"ScoreTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
-		 
-			"ScoreEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
+			"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
 			 
-				"ScoreCreateDayResults"  [label="CreateDayResults\ncommand-handler", shape=box];
+				"NewsCreateNewsItem"  [label="CreateNewsItem\ncommand-handler", shape=box];
 			
 		
 			
-			    "ScoreGetResults"  [label="GetResults\nquery-handler"];
+			    "NewsGetNews"  [label="GetNews\nquery-handler"];
 			
 		
 		// store
-		"ScoreStore" [shape=box, style=filled];
+		"NewsStore" [shape=box, style=filled];
+	}
+
+	subgraph clusternotification {
+		
+		label="Notification-service";
+
+		// events
+		 
+			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=diamond];
+		
+		// commands
+		
+			 
+				"NotificationSubscribeToNotifications"  [label="SubscribeToNotifications\ncommand-handler", shape=box];
+			
+		
+		// store
+		"NotificationStore" [shape=box, style=filled];
 	}
 
 
@@ -134,6 +164,8 @@ digraph G {
 	
 	//"Proxy" -> "TourCreateEtappe" [label="json/HTTP", arrowhead=crow];
 	
+	//"Proxy" -> "TourCreateEtappeResults" [label="json/HTTP", arrowhead=crow];
+	
 	//"Proxy" -> "TourGetTour" [label="json/HTTP", arrowhead=crow];
 	
 
@@ -145,24 +177,28 @@ digraph G {
 	
 	//"Proxy" -> "GamblerGetGambler" [label="json/HTTP", arrowhead=crow];
 	
+	//"Proxy" -> "GamblerGetResults" [label="json/HTTP", arrowhead=crow];
+	
 
 	
-	"Proxy" -> "ScoreCreateDayResults" [label="json/HTTP", lhead=clusterscore, arrowhead=crow];
+	"Proxy" -> "NewsCreateNewsItem" [label="json/HTTP", lhead=clusternews, arrowhead=crow];
 	// omit other commands and queries for readability
 	
-	//"Proxy" -> "ScoreGetResults" [label="json/HTTP", arrowhead=crow];
+	//"Proxy" -> "NewsGetNews" [label="json/HTTP", arrowhead=crow];
+	
+
+	
+	"Proxy" -> "NotificationSubscribeToNotifications" [label="json/HTTP", lhead=clusternotification, arrowhead=crow];
+	// omit other commands and queries for readability
 	
 
 	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
 
 	// edges for events
-	"TourCreateTour" -> "GamblerTourCreated" [label="TourCreated-event", style=dashed];
-	"TourCreateTour" -> "ScoreTourCreated" [label="TourCreated-event", style=dashed];
-	"TourCreateCyclist" -> "GamblerCyclistCreated" [label="CyclistCreated-event", style=dashed];
-	"TourCreateCyclist" -> "ScoreCyclistCreated" [label="CyclistCreated-event", style=dashed];
-	"TourCreateEtappe" -> "ScoreEtappeCreated" [label="EtappeCreated-event", style=dashed];
-	"GamblerCreateGambler" -> "ScoreGamblerCreated" [label="GamblerCreated-event", style=dashed];
-	"GamblerCreateGamblerTeam" -> "ScoreGamblerTeamCreated" [label="GamblerTeamCreated-event", style=dashed];
+	"TourCreateEtappeResults" -> "GamblerEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clustergambler",style=dashed];
+	"TourCreateEtappeResults" -> "NewsEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternews",style=dashed];
+	"TourCreateEtappeResults" -> "NotificationEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternotification",style=dashed];
+	"NewsCreateNewsItem" -> "NotificationNewsItemCreated" [label="events/NSQ", ltail="clusternews", lhead="clusternotification",style=dashed];
 
 
 }
