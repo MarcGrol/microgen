@@ -55,6 +55,7 @@ A tour-de-france application:
 - News: 
     - As journalist: Create a news item (31)
     - As anybody: View timeline of tour events and news events (32)
+    - As anybody: subscribe and receive news via email (33)
 - System administration: 
     - Keep track of everything that has happens within the system (50)
 
@@ -63,11 +64,13 @@ A tour-de-france application:
 Responsible for managing tours with their etappes and cyclists (1,2,3,4,5,6)
 
 ### Gambler-service
-Responsible for gamblers and their teams of cyclists (21,22,23,24) and
-Responsible for calculating and presenting results and scores (31,32)
+Responsible for gamblers and their teams of cyclists and scoring (21,22,23,24) and
 
 ### News-service
-Responsible for providing a timeline of tour and news events
+Responsible for accepting news items and providing a timeline of tour and news events
+
+### Notification-service
+Responsible for sending out tour and news items via email to subscribers
 
 ### Collector-service
 Non functional service that keeps track of everything that has happened. (5)
