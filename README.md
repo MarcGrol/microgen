@@ -56,8 +56,8 @@ A tour-de-france application:
     - As journalist: Create a news item (31)
     - As anybody: View timeline of tour events and news events (32)
     - As anybody: subscribe and receive news via email (33)
-- System administration: 
-    - Keep track of everything that has happens within the system (50)
+- Maintenance: 
+    - As system administrator: Keep track of everything that has happens within the system (50)
 
 ## Devision of functions in services
 ### Tour-service
