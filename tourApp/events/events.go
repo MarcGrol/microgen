@@ -26,22 +26,22 @@ const (
 
 func GetAllEventTypes() []Type {
 	return []Type{
+		TypeEtappeResultsCreated,
+		TypeGamblerCreated,
 		TypeGamblerTeamCreated,
 		TypeNewsItemCreated,
 		TypeTourCreated,
 		TypeCyclistCreated,
 		TypeEtappeCreated,
-		TypeEtappeResultsCreated,
-		TypeGamblerCreated,
 	}
 }
 
 func GetTourEventTypes() []Type {
 	return []Type{
+		TypeEtappeResultsCreated,
 		TypeTourCreated,
 		TypeCyclistCreated,
 		TypeEtappeCreated,
-		TypeEtappeResultsCreated,
 	}
 }
 
@@ -64,12 +64,6 @@ func GetNotificationEventTypes() []Type {
 
 func (t Type) String() string {
 	switch t {
-	case TypeEtappeResultsCreated:
-		return "EtappeResultsCreated"
-	case TypeGamblerCreated:
-		return "GamblerCreated"
-	case TypeGamblerTeamCreated:
-		return "GamblerTeamCreated"
 	case TypeNewsItemCreated:
 		return "NewsItemCreated"
 	case TypeTourCreated:
@@ -78,170 +72,15 @@ func (t Type) String() string {
 		return "CyclistCreated"
 	case TypeEtappeCreated:
 		return "EtappeCreated"
+	case TypeEtappeResultsCreated:
+		return "EtappeResultsCreated"
+	case TypeGamblerCreated:
+		return "GamblerCreated"
+	case TypeGamblerTeamCreated:
+		return "GamblerTeamCreated"
 
 	}
 	return "unknown"
-}
-
-type GamblerTeamCreated struct {
-	GamblerUid      string `json:"gamblerUid"`
-	Year            int    `json:"year"`
-	GamblerCyclists []int  `json:"gamblerCyclists"`
-}
-
-func (event *GamblerTeamCreated) Wrap() *envelope.Envelope {
-	var err error
-	var t Type = TypeGamblerTeamCreated
-
-	envelope := new(envelope.Envelope)
-	envelope.Uuid = uuid.New()
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.AggregateName = "gambler"
-	envelope.AggregateUid = event.GamblerUid
-
-	envelope.EventTypeName = t.String()
-	blob, err := json.Marshal(event)
-	if err != nil {
-		log.Printf("Error marshalling event payload %+v", err)
-		return nil //, err
-	}
-	envelope.EventData = string(blob)
-	return envelope //, nil
-}
-
-func IsGamblerTeamCreated(envelope *envelope.Envelope) bool {
-	var t Type = TypeGamblerTeamCreated
-	return envelope.EventTypeName == t.String()
-}
-
-func GetIfIsGamblerTeamCreated(envelop *envelope.Envelope) (*GamblerTeamCreated, bool) {
-	if IsGamblerTeamCreated(envelop) == false {
-		return nil, false
-	}
-	event := UnWrapGamblerTeamCreated(envelop)
-	return event, true
-}
-
-func UnWrapGamblerTeamCreated(envelop *envelope.Envelope) *GamblerTeamCreated {
-	if IsGamblerTeamCreated(envelop) == false {
-		return nil
-	}
-	var event GamblerTeamCreated
-	err := json.Unmarshal([]byte(envelop.EventData), &event)
-	if err != nil {
-		log.Printf("Error unmarshalling event payload %+v", err)
-		return nil
-	}
-
-	return &event
-}
-
-type NewsItemCreated struct {
-	Uid       string    `json:"uid"`
-	Year      int       `json:"year"`
-	Timestamp time.Time `json:"timestamp"`
-	Message   string    `json:"message"`
-	Sender    string    `json:"sender"`
-}
-
-func (event *NewsItemCreated) Wrap() *envelope.Envelope {
-	var err error
-	var t Type = TypeNewsItemCreated
-
-	envelope := new(envelope.Envelope)
-	envelope.Uuid = uuid.New()
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.AggregateName = "news"
-	envelope.AggregateUid = event.Uid
-
-	envelope.EventTypeName = t.String()
-	blob, err := json.Marshal(event)
-	if err != nil {
-		log.Printf("Error marshalling event payload %+v", err)
-		return nil //, err
-	}
-	envelope.EventData = string(blob)
-	return envelope //, nil
-}
-
-func IsNewsItemCreated(envelope *envelope.Envelope) bool {
-	var t Type = TypeNewsItemCreated
-	return envelope.EventTypeName == t.String()
-}
-
-func GetIfIsNewsItemCreated(envelop *envelope.Envelope) (*NewsItemCreated, bool) {
-	if IsNewsItemCreated(envelop) == false {
-		return nil, false
-	}
-	event := UnWrapNewsItemCreated(envelop)
-	return event, true
-}
-
-func UnWrapNewsItemCreated(envelop *envelope.Envelope) *NewsItemCreated {
-	if IsNewsItemCreated(envelop) == false {
-		return nil
-	}
-	var event NewsItemCreated
-	err := json.Unmarshal([]byte(envelop.EventData), &event)
-	if err != nil {
-		log.Printf("Error unmarshalling event payload %+v", err)
-		return nil
-	}
-
-	return &event
-}
-
-type TourCreated struct {
-	Year int `json:"year"`
-}
-
-func (event *TourCreated) Wrap() *envelope.Envelope {
-	var err error
-	var t Type = TypeTourCreated
-
-	envelope := new(envelope.Envelope)
-	envelope.Uuid = uuid.New()
-	envelope.SequenceNumber = 0 // Set later by event-store
-	envelope.Timestamp = time.Now()
-	envelope.AggregateName = "tour"
-	envelope.AggregateUid = strconv.Itoa(event.Year)
-	envelope.EventTypeName = t.String()
-	blob, err := json.Marshal(event)
-	if err != nil {
-		log.Printf("Error marshalling event payload %+v", err)
-		return nil //, err
-	}
-	envelope.EventData = string(blob)
-	return envelope //, nil
-}
-
-func IsTourCreated(envelope *envelope.Envelope) bool {
-	var t Type = TypeTourCreated
-	return envelope.EventTypeName == t.String()
-}
-
-func GetIfIsTourCreated(envelop *envelope.Envelope) (*TourCreated, bool) {
-	if IsTourCreated(envelop) == false {
-		return nil, false
-	}
-	event := UnWrapTourCreated(envelop)
-	return event, true
-}
-
-func UnWrapTourCreated(envelop *envelope.Envelope) *TourCreated {
-	if IsTourCreated(envelop) == false {
-		return nil
-	}
-	var event TourCreated
-	err := json.Unmarshal([]byte(envelop.EventData), &event)
-	if err != nil {
-		log.Printf("Error unmarshalling event payload %+v", err)
-		return nil
-	}
-
-	return &event
 }
 
 type CyclistCreated struct {
@@ -457,6 +296,167 @@ func UnWrapGamblerCreated(envelop *envelope.Envelope) *GamblerCreated {
 		return nil
 	}
 	var event GamblerCreated
+	err := json.Unmarshal([]byte(envelop.EventData), &event)
+	if err != nil {
+		log.Printf("Error unmarshalling event payload %+v", err)
+		return nil
+	}
+
+	return &event
+}
+
+type GamblerTeamCreated struct {
+	GamblerUid      string `json:"gamblerUid"`
+	Year            int    `json:"year"`
+	GamblerCyclists []int  `json:"gamblerCyclists"`
+}
+
+func (event *GamblerTeamCreated) Wrap() *envelope.Envelope {
+	var err error
+	var t Type = TypeGamblerTeamCreated
+
+	envelope := new(envelope.Envelope)
+	envelope.Uuid = uuid.New()
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.AggregateName = "gambler"
+	envelope.AggregateUid = event.GamblerUid
+
+	envelope.EventTypeName = t.String()
+	blob, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Error marshalling event payload %+v", err)
+		return nil //, err
+	}
+	envelope.EventData = string(blob)
+	return envelope //, nil
+}
+
+func IsGamblerTeamCreated(envelope *envelope.Envelope) bool {
+	var t Type = TypeGamblerTeamCreated
+	return envelope.EventTypeName == t.String()
+}
+
+func GetIfIsGamblerTeamCreated(envelop *envelope.Envelope) (*GamblerTeamCreated, bool) {
+	if IsGamblerTeamCreated(envelop) == false {
+		return nil, false
+	}
+	event := UnWrapGamblerTeamCreated(envelop)
+	return event, true
+}
+
+func UnWrapGamblerTeamCreated(envelop *envelope.Envelope) *GamblerTeamCreated {
+	if IsGamblerTeamCreated(envelop) == false {
+		return nil
+	}
+	var event GamblerTeamCreated
+	err := json.Unmarshal([]byte(envelop.EventData), &event)
+	if err != nil {
+		log.Printf("Error unmarshalling event payload %+v", err)
+		return nil
+	}
+
+	return &event
+}
+
+type NewsItemCreated struct {
+	Uid       string    `json:"uid"`
+	Year      int       `json:"year"`
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+	Sender    string    `json:"sender"`
+}
+
+func (event *NewsItemCreated) Wrap() *envelope.Envelope {
+	var err error
+	var t Type = TypeNewsItemCreated
+
+	envelope := new(envelope.Envelope)
+	envelope.Uuid = uuid.New()
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.AggregateName = "news"
+	envelope.AggregateUid = event.Uid
+
+	envelope.EventTypeName = t.String()
+	blob, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Error marshalling event payload %+v", err)
+		return nil //, err
+	}
+	envelope.EventData = string(blob)
+	return envelope //, nil
+}
+
+func IsNewsItemCreated(envelope *envelope.Envelope) bool {
+	var t Type = TypeNewsItemCreated
+	return envelope.EventTypeName == t.String()
+}
+
+func GetIfIsNewsItemCreated(envelop *envelope.Envelope) (*NewsItemCreated, bool) {
+	if IsNewsItemCreated(envelop) == false {
+		return nil, false
+	}
+	event := UnWrapNewsItemCreated(envelop)
+	return event, true
+}
+
+func UnWrapNewsItemCreated(envelop *envelope.Envelope) *NewsItemCreated {
+	if IsNewsItemCreated(envelop) == false {
+		return nil
+	}
+	var event NewsItemCreated
+	err := json.Unmarshal([]byte(envelop.EventData), &event)
+	if err != nil {
+		log.Printf("Error unmarshalling event payload %+v", err)
+		return nil
+	}
+
+	return &event
+}
+
+type TourCreated struct {
+	Year int `json:"year"`
+}
+
+func (event *TourCreated) Wrap() *envelope.Envelope {
+	var err error
+	var t Type = TypeTourCreated
+
+	envelope := new(envelope.Envelope)
+	envelope.Uuid = uuid.New()
+	envelope.SequenceNumber = 0 // Set later by event-store
+	envelope.Timestamp = time.Now()
+	envelope.AggregateName = "tour"
+	envelope.AggregateUid = strconv.Itoa(event.Year)
+	envelope.EventTypeName = t.String()
+	blob, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Error marshalling event payload %+v", err)
+		return nil //, err
+	}
+	envelope.EventData = string(blob)
+	return envelope //, nil
+}
+
+func IsTourCreated(envelope *envelope.Envelope) bool {
+	var t Type = TypeTourCreated
+	return envelope.EventTypeName == t.String()
+}
+
+func GetIfIsTourCreated(envelop *envelope.Envelope) (*TourCreated, bool) {
+	if IsTourCreated(envelop) == false {
+		return nil, false
+	}
+	event := UnWrapTourCreated(envelop)
+	return event, true
+}
+
+func UnWrapTourCreated(envelop *envelope.Envelope) *TourCreated {
+	if IsTourCreated(envelop) == false {
+		return nil
+	}
+	var event TourCreated
 	err := json.Unmarshal([]byte(envelop.EventData), &event)
 	if err != nil {
 		log.Printf("Error unmarshalling event payload %+v", err)

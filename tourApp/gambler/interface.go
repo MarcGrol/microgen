@@ -39,10 +39,10 @@ type EventHandler interface {
 	Start()
 	OnEnvelope(envelop *envelope.Envelope) error
 
+	OnCyclistCreated(event *events.CyclistCreated) error
 	OnEtappeCreated(event *events.EtappeCreated) error
 	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
 	OnTourCreated(event *events.TourCreated) error
-	OnCyclistCreated(event *events.CyclistCreated) error
 }
 
 type EventApplier interface {

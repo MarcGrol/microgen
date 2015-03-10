@@ -25,11 +25,17 @@ type EventHandler interface {
 	Start()
 	OnEnvelope(envelop *envelope.Envelope) error
 
-	OnNewsItemCreated(event *events.NewsItemCreated) error
 	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
+	OnNewsItemCreated(event *events.NewsItemCreated) error
+	OnTourCreated(event *events.TourCreated) error
+	OnCyclistCreated(event *events.CyclistCreated) error
+	OnEtappeCreated(event *events.EtappeCreated) error
 }
 
 type EventApplier interface {
+	ApplyTourCreated(event *events.TourCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
+	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 	ApplyNewsItemCreated(event *events.NewsItemCreated)
 }

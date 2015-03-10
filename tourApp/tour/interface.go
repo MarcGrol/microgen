@@ -60,8 +60,8 @@ type EventHandler interface {
 }
 
 type EventApplier interface {
-	ApplyTourCreated(event *events.TourCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+	ApplyTourCreated(event *events.TourCreated)
 }

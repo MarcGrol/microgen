@@ -25,45 +25,42 @@ func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store) *Gam
 
 func (eventHandler *GamblerEventHandler) Start() error {
 	for _, eventType := range events.GetTourEventTypes() {
-		eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
+		err := eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
 			return eventHandler.OnEnvelope(envelope)
 		})
+		if err != nil {
+			return err
+		}
 	}
-	/*
 
-		{
-			var topic events.Type = events.TypeTourCreated
-			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-				event := events.UnWrapTourCreated(envelop)
-				return eventHandler.OnTourCreated(event)
-			})
-		}
-		{
-			var topic events.Type = events.TypeCyclistCreated
-			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-				event := events.UnWrapCyclistCreated(envelop)
-				return eventHandler.OnCyclistCreated(event)
-			})
-		}
-		{
-			var topic events.Type = events.TypeEtappeCreated
-			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-				event := events.UnWrapEtappeCreated(envelop)
-				return eventHandler.OnEtappeCreated(event)
-			})
-		}
-		{
-			var topic events.Type = events.TypeEtappeResultsCreated
-			eventHandler.bus.Subscribe(topic.String(), func(envelop *envelope.Envelope) error {
-				event := events.UnWrapEtappeResultsCreated(envelop)
-				return eventHandler.OnEtappeResultsCreated(event)
-			})
-		}
-	*/
 	return nil
 }
 
 func (eh *GamblerEventHandler) OnEnvelope(envelop *envelope.Envelope) error {
+	{
+		event, ok := events.GetIfIsTourCreated(envelop)
+		if ok {
+			eh.OnTourCreated(event)
+		}
+	}
+	{
+		event, ok := events.GetIfIsCyclistCreated(envelop)
+		if ok {
+			eh.OnCyclistCreated(event)
+		}
+	}
+	{
+		event, ok := events.GetIfIsEtappeCreated(envelop)
+		if ok {
+			eh.OnEtappeCreated(event)
+		}
+	}
+	{
+		event, ok := events.GetIfIsEtappeResultsCreated(envelop)
+		if ok {
+			eh.OnEtappeResultsCreated(event)
+		}
+	}
 	return doStore(eh.store, []*envelope.Envelope{envelop})
 }
 

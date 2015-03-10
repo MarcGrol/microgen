@@ -324,7 +324,7 @@ var (
 								{Name: "email", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 							},
 						},
-						ConsumesEvents: []dsl.Event{etappeResultsCreated, newsItemCreated},
+						ConsumesEvents: []dsl.Event{tourCreated, cyclistCreated, etappeCreated, etappeResultsCreated, newsItemCreated},
 						ProducesEvents: []dsl.Event{},
 					},
 				},

@@ -86,13 +86,13 @@ digraph G {
 
 		// events
 		 
+			"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
+		 
 			"NewsTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
 			"NewsEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		 
 			"NewsCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
-		 
-			"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -114,9 +114,15 @@ digraph G {
 
 		// events
 		 
-			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
-		 
 			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -195,10 +201,10 @@ digraph G {
 	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
 
 	// edges for events
-	"TourCreateEtappeResults" -> "GamblerEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clustergambler",style=dashed];
-	"TourCreateEtappeResults" -> "NewsEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternews",style=dashed];
 	"TourCreateEtappeResults" -> "NotificationEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternotification",style=dashed];
 	"NewsCreateNewsItem" -> "NotificationNewsItemCreated" [label="events/NSQ", ltail="clusternews", lhead="clusternotification",style=dashed];
+	"TourCreateEtappeResults" -> "GamblerEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clustergambler",style=dashed];
+	"TourCreateEtappeResults" -> "NewsEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternews",style=dashed];
 
 
 }
