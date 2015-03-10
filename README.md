@@ -19,7 +19,7 @@ Experiment with microservices using go.
 Specification effort:
 * Define your screens 
 * Based on screens, determine your commands and queries
-* Group related commands and queries in a service if this promotes cohesion
+* Group related commands and queries in a service if this promotes cohesion. Typically commands and queries related to an specific "aggregate" are grouped together.
 * Define your events, that exchange information between services.
 * Specify which events a command emits
 * Specify on which events a service depends
@@ -64,13 +64,13 @@ A tour-de-france application:
 Responsible for managing tours with their etappes and cyclists (1,2,3,4,5,6)
 
 ### Gambler-service
-Responsible for gamblers and their teams of cyclists and scoring (21,22,23,24) and
+Responsible for gamblers and their teams of cyclists and scoring (21,22,23,24)
 
 ### News-service
-Responsible for accepting news items and providing a timeline of tour and news events
+Responsible for accepting news items and providing a timeline of tour and news events (31,32)
 
 ### Notification-service
-Responsible for sending out tour and news items via email to subscribers
+Responsible for sending out tour and news items via email to subscribers (33)
 
 ### Collector-service
 Non functional service that keeps track of everything that has happened. (5)
@@ -80,7 +80,7 @@ Responsible for serving the web-UI and hiding all services behind a single http-
 
 ## Concept
 An "application" consists of the following concepts:
- - "service": An application cosnsts of one or more loosely couples "services". each service is responsible for keeping is own data.
+ - "service": An application consists of one or more loosely couples "services". each service is responsible for keeping is own data.
  - "commands" and "queries"(with "attributes"): Each service supports zero or more commands and queries. Browsers interact with the system via these commands and queries on a services.
  - "event" (with "attributes"): Each command emits zero or more events. An event is used to exchange of information between services in an async away.
 
