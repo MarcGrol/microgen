@@ -1,7 +1,7 @@
 # Microgen
 
 ## Goal
-Experiment with microservices using go. 
+Experiment with microservices using go. Truly understand how to balance scalability and understandability.
 
 ## Pros of microservice approach
 - The core of "micro" is to keep services small so you do not have to understand the full big monolith before you can be effective. 
