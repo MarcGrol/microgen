@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
-	"github.com/MarcGrol/microgen/infra/http"
+	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/infra/store"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/gin-gonic/gin"
