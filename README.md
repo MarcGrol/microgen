@@ -97,7 +97,9 @@ An "application" consists of the following concepts:
 
 ## Obtaining, building, running and testing
 
-    # prepare (has following dependencies (use go list -f {{.Deps}}) )
+    # fetch external dependencies: 
+    go list -f {{.Deps}}' # to find dependencies of app
+    
     go get github.com/bitly/go-nsq
     # go get github.com/bitly/go-simplejson
     go get github.com/gin-gonic/gin
@@ -111,9 +113,9 @@ An "application" consists of the following concepts:
     go get github.com/MarcGrol/microgen
     cd ${GOPATH}/src/github.com/MarcGrol/microgen
     
-    ./sloc_count.sh         # get overview of the applications and its compoments
+    ./sloc_count.sh         # get overview of the application and its compoments
     go test ./...           # to run all unit tests
-    go install              # to create executable
+    go install              # to create executable "${GOPATH}/bin/microgen"
     
     # Sync source-code with application-dsl
     ${GOPATH}/bin/microgen -tool=gen -base-dir=. # to generate interfaces based on ./application.go
@@ -125,7 +127,7 @@ An "application" consists of the following concepts:
     # Start the application
     ${GOPATH}/bin/microgen -service=tour      -port=8081 -base-dir=.
     ${GOPATH}/bin/microgen -service=gambler   -port=8082 -base-dir=.
-    ${GOPATH}/bin/microgen -service=score     -port=8083 -base-dir=.
+    ${GOPATH}/bin/microgen -service=news      -port=8083 -base-dir=.
     ${GOPATH}/bin/microgen -service=collector -port=8084 -base-dir=.
     ${GOPATH}/bin/microgen -service=proxy     -port=8080 -base-dir=.
     
