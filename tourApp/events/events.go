@@ -15,33 +15,33 @@ type Type int
 
 const (
 	TypeUnknown              Type = iota
-	TypeGamblerTeamCreated        = 5
-	TypeNewsItemCreated           = 10
 	TypeTourCreated               = 1
 	TypeCyclistCreated            = 2
 	TypeEtappeCreated             = 3
 	TypeEtappeResultsCreated      = 7
 	TypeGamblerCreated            = 4
+	TypeGamblerTeamCreated        = 5
+	TypeNewsItemCreated           = 10
 )
 
 func GetAllEventTypes() []Type {
 	return []Type{
-		TypeEtappeResultsCreated,
 		TypeGamblerCreated,
 		TypeGamblerTeamCreated,
 		TypeNewsItemCreated,
 		TypeTourCreated,
 		TypeCyclistCreated,
 		TypeEtappeCreated,
+		TypeEtappeResultsCreated,
 	}
 }
 
 func GetTourEventTypes() []Type {
 	return []Type{
-		TypeEtappeResultsCreated,
 		TypeTourCreated,
 		TypeCyclistCreated,
 		TypeEtappeCreated,
+		TypeEtappeResultsCreated,
 	}
 }
 

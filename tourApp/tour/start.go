@@ -37,7 +37,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	return nil
 }
 
-func (commandHandler *TourCommandHandler) Start(listenPort int) {
+func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -99,6 +99,8 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) {
 	}
 
 	engine.Run(fmt.Sprintf(":%d", listenPort))
+
+	return nil
 }
 
 func createStore(baseDir string) (infra.Store, error) {

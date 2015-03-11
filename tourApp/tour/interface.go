@@ -40,7 +40,7 @@ type CreateEtappeResultsCommand struct {
 }
 
 type CommandHandler interface {
-	Start(listenPort int)
+	Start(listenPort int) error
 
 	HandleCreateTourCommand(command *CreateTourCommand) error
 
@@ -56,12 +56,12 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	Start()
+	Start() error
 }
 
 type EventApplier interface {
+	ApplyTourCreated(event *events.TourCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
-	ApplyTourCreated(event *events.TourCreated)
 }

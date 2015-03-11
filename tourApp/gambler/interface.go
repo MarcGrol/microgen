@@ -22,7 +22,7 @@ type CreateGamblerTeamCommand struct {
 }
 
 type CommandHandler interface {
-	Start(listenPort int)
+	Start(listenPort int) error
 
 	HandleCreateGamblerCommand(command *CreateGamblerCommand) error
 
@@ -36,13 +36,13 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	Start()
+	Start() error
 	OnEnvelope(envelop *envelope.Envelope) error
 
+	OnTourCreated(event *events.TourCreated) error
 	OnCyclistCreated(event *events.CyclistCreated) error
 	OnEtappeCreated(event *events.EtappeCreated) error
 	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
-	OnTourCreated(event *events.TourCreated) error
 }
 
 type EventApplier interface {

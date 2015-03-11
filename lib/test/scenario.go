@@ -14,28 +14,24 @@ import (
 	"testing"
 )
 
-type Scenarios struct {
-	Scenarios []Scenario
-}
+type CommandScenarioExecutorFunc func(scenario *CommandScenario) error
 
-type ScenarioExecutorFunc func(scenario *Scenario) error
-
-type Scenario struct {
+type CommandScenario struct {
 	Bus   infra.PublishSubscriber `json:"-"`
 	Store infra.Store             `json:"-"`
 
-	Title             string               `json:"title"`
-	Given             []*envelope.Envelope `json:"given"`
-	When              ScenarioExecutorFunc `json:"-"`
-	Command           interface{}          `json:"command"`
-	Expect            []*envelope.Envelope `json:"expect"`
-	Actual            []*envelope.Envelope `json:"actual"`
-	ErrMsg            *string              `json:"errMsg"`
-	InvalidInputError bool                 `json:"invalidInputError"`
-	NotFoundError     bool                 `json:"notFoundError"`
+	Title             string                      `json:"title"`
+	Given             []*envelope.Envelope        `json:"given"`
+	When              CommandScenarioExecutorFunc `json:"-"`
+	Command           interface{}                 `json:"command"`
+	Expect            []*envelope.Envelope        `json:"expect"`
+	Actual            []envelope.Envelope         `json:"actual"`
+	ErrMsg            *string                     `json:"errMsg"`
+	InvalidInputError bool                        `json:"invalidInputError"`
+	NotFoundError     bool                        `json:"notFoundError"`
 }
 
-func (s *Scenario) RunAndVerify(t *testing.T) {
+func (s *CommandScenario) RunAndVerify(t *testing.T) {
 
 	s.Store = NewFakeStore()
 	s.Bus = NewFakeBus()
@@ -46,9 +42,9 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 	}
 
 	// subscribe to all expected topics to catch published evemts
-	s.Actual = make([]*envelope.Envelope, 0, 10)
+	s.Actual = make([]envelope.Envelope, 0, 10)
 	callback := func(envelope *envelope.Envelope) error {
-		s.Actual = append(s.Actual, envelope)
+		s.Actual = append(s.Actual, *envelope)
 		return nil
 	}
 	for _, expected := range s.Expect {
@@ -73,14 +69,80 @@ func (s *Scenario) RunAndVerify(t *testing.T) {
 		s.NotFoundError = myerrors.IsNotFoundError(err)
 	}
 
-	s.Dump(title2filename(s.Title))
+	Dump(s, title2filename(s.Title))
+}
+
+type EventScenarioExecutorFunc func(scenario *EventScenario) error
+
+type EventScenario struct {
+	Bus   infra.PublishSubscriber `json:"-"`
+	Store infra.Store             `json:"-"`
+
+	Title   string                    `json:"title"`
+	Given   []*envelope.Envelope      `json:"given"`
+	When    EventScenarioExecutorFunc `json:"-"`
+	Envelop *envelope.Envelope        `json:"envelope"`
+	Expect  []*envelope.Envelope      `json:"expect"`
+	Actual  []envelope.Envelope       `json:"actual"`
+	ErrMsg  *string                   `json:"errMsg"`
+}
+
+func (s *EventScenario) RunAndVerify(t *testing.T) {
+
+	s.Store = NewFakeStore()
+	s.Bus = NewFakeBus()
+
+	// store preconditions
+	for _, given := range s.Given {
+		s.Store.Store(given)
+	}
+
+	// subscribe to all expected topics to catch published evemts
+	s.Actual = make([]envelope.Envelope, 0, 10)
+	callback := func(envelope *envelope.Envelope) error {
+		s.Actual = append(s.Actual, *envelope)
+		return nil
+	}
+	for _, expected := range s.Expect {
+		s.Bus.Subscribe(expected.EventTypeName, callback)
+	}
+
+	// execute operation on subject
+	err := s.When(s)
+
+	// get messages from store
+	idx := 0
+	s.Store.Iterate(func(envelop *envelope.Envelope) {
+		s.Actual = append(s.Actual, *envelop)
+		idx++
+	})
+
+	if err == nil {
+		// basic ocmpare expected with actual
+		assert.Equal(t, len(s.Expect), len(s.Actual))
+		for idx := 0; idx < len(s.Expect); idx++ {
+			expected := s.Expect[idx]
+			actual := s.Actual[idx]
+			assert.Equal(t, expected.Uuid, actual.Uuid)
+			assert.Equal(t, expected.Timestamp, actual.Timestamp)
+			assert.Equal(t, expected.SequenceNumber, actual.SequenceNumber)
+			assert.Equal(t, expected.AggregateName, actual.AggregateName)
+			assert.Equal(t, expected.AggregateUid, actual.AggregateUid)
+			assert.Equal(t, expected.EventTypeName, actual.EventTypeName)
+		}
+	} else {
+		s.ErrMsg = new(string)
+		*s.ErrMsg = err.Error()
+	}
+
+	Dump(s, title2filename(s.Title))
 }
 
 func title2filename(title string) string {
 	return "../doc/" + strings.Replace(title, " ", "_", -1) + ".json"
 }
 
-func (s *Scenario) Dump(filename string) error {
+func Dump(scenario interface{}, filename string) error {
 	w, err := os.Create(filename)
 	if err != nil {
 		log.Printf("Error opening json-file %s (%s)", filename, err.Error())
@@ -88,7 +150,7 @@ func (s *Scenario) Dump(filename string) error {
 	}
 	defer w.Close()
 
-	jsondata, err := json.MarshalIndent(s, "", "  ")
+	jsondata, err := json.MarshalIndent(scenario, "", "  ")
 	if err != nil {
 		log.Printf("Error marshalling json %s", err.Error())
 		return err
@@ -146,7 +208,6 @@ func NewFakeStore() *FakeStore {
 func (store *FakeStore) Store(envelope *envelope.Envelope) error {
 	envelope.SequenceNumber = uint64(len(store.stored) + 1)
 	store.stored = append(store.stored, *envelope)
-	//log.Printf("FakeStore: stored: %v", envelope)
 	return nil
 }
 

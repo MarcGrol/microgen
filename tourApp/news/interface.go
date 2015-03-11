@@ -18,7 +18,7 @@ type CreateNewsItemCommand struct {
 }
 
 type CommandHandler interface {
-	Start(listenPort int)
+	Start(listenPort int) error
 
 	HandleCreateNewsItemCommand(command *CreateNewsItemCommand) error
 
@@ -28,19 +28,19 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	Start()
+	Start() error
 	OnEnvelope(envelop *envelope.Envelope) error
 
-	OnTourCreated(event *events.TourCreated) error
-	OnEtappeCreated(event *events.EtappeCreated) error
 	OnCyclistCreated(event *events.CyclistCreated) error
 	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
+	OnTourCreated(event *events.TourCreated) error
+	OnEtappeCreated(event *events.EtappeCreated) error
 }
 
 type EventApplier interface {
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 	ApplyNewsItemCreated(event *events.NewsItemCreated)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
-	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 }

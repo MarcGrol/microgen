@@ -21,7 +21,7 @@ import (
 {{end}}
 
 type CommandHandler interface {
-    Start( listenPort int)
+    Start( listenPort int) error
     {{range .Service.Commands}}
     	{{if .IsQuery}} Handle{{.NameToFirstUpper}}Query ( {{range .Input.Attributes}} {{.NameToFirstLower}} {{.TypeName}}, {{end}} ) ({{.OutputName}}, error)
     	{{else}} Handle{{.NameToFirstUpper}}Command ( command *{{.NameToFirstUpper}}Command ) error
@@ -32,7 +32,7 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-    Start()
+    Start() error
     {{if .Service.ConsumesEvents}}OnEnvelope( envelop *envelope.Envelope) error
     {{end}}
     {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} ) error

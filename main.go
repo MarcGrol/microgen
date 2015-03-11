@@ -6,9 +6,9 @@ import (
 	"github.com/MarcGrol/microgen/tool/dsl"
 	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
+	"github.com/MarcGrol/microgen/tourApp/news"
 	"github.com/MarcGrol/microgen/tourApp/prov"
 	"github.com/MarcGrol/microgen/tourApp/proxy"
-	"github.com/MarcGrol/microgen/tourApp/score"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
 	"os"
@@ -41,7 +41,7 @@ func printVersion() {
 func processArgs() {
 	tool = flag.String("tool", "", "Run in 'tool-mode: 'gen' pr 'prov'")
 	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
-	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler','score', 'proxy' or 'collector'")
+	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler','news', 'proxy' or 'collector'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
 	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
 	targetHostPort = flag.String("target-host", "localhost:8080", "For tool 'prov': Hostname where the application is running")
@@ -77,10 +77,10 @@ func main() {
 				log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
-		} else if *service == "score" {
-			err := score.Start(*httpPort, *busAddress, *baseDir)
+		} else if *service == "news" {
+			err := news.Start(*httpPort, *busAddress, *baseDir)
 			if err != nil {
-				log.Fatalf("Error starting 'score'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
+				log.Fatalf("Error starting 'news'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
 		} else if *service == "collector" {

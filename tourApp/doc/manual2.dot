@@ -1,0 +1,73 @@
+// Generated automatically by microgen: do not edit manually
+
+digraph G {
+    graph [compound=true, rankdir=LR];
+
+	subgraph clusterproxy {
+        label="Proxy";
+        "UI";
+        "Proxy";
+    }
+
+	subgraph clustertour {
+		label="Tour-service";
+		"TourCreateTour"  [label="CreateTour\ncommand-handler", style=filled, shape=box];
+		"TourCreateCyclist"  [label="CreateCyclist\ncommand-handler", style=filled, shape=box];			 
+		"TourCreateEtappe"  [label="CreateEtappe\ncommand-handler", style=filled, shape=box];
+		"TourCreateEtappeResults"  [label="CreateEtappeResults\ncommand-handler", style=filled, shape=box];
+	    "TourGetTour"  [label="GetTour\nquery-handler", style=rounded, shape=diamond];
+	}
+
+	subgraph clustergambler {
+		label="Gambler-service";
+		"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+		"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+		"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+		"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+		"GamblerCreateGambler"  [label="CreateGambler\ncommand-handler", style=filled, shape=box];
+		"GamblerCreateGamblerTeam"  [label="CreateGamblerTeam\ncommand-handler", style=filled, shape=box];
+	    "GamblerGetGambler"  [label="GetGambler\nquery-handler",style=rounded, shape=diamond];
+	    "GamblerGetResults"  [label="GetResults\nquery-handler",style=rounded, shape=diamond];			
+	}
+
+	subgraph clusternews {
+		label="News-service";
+
+		"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+		"NewsTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+		"NewsEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+		"NewsCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+		"NewsCreateNewsItem"  [label="CreateNewsItem\ncommand-handler", style=filled, shape=box];
+	    "NewsGetNews"  [label="GetNews\nquery-handler",style=rounded, shape=diamond];
+	}
+
+	subgraph clusternotification {
+		
+		label="Notification-service";
+		"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=oval];
+		"NotificationTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+		"NotificationCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+		"NotificationEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+		"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+		"NotificationSubscribeToNotifications"  [label="SubscribeToNotifications\ncommand-handler", style=filled, shape=box];
+			
+	}
+
+	subgraph clustercollector {
+		label="Collector-service";
+		"Any" [label="All\nevent-handler", shape=oval];
+		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler",style=rounded, shape=diamond];
+    }
+
+	"Browser\nApp" -> "UI" [label="html/css/javascript/HTTP",arrowhead=crow];
+	"Browser\nApp" -> "Proxy" [label="json/HTTP",arrowhead=crow];
+	"Proxy" -> "TourCreateTour" [label="json/HTTP", lhead=clustertour, arrowhead=crow];
+	"Proxy" -> "GamblerCreateGambler" [label="json/HTTP", lhead=clustergambler, arrowhead=crow];
+	"Proxy" -> "NewsCreateNewsItem" [label="json/HTTP", lhead=clusternews, arrowhead=crow];
+	"Proxy" -> "NotificationSubscribeToNotifications" [label="json/HTTP", lhead=clusternotification, arrowhead=crow];
+	"Proxy" -> "CollectorSearchEvents" [label="json/HTTP", lhead=clustercollector, arrowhead=crow];
+	"TourCreateEtappeResults" -> "GamblerEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clustergambler",style=dashed];
+	"TourCreateEtappeResults" -> "NewsEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternews",style=dashed];
+	"TourCreateEtappeResults" -> "NotificationEtappeResultsCreated" [label="events/NSQ", ltail="clustertour", lhead="clusternotification",style=dashed];
+	"NewsCreateNewsItem" -> "NotificationNewsItemCreated" [label="events/NSQ", ltail="clusternews", lhead="clusternotification",style=dashed];
+}

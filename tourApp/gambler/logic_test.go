@@ -6,17 +6,144 @@ import (
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
+
+func TestTourCreatedEvent(t *testing.T) {
+	var service EventHandler
+	input := (&events.TourCreated{Year: 2015}).Wrap()
+
+	scenario := test.EventScenario{
+		Title:   "Handle tour-created event",
+		Given:   []*envelope.Envelope{},
+		Envelop: input,
+		When: func(scenario *test.EventScenario) error {
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			return service.OnEnvelope(scenario.Envelop)
+		},
+		Expect: []*envelope.Envelope{input},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.ErrMsg)
+
+}
+
+func TestCyclistCreatedEvent(t *testing.T) {
+	var service EventHandler
+	given := (&events.TourCreated{Year: 2015}).Wrap()
+	input := (&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "Lance", CyclistTeam: "Shack"}).Wrap()
+
+	scenario := test.EventScenario{
+		Title:   "Handle cyclist-created event",
+		Given:   []*envelope.Envelope{given},
+		Envelop: input,
+		When: func(scenario *test.EventScenario) error {
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			return service.OnEnvelope(scenario.Envelop)
+		},
+		Expect: []*envelope.Envelope{given, input},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.ErrMsg)
+}
+
+func TestEtappeCreatedEvent(t *testing.T) {
+	var service EventHandler
+	given := (&events.TourCreated{Year: 2015}).Wrap()
+	input := (&events.EtappeCreated{
+		Year:                 2015,
+		EtappeId:             1,
+		EtappeDate:           time.Now(),
+		EtappeStartLocation:  "Luik",
+		EtappeFinishLocation: "Bastenaken",
+		EtappeLength:         256,
+		EtappeKind:           1}).Wrap()
+
+	scenario := test.EventScenario{
+		Title:   "Handle etappe-created event",
+		Given:   []*envelope.Envelope{given},
+		Envelop: input,
+		When: func(scenario *test.EventScenario) error {
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			return service.OnEnvelope(scenario.Envelop)
+		},
+		Expect: []*envelope.Envelope{given, input},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.ErrMsg)
+}
+
+func TestEtappeResultsEvent(t *testing.T) {
+	var service EventHandler
+	givenTour := (&events.TourCreated{Year: 2015}).Wrap()
+
+	givenEtappe := (&events.EtappeCreated{
+		Year:                 2015,
+		EtappeId:             1,
+		EtappeDate:           time.Now(),
+		EtappeStartLocation:  "Luik",
+		EtappeFinishLocation: "Bastenaken",
+		EtappeLength:         256,
+		EtappeKind:           1}).Wrap()
+
+	givenCyclist1 := (&events.CyclistCreated{
+		Year:        2015,
+		CyclistId:   1,
+		CyclistName: "Lance",
+		CyclistTeam: "Shack"}).Wrap()
+
+	givenCyclist2 := (&events.CyclistCreated{
+		Year:        2015,
+		CyclistId:   2,
+		CyclistName: "Boogerd",
+		CyclistTeam: "Rabo"}).Wrap()
+
+	givenCyclist3 := (&events.CyclistCreated{
+		Year:        2015,
+		CyclistId:   3,
+		CyclistName: "Pantani",
+		CyclistTeam: "Lampre"}).Wrap()
+
+	input := (&events.EtappeResultsCreated{
+		Year:                     2015,
+		LastEtappeId:             3,
+		BestDayCyclistIds:        []int{1, 2},
+		BestAllrondersCyclistIds: []int{1, 2, 3},
+		BestSprintersCyclistIds:  []int{3, 2, 1},
+		BestClimberCyclistIds:    []int{3, 2},
+	}).Wrap()
+
+	scenario := test.EventScenario{
+		Title:   "Handle etappe-created event",
+		Given:   []*envelope.Envelope{givenTour, givenEtappe, givenCyclist1, givenCyclist2, givenCyclist3},
+		Envelop: input,
+		When: func(scenario *test.EventScenario) error {
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			return service.OnEnvelope(scenario.Envelop)
+		},
+		Expect: []*envelope.Envelope{givenTour, givenEtappe, givenCyclist1, givenCyclist2, givenCyclist3, input},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Nil(t, scenario.ErrMsg)
+}
 
 func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
-	scenario := test.Scenario{
+	scenario := test.CommandScenario{
 		Title: "Create new gambler success",
 		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 		},
 		Command: &CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
-		When: func(scenario *test.Scenario) error {
+		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
 		},
@@ -32,7 +159,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 	expected, ok := events.GetIfIsGamblerCreated(scenario.Expect[0])
 	assert.True(t, ok)
 	assert.NotNil(t, expected)
-	actual, ok := events.GetIfIsGamblerCreated(scenario.Actual[0])
+	actual, ok := events.GetIfIsGamblerCreated(&scenario.Actual[0])
 	assert.True(t, ok)
 	assert.NotNil(t, actual)
 	assert.Equal(t, expected.GamblerUid, actual.GamblerUid)
@@ -50,7 +177,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 
 func TestCreateGamblerTeamCommand(t *testing.T) {
 	var service CommandHandler
-	scenario := test.Scenario{
+	scenario := test.CommandScenario{
 		Title: "Create new gambler team success",
 		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
@@ -59,7 +186,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
 		},
 		Command: &CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
-		When: func(scenario *test.Scenario) error {
+		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
@@ -73,7 +200,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 	assert.Nil(t, scenario.ErrMsg)
 
 	expected := events.UnWrapGamblerTeamCreated(scenario.Expect[0])
-	actual := events.UnWrapGamblerTeamCreated(scenario.Actual[0])
+	actual := events.UnWrapGamblerTeamCreated(&scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 	assert.Equal(t, expected.GamblerUid, actual.GamblerUid)
 	assert.Equal(t, 2, len(actual.GamblerCyclists))

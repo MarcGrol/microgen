@@ -65,23 +65,22 @@ func (eh *GamblerEventHandler) OnEnvelope(envelop *envelope.Envelope) error {
 }
 
 func (eh *GamblerEventHandler) OnTourCreated(event *events.TourCreated) error {
-	log.Printf("OnTourCreated: event: %+v", event)
+	//log.Printf("OnTourCreated: event: %+v", event)
 	return nil
 }
 
 func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) error {
-
-	log.Printf("OnCyclistCreated: event: %+v", event)
+	//log.Printf("OnCyclistCreated: event: %+v", event)
 	return nil
 }
 
 func (eh *GamblerEventHandler) OnEtappeCreated(event *events.EtappeCreated) error {
-	log.Printf("OnEtappeCreated: event: %+v", event)
+	//log.Printf("OnEtappeCreated: event: %+v", event)
 	return nil
 }
 
 func (eh *GamblerEventHandler) OnEtappeResultsCreated(event *events.EtappeResultsCreated) error {
-	log.Printf("OnEtappeResultsCreated: event: %+v", event)
+	//log.Printf("OnEtappeResultsCreated: event: %+v", event)
 	return nil
 }
 
@@ -163,7 +162,7 @@ func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
 			log.Printf("Error storing event: %+v", err)
 			return err
 		}
-		log.Printf("Successfully stored event: %+v", env)
+		//log.Printf("Successfully stored event: %+v", env)
 	}
 	return nil
 }
@@ -209,11 +208,6 @@ func getGamblerContext(store infra.Store, gamblerUid string, year int) (*Gambler
 		return context, err
 	}
 
-	gamblerRelatedEvents, err := store.Get("gambler", gamblerUid)
-	if err != nil {
-		return context, err
-	}
-
 	for _, envelop := range tourRelatedEvents {
 		if events.IsTourCreated(&envelop) {
 			context.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
@@ -226,6 +220,11 @@ func getGamblerContext(store infra.Store, gamblerUid string, year int) (*Gambler
 		} else {
 			log.Panicf("getGamblerOnUid(tour): Unexpected event %s", envelop.EventTypeName)
 		}
+	}
+
+	gamblerRelatedEvents, err := store.Get("gambler", gamblerUid)
+	if err != nil {
+		return context, err
 	}
 
 	for _, envelop := range gamblerRelatedEvents {

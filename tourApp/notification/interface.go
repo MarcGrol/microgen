@@ -14,7 +14,7 @@ type SubscribeToNotificationsCommand struct {
 }
 
 type CommandHandler interface {
-	Start(listenPort int)
+	Start(listenPort int) error
 
 	HandleSubscribeToNotificationsCommand(command *SubscribeToNotificationsCommand) error
 }
@@ -22,14 +22,14 @@ type CommandHandler interface {
 // events
 
 type EventHandler interface {
-	Start()
+	Start() error
 	OnEnvelope(envelop *envelope.Envelope) error
 
+	OnEtappeCreated(event *events.EtappeCreated) error
 	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
 	OnNewsItemCreated(event *events.NewsItemCreated) error
 	OnTourCreated(event *events.TourCreated) error
 	OnCyclistCreated(event *events.CyclistCreated) error
-	OnEtappeCreated(event *events.EtappeCreated) error
 }
 
 type EventApplier interface {
