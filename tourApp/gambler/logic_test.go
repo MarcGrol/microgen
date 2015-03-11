@@ -14,7 +14,7 @@ func TestTourCreatedEvent(t *testing.T) {
 	input := (&events.TourCreated{Year: 2015}).Wrap()
 
 	scenario := test.EventScenario{
-		Title:   "Handle tour-created event",
+		Title:   "Handle tour created event",
 		Given:   []*envelope.Envelope{},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
@@ -36,7 +36,7 @@ func TestCyclistCreatedEvent(t *testing.T) {
 	input := (&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "Lance", CyclistTeam: "Shack"}).Wrap()
 
 	scenario := test.EventScenario{
-		Title:   "Handle cyclist-created event",
+		Title:   "Handle cyclist created event",
 		Given:   []*envelope.Envelope{given},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
@@ -64,7 +64,7 @@ func TestEtappeCreatedEvent(t *testing.T) {
 		EtappeKind:           1}).Wrap()
 
 	scenario := test.EventScenario{
-		Title:   "Handle etappe-created event",
+		Title:   "Handle etappe created event",
 		Given:   []*envelope.Envelope{given},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
@@ -120,7 +120,7 @@ func TestEtappeResultsEvent(t *testing.T) {
 	}).Wrap()
 
 	scenario := test.EventScenario{
-		Title:   "Handle etappe-created event",
+		Title:   "Handle etappe results created event",
 		Given:   []*envelope.Envelope{givenTour, givenEtappe, givenCyclist1, givenCyclist2, givenCyclist3},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {

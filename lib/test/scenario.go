@@ -81,7 +81,7 @@ type EventScenario struct {
 	Title   string                    `json:"title"`
 	Given   []*envelope.Envelope      `json:"given"`
 	When    EventScenarioExecutorFunc `json:"-"`
-	Envelop *envelope.Envelope        `json:"envelope"`
+	Envelop *envelope.Envelope        `json:"event"`
 	Expect  []*envelope.Envelope      `json:"expect"`
 	Actual  []envelope.Envelope       `json:"actual"`
 	ErrMsg  *string                   `json:"errMsg"`
