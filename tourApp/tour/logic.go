@@ -67,7 +67,6 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("Tour %d already exists", command.Year)))
 	}
 
-	// apply business logic
 	tourCreatedEvent := events.TourCreated{command.Year}
 
 	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)

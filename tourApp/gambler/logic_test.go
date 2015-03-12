@@ -19,7 +19,7 @@ func TestTourCreatedEvent(t *testing.T) {
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
 			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
-			return service.OnEnvelope(scenario.Envelop)
+			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []*envelope.Envelope{input},
 	}
@@ -41,7 +41,7 @@ func TestCyclistCreatedEvent(t *testing.T) {
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
 			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
-			return service.OnEnvelope(scenario.Envelop)
+			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []*envelope.Envelope{given, input},
 	}
@@ -69,7 +69,7 @@ func TestEtappeCreatedEvent(t *testing.T) {
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
 			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
-			return service.OnEnvelope(scenario.Envelop)
+			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []*envelope.Envelope{given, input},
 	}
@@ -125,7 +125,7 @@ func TestEtappeResultsEvent(t *testing.T) {
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
 			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
-			return service.OnEnvelope(scenario.Envelop)
+			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []*envelope.Envelope{givenTour, givenEtappe, givenCyclist1, givenCyclist2, givenCyclist3, input},
 	}

@@ -125,14 +125,13 @@ var (
 		Id:   10,
 		Name: "NewsItemCreated",
 		Attributes: []dsl.Attribute{
-			{Name: "uid", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 			{Name: "year", Type: dsl.TypeInt, Cardinality: dsl.Mandatory},
 			{Name: "timestamp", Type: dsl.TypeTimestamp, Cardinality: dsl.Mandatory},
 			{Name: "message", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 			{Name: "sender", Type: dsl.TypeString, Cardinality: dsl.Mandatory},
 		},
 		AggregateName:      "news",
-		AggregateFieldName: "uid",
+		AggregateFieldName: "year",
 	}
 
 	application = dsl.Application{
