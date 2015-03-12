@@ -3,6 +3,7 @@ package news
 // Generated automatically by microgen: do not edit manually
 
 import (
+	"fmt"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"time"
@@ -30,17 +31,38 @@ type CommandHandler interface {
 type EventHandler interface {
 	Start() error
 	OnEnvelope(envelop *envelope.Envelope) error
-
-	OnCyclistCreated(event *events.CyclistCreated) error
-	OnEtappeResultsCreated(event *events.EtappeResultsCreated) error
-	OnTourCreated(event *events.TourCreated) error
-	OnEtappeCreated(event *events.EtappeCreated) error
 }
 
 type EventApplier interface {
+	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 	ApplyNewsItemCreated(event *events.NewsItemCreated)
 	ApplyTourCreated(event *events.TourCreated)
-	ApplyEtappeCreated(event *events.EtappeCreated)
-	ApplyCyclistCreated(event *events.CyclistCreated)
+}
+
+func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+	for _, envelop := range envelopes {
+		switch envelop.EventTypeName {
+		case "NewsItemCreated":
+			aggregate.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
+			break
+		case "TourCreated":
+			aggregate.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+			break
+		case "EtappeCreated":
+			aggregate.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+			break
+		case "CyclistCreated":
+			aggregate.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+			break
+		case "EtappeResultsCreated":
+			aggregate.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+			break
+
+		default:
+			return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
+		}
+	}
+	return nil
 }

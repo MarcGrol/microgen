@@ -38,45 +38,12 @@ func (eventHandler *GamblerEventHandler) Start() error {
 
 func (eh *GamblerEventHandler) OnEnvelope(envelop *envelope.Envelope) error {
 	{
-		event, ok := events.GetIfIsTourCreated(envelop)
-		if ok {
-			eh.OnTourCreated(event)
-		}
-	}
-	{
-		event, ok := events.GetIfIsCyclistCreated(envelop)
-		if ok {
-			eh.OnCyclistCreated(event)
-		}
-	}
-	{
-		event, ok := events.GetIfIsEtappeCreated(envelop)
-		if ok {
-			eh.OnEtappeCreated(event)
-		}
-	}
-	{
 		event, ok := events.GetIfIsEtappeResultsCreated(envelop)
 		if ok {
 			eh.OnEtappeResultsCreated(event)
 		}
 	}
 	return doStore(eh.store, []*envelope.Envelope{envelop})
-}
-
-func (eh *GamblerEventHandler) OnTourCreated(event *events.TourCreated) error {
-	//log.Printf("OnTourCreated: event: %+v", event)
-	return nil
-}
-
-func (eh *GamblerEventHandler) OnCyclistCreated(event *events.CyclistCreated) error {
-	//log.Printf("OnCyclistCreated: event: %+v", event)
-	return nil
-}
-
-func (eh *GamblerEventHandler) OnEtappeCreated(event *events.EtappeCreated) error {
-	//log.Printf("OnEtappeCreated: event: %+v", event)
-	return nil
 }
 
 func (eh *GamblerEventHandler) OnEtappeResultsCreated(event *events.EtappeResultsCreated) error {
@@ -172,8 +139,8 @@ func doStoreAndPublish(store infra.Store, bus infra.PublishSubscriber, envelopes
 	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
-	for _, env := range envelopes {
-		err = bus.Publish(env)
+	for _, envelop := range envelopes {
+		err = bus.Publish(envelop)
 		if err != nil {
 			return myerrors.NewInternalError(err)
 		}
@@ -207,37 +174,13 @@ func getGamblerContext(store infra.Store, gamblerUid string, year int) (*Gambler
 	if err != nil {
 		return context, err
 	}
-
-	for _, envelop := range tourRelatedEvents {
-		if events.IsTourCreated(&envelop) {
-			context.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
-		} else if events.IsCyclistCreated(&envelop) {
-			context.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
-		} else if events.IsEtappeCreated(&envelop) {
-			context.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
-		} else if events.IsEtappeResultsCreated(&envelop) {
-			context.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
-		} else {
-			log.Panicf("getGamblerOnUid(tour): Unexpected event %s", envelop.EventTypeName)
-		}
-	}
+	applyEvents(tourRelatedEvents, context)
 
 	gamblerRelatedEvents, err := store.Get("gambler", gamblerUid)
 	if err != nil {
 		return context, err
 	}
-
-	for _, envelop := range gamblerRelatedEvents {
-		if events.IsGamblerCreated(&envelop) {
-			event := events.UnWrapGamblerCreated(&envelop)
-			context.ApplyGamblerCreated(event)
-		} else if events.IsGamblerTeamCreated(&envelop) {
-			event := events.UnWrapGamblerTeamCreated(&envelop)
-			context.ApplyGamblerTeamCreated(event)
-		} else {
-			log.Panicf("getGamblerOnUid(gambler): Unexpected event %s", envelop.EventTypeName)
-		}
-	}
+	applyEvents(gamblerRelatedEvents, context)
 
 	return context, nil
 }

@@ -21,25 +21,27 @@ digraph G {
 		// commands
 		
 			 
-				"TourCreateTour"  [label="CreateTour\ncommand-handler", style=filled, shape=box];
+				"TourCreateTour"  [label="CreateTour\ncommand-handler", shape=box];
 			
 		
 			 
-				"TourCreateCyclist"  [label="CreateCyclist\ncommand-handler", style=filled, shape=box];
+				"TourCreateCyclist"  [label="CreateCyclist\ncommand-handler", shape=box];
 			
 		
 			 
-				"TourCreateEtappe"  [label="CreateEtappe\ncommand-handler", style=filled, shape=box];
+				"TourCreateEtappe"  [label="CreateEtappe\ncommand-handler", shape=box];
 			
 		
 			 
-				"TourCreateEtappeResults"  [label="CreateEtappeResults\ncommand-handler", style=filled, shape=box];
+				"TourCreateEtappeResults"  [label="CreateEtappeResults\ncommand-handler", shape=box];
 			
 		
 			
-			    "TourGetTour"  [label="GetTour\nquery-handler", style=rounded, shape=diamond];
+			    "TourGetTour"  [label="GetTour\nquery-handler"];
 			
 		
+		// store
+		"TourStore" [shape=box, style=filled];
 	}
 
 	subgraph clustergambler {
@@ -48,31 +50,34 @@ digraph G {
 
 		// events
 		 
-			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		 
-			"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
-			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
-			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+			"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
 			 
-				"GamblerCreateGambler"  [label="CreateGambler\ncommand-handler", style=filled, shape=box];
+				"GamblerCreateGambler"  [label="CreateGambler\ncommand-handler", shape=box];
 			
 		
 			 
-				"GamblerCreateGamblerTeam"  [label="CreateGamblerTeam\ncommand-handler", style=filled, shape=box];
+				"GamblerCreateGamblerTeam"  [label="CreateGamblerTeam\ncommand-handler", shape=box];
 			
 		
 			
-			    "GamblerGetGambler"  [label="GetGambler\nquery-handler",style=rounded, shape=diamond];
+			    "GamblerGetGambler"  [label="GetGambler\nquery-handler"];
 			
 		
 			
-			    "GamblerGetResults"  [label="GetResults\nquery-handler",style=rounded, shape=diamond];
+			    "GamblerGetResults"  [label="GetResults\nquery-handler"];
 			
+		
+		// store
+		"GamblerStore" [shape=box, style=filled];
 	}
 
 	subgraph clusternews {
@@ -81,23 +86,26 @@ digraph G {
 
 		// events
 		 
-			"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+			"NewsTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
-			"NewsTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+			"NewsEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		 
-			"NewsEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+			"NewsCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
-			"NewsCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+			"NewsEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
 			 
-				"NewsCreateNewsItem"  [label="CreateNewsItem\ncommand-handler", style=filled, shape=box];
+				"NewsCreateNewsItem"  [label="CreateNewsItem\ncommand-handler", shape=box];
 			
 		
 			
-			    "NewsGetNews"  [label="GetNews\nquery-handler",style=rounded, shape=diamond];
+			    "NewsGetNews"  [label="GetNews\nquery-handler"];
 			
+		
+		// store
+		"NewsStore" [shape=box, style=filled];
 	}
 
 	subgraph clusternotification {
@@ -106,36 +114,40 @@ digraph G {
 
 		// events
 		 
-			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=oval];
+			"NotificationTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
-			"NotificationTourCreated" [label="TourCreated\nevent-handler", shape=oval];
+			"NotificationCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
-			"NotificationCyclistCreated" [label="CyclistCreated\nevent-handler", shape=oval];
+			"NotificationEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
 		 
-			"NotificationEtappeCreated" [label="EtappeCreated\nevent-handler", shape=oval];
+			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		 
-			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=oval];
+			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
 			 
-			"NotificationSubscribeToNotifications"  [label="SubscribeToNotifications\ncommand-handler", style=filled, shape=box];
+				"NotificationSubscribeToNotifications"  [label="SubscribeToNotifications\ncommand-handler", shape=box];
 			
+		
+		// store
+		"NotificationStore" [shape=box, style=filled];
 	}
 
 
 	subgraph clustercollector {
 		label="Collector-service";
 		
-		"Any" [label="All\nevent-handler", shape=oval];
-		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler",style=rounded, shape=diamond];
+		"Any" [label="All\nevent-handler", shape=diamond];
+		"CollectorSearchEvents"  [label="SearchEvents\nquery-handler"];
+		"CollectorStore" [shape=box, style=filled];
     }
 
 // legend does not really clear things, so skip
 //    subgraph clusterlegend {
 //		label="Legend";
 //		"CommandHandler"  [label="Command-handler", shape=box];
-//		"EventHandler"  [label="Event-handler", shape=oval];
+//		"EventHandler"  [label="Event-handler", shape=diamond];
 //		"QueryHandler"  [label="Query-handler"];
 //		"Store local to service" [shape=box, style=filled];
 //   }

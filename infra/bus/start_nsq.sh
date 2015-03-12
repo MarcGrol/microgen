@@ -20,6 +20,7 @@ curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerTeamCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_CyclistScoreCalculated
 curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerScoreCalculated
+curl -X POST localhost:4161/topic/create?topic=tourApp_NewsItemCreated
 
 #
 # stats

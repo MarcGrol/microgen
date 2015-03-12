@@ -174,21 +174,7 @@ func getTourOnYear(store infra.Store, year int) (*Tour, bool) {
 	}
 
 	tour := NewTour()
-	for _, envelop := range tourRelatedEvents {
-		if events.IsTourCreated(&envelop) {
-			event := events.UnWrapTourCreated(&envelop)
-			tour.ApplyTourCreated(event)
-		} else if events.IsEtappeCreated(&envelop) {
-			event := events.UnWrapEtappeCreated(&envelop)
-			tour.ApplyEtappeCreated(event)
-		} else if events.IsCyclistCreated(&envelop) {
-			event := events.UnWrapCyclistCreated(&envelop)
-			tour.ApplyCyclistCreated(event)
-		} else {
-			log.Panicf("getTourOnYear: Unexpected event %s", envelop.EventTypeName)
-		}
-	}
-
+	applyEvents(tourRelatedEvents, tour)
 	return tour, true
 }
 

@@ -3,6 +3,8 @@ package tour
 // Generated automatically by microgen: do not edit manually
 
 import (
+	"fmt"
+	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"time"
 )
@@ -64,4 +66,27 @@ type EventApplier interface {
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+}
+
+func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+	for _, envelop := range envelopes {
+		switch envelop.EventTypeName {
+		case "EtappeResultsCreated":
+			aggregate.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+			break
+		case "TourCreated":
+			aggregate.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+			break
+		case "CyclistCreated":
+			aggregate.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+			break
+		case "EtappeCreated":
+			aggregate.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+			break
+
+		default:
+			return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
+		}
+	}
+	return nil
 }

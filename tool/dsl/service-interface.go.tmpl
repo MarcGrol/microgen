@@ -3,9 +3,10 @@ package {{.Service.NameToLower}}
 // Generated automatically by microgen: do not edit manually
 
 import (
+    "fmt"
     {{if .Service.HasDateField}}"time"{{end}}
     "{{.Application.Package}}/{{.Application.NameToFirstLower}}/events"
-    {{if .Service.ConsumesEvents}}"{{.Application.Package}}/lib/envelope"{{end}}
+    "{{.Application.Package}}/lib/envelope"
 )
 
 // commands
@@ -35,12 +36,24 @@ type EventHandler interface {
     Start() error
     {{if .Service.ConsumesEvents}}OnEnvelope( envelop *envelope.Envelope) error
     {{end}}
-    {{range .Service.GetConsumedEvents}} On{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} ) error
-    {{end}}
 }
 
 type EventApplier interface {
     {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} )
     {{end}}
+}
+
+func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+    for _, envelop := range envelopes {
+        switch( envelop.EventTypeName ) {
+            {{range .Service.GetAllEvents}}case "{{.NameToFirstUpper}}":
+                aggregate.Apply{{.NameToFirstUpper}}(events.UnWrap{{.NameToFirstUpper}}(&envelop))
+                break
+            {{end}}
+            default:
+            return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
+        }
+    }
+    return nil
 }
 
