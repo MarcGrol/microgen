@@ -26,7 +26,7 @@ func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store) *Gam
 func (eventHandler *GamblerEventHandler) Start() error {
 	for _, eventType := range events.GetTourEventTypes() {
 		err := eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
-			return eventHandler.OnEnvelope(envelope)
+			return eventHandler.OnEvent(envelope)
 		})
 		if err != nil {
 			return err
@@ -36,7 +36,7 @@ func (eventHandler *GamblerEventHandler) Start() error {
 	return nil
 }
 
-func (eh *GamblerEventHandler) OnEnvelope(envelop *envelope.Envelope) error {
+func (eh *GamblerEventHandler) OnEvent(envelop *envelope.Envelope) error {
 	{
 		event, ok := events.GetIfIsEtappeResultsCreated(envelop)
 		if ok {

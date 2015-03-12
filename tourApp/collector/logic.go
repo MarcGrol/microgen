@@ -45,7 +45,7 @@ func (eventHandler *CollectorEventHandler) Start() error {
 }
 
 func (eh *CollectorEventHandler) OnAnyEvent(envelop *envelope.Envelope) error {
-	log.Printf("OnEvent: envelope: %+v", envelop)
+	log.Printf("OnAnyEvent: envelope: %+v", envelop)
 	return doStore(eh.store, []*envelope.Envelope{envelop})
 }
 

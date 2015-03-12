@@ -39,38 +39,38 @@ type CommandHandler interface {
 
 type EventHandler interface {
 	Start() error
-	OnEnvelope(envelop *envelope.Envelope) error
+	OnEvent(envelop *envelope.Envelope) error
 }
 
-type EventApplier interface {
-	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+type AggregateRoot interface {
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyGamblerCreated(event *events.GamblerCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 }
 
-func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
 	for _, envelop := range envelopes {
 		switch envelop.EventTypeName {
 		case "CyclistCreated":
-			aggregate.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
 			break
 		case "GamblerTeamCreated":
-			aggregate.ApplyGamblerTeamCreated(events.UnWrapGamblerTeamCreated(&envelop))
+			aggregateRoot.ApplyGamblerTeamCreated(events.UnWrapGamblerTeamCreated(&envelop))
 			break
 		case "EtappeCreated":
-			aggregate.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+			aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
 			break
 		case "EtappeResultsCreated":
-			aggregate.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
 			break
 		case "TourCreated":
-			aggregate.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
 			break
 		case "GamblerCreated":
-			aggregate.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
+			aggregateRoot.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
 			break
 
 		default:

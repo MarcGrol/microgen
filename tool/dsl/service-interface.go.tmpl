@@ -34,20 +34,20 @@ type CommandHandler interface {
 
 type EventHandler interface {
     Start() error
-    {{if .Service.ConsumesEvents}}OnEnvelope( envelop *envelope.Envelope) error
+    {{if .Service.ConsumesEvents}}OnEvent( envelop *envelope.Envelope) error
     {{end}}
 }
 
-type EventApplier interface {
+type AggregateRoot interface {
     {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} )
     {{end}}
 }
 
-func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
     for _, envelop := range envelopes {
         switch( envelop.EventTypeName ) {
             {{range .Service.GetAllEvents}}case "{{.NameToFirstUpper}}":
-                aggregate.Apply{{.NameToFirstUpper}}(events.UnWrap{{.NameToFirstUpper}}(&envelop))
+                aggregateRoot.Apply{{.NameToFirstUpper}}(events.UnWrap{{.NameToFirstUpper}}(&envelop))
                 break
             {{end}}
             default:

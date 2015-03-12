@@ -30,34 +30,34 @@ type CommandHandler interface {
 
 type EventHandler interface {
 	Start() error
-	OnEnvelope(envelop *envelope.Envelope) error
+	OnEvent(envelop *envelope.Envelope) error
 }
 
-type EventApplier interface {
-	ApplyEtappeCreated(event *events.EtappeCreated)
-	ApplyCyclistCreated(event *events.CyclistCreated)
+type AggregateRoot interface {
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 	ApplyNewsItemCreated(event *events.NewsItemCreated)
 	ApplyTourCreated(event *events.TourCreated)
+	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyCyclistCreated(event *events.CyclistCreated)
 }
 
-func applyEvents(envelopes []envelope.Envelope, aggregate EventApplier) error {
+func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
 	for _, envelop := range envelopes {
 		switch envelop.EventTypeName {
 		case "NewsItemCreated":
-			aggregate.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
+			aggregateRoot.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
 			break
 		case "TourCreated":
-			aggregate.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
 			break
 		case "EtappeCreated":
-			aggregate.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+			aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
 			break
 		case "CyclistCreated":
-			aggregate.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
 			break
 		case "EtappeResultsCreated":
-			aggregate.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
 			break
 
 		default:
