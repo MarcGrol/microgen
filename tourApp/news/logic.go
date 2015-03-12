@@ -73,12 +73,8 @@ func (ch *NewsCommandHandler) HandleCreateNewsItemCommand(command *CreateNewsIte
 	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{newsItemEvent.Wrap()})
 }
 
-func (ch *NewsCommandHandler) HandleGetNewsQuery(command *CreateNewsItemCommand) (*News, error) {
-	err := ch.validateCreateNewsItemCommand(command)
-	if err != nil {
-		return nil, myerrors.NewInvalidInputError(err)
-	}
-	news, err := getNews(ch.store, command.Year)
+func (ch *NewsCommandHandler) HandleGetNewsQuery(year int) (*News, error) {
+	news, err := getNews(ch.store, year)
 	if err != nil {
 		return nil, myerrors.NewInternalError(err)
 	}
@@ -156,5 +152,9 @@ func (news *News) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) 
 
 func (news *News) ApplyNewsItemCreated(event *events.NewsItemCreated) {
 	log.Fatal("news.%s not implemented", "ApplyNewsItemCreated")
+	news.NewItems = append(news.NewItems,
+		NewsItem{Message: event.Message,
+			Sender:    event.Sender,
+			Timestamp: event.Timestamp})
 	// TODO create news item out of this
 }

@@ -45,6 +45,19 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
+		api.GET("/gambler/:year", func(c *gin.Context) {
+			year, err := strconv.Atoi(c.Params.ByName("year"))
+			if err != nil {
+				http.HandleError(c, myerrors.NewInvalidInputError(err))
+				return
+			}
+			results, err := commandHandler.HandleGetResultsQuery(gamblerUid, year)
+			if err != nil {
+				http.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *results)
+		})
 		api.GET("/gambler/:gamblerUid/year/:year", func(c *gin.Context) {
 			gamblerUid := c.Params.ByName("gamblerUid")
 			year, err := strconv.Atoi(c.Params.ByName("year"))

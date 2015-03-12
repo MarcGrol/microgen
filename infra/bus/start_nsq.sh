@@ -15,7 +15,7 @@ ps -eaf|grep nsq
 curl -X POST localhost:4161/topic/create?topic=tourApp_TourCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_EtappeCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_CyclistCreated
-curl -X POST localhost:4161/topic/create?topic=tourApp_EtappeResultsAvailable
+curl -X POST localhost:4161/topic/create?topic=tourApp_EtappeResultsCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_GamblerTeamCreated
 curl -X POST localhost:4161/topic/create?topic=tourApp_CyclistScoreCalculated

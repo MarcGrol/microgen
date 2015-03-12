@@ -70,7 +70,7 @@ countLinesInDir ./lib/test
 countLinesInDir ./lib/envelope
 countLinesInDir ./infra/bus
 countLinesInDir ./infra/store
-countLinesInDir ./infra/http
+countLinesInDir ./infra/myhttp
 
 echo "\nApplication specification:"
 countSpecLinesInDir .
