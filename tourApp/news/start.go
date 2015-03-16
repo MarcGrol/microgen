@@ -69,12 +69,12 @@ func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
 		api.GET("/tour/:year/news", func(c *gin.Context) {
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				http.HandleError(c, myerrors.NewInvalidInputError(err))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
 			tour, err := commandHandler.HandleGetNewsQuery(year)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *tour)
@@ -83,15 +83,15 @@ func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
 			var command CreateNewsItemCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
 				return
 			}
 			err := commandHandler.HandleCreateNewsItemCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 	}
 

@@ -47,7 +47,7 @@ func (commandHandler *CollectorCommandHandler) Start(listenPort int) error {
 			aggregateUid := c.Params.ByName("aggregateUid")
 			results, err := commandHandler.HandleSearchQuery(eventType, aggregateType, aggregateUid)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *results)
