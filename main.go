@@ -92,7 +92,7 @@ func main() {
 		} else if *service == "proxy" {
 			err := proxy.Start(*baseDir, *httpPort, 8081, 8082, 8083, 8084)
 			if err != nil {
-				log.Fatalf("Error starting 'proxy'-service on port %d", *httpPort, err)
+				log.Fatalf("Error starting 'proxy'-service on port %d (%+v)", *httpPort, err)
 			}
 		} else {
 			fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)

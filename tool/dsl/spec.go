@@ -110,7 +110,7 @@ func (app Application) GraphvizEdgesForEvents() string {
 						fromService.NameToLower(),
 						toService.NameToLower())
 					// lhead=clustercollector, arrowhead=crow
-					edges[fmt.Sprintf("%s-%s", fromService, toService)] = edge
+					edges[fmt.Sprintf("%s-%s", fromService.Name, toService.Name)] = edge
 				}
 			}
 		}

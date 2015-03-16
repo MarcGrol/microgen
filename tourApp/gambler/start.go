@@ -48,12 +48,12 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 		api.GET("/gambler/:year", func(c *gin.Context) {
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				http.HandleError(c, myerrors.NewInvalidInputError(err))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
-			results, err := commandHandler.HandleGetResultsQuery(gamblerUid, year)
+			results, err := commandHandler.HandleGetResultsQuery(year)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *results)
@@ -62,12 +62,12 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 			gamblerUid := c.Params.ByName("gamblerUid")
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				http.HandleError(c, myerrors.NewInvalidInputError(err))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
 			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid, year)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *gambler)
@@ -76,29 +76,29 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 			var command CreateGamblerCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
 				return
 			}
 			err := commandHandler.HandleCreateGamblerCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
 			var command CreateGamblerTeamCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
 				return
 			}
 			err := commandHandler.HandleCreateGamblerTeamCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 	}
 

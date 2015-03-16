@@ -44,12 +44,12 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 		api.GET("/tour/:year", func(c *gin.Context) {
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				http.HandleError(c, myerrors.NewInvalidInputError(err))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
 			tour, err := commandHandler.HandleGetTourQuery(year)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
 			c.JSON(200, *tour)
@@ -58,43 +58,43 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 			var command CreateTourCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
 				return
 			}
 			err := commandHandler.HandleCreateTourCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
 			var command CreateEtappeCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
 				return
 			}
 			err := commandHandler.HandleCreateEtappeCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
 			var command CreateCyclistCommand
 			ok := c.Bind(&command)
 			if ok == false {
-				http.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
 				return
 			}
 			err := commandHandler.HandleCreateCyclistCommand(&command)
 			if err != nil {
-				http.HandleError(c, err)
+				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *http.SuccessResponse())
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 	}
 

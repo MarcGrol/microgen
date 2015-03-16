@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
 	"github.com/MarcGrol/microgen/tourApp/tour"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -38,7 +40,7 @@ func (c *Client) CreateTour(year int) error {
 		log.Printf("Create tour %d", year)
 		command := &tour.CreateTourCommand{Year: year}
 
-		url := fmt.Sprintf("http://%s/api/tour", c.hostname)
+		url := fmt.Sprintf("%s/api/tour", c.hostname)
 
 		c.Err = doPost(url, command)
 	}
@@ -54,7 +56,7 @@ func (c *Client) CreateCyclist(year int, number int, name string, team string) e
 			Name: name,
 			Team: team}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d/cyclist", c.hostname, year)
+		url := fmt.Sprintf("%s/api/tour/%d/cyclist", c.hostname, year)
 
 		c.Err = doPost(url, command)
 	}
@@ -73,7 +75,27 @@ func (c *Client) CreateEtappe(year int, number int, timestamp time.Time, start s
 			Length:         length,
 			Kind:           kind}
 
-		url := fmt.Sprintf("http://%s/api/tour/%d/etappe", c.hostname, year)
+		url := fmt.Sprintf("%s/api/tour/%d/etappe", c.hostname, year)
+
+		c.Err = doPost(url, command)
+
+	}
+	return c.Err
+}
+
+func (c *Client) CreateEtappeResults(year int, etappeId int, bestDayCyclistIds []int,
+	bestAllrondersCyclistIds []int, bestSprintersCyclistIds []int, bestClimberCyclistIds []int) error {
+	if c.Err == nil {
+		log.Printf("Create etappe results for etappe %d", etappeId)
+		command := &tour.CreateEtappeResultsCommand{
+			Year:                   year,
+			EtappeId:               etappeId,
+			BestDayCyclistIds:      bestDayCyclistIds,
+			BestAllroundCyclistIds: bestAllrondersCyclistIds,
+			BestClimbCyclistIds:    bestClimberCyclistIds,
+			BestSprintCyclistIds:   bestSprintersCyclistIds}
+
+		url := fmt.Sprintf("%s/api/tour/%d/etappe/%d", c.hostname, year, etappeId)
 
 		c.Err = doPost(url, command)
 
@@ -89,7 +111,7 @@ func (c *Client) CreateGambler(gamblerUid string, name string, email string) err
 			Name:       name,
 			Email:      email}
 
-		url := fmt.Sprintf("http://%s/api/gambler", c.hostname)
+		url := fmt.Sprintf("%s/api/gambler", c.hostname)
 
 		c.Err = doPost(url, command)
 	}
@@ -105,7 +127,7 @@ func (c *Client) CreateGamblerTeam(year int, gamblerUid string, cyclistsIds []in
 			CyclistIds: cyclistsIds}
 		// gambler/:gamblerUid/year/:year/team
 
-		url := fmt.Sprintf("http://%s/api/gambler/%s/year/%d/team", c.hostname, gamblerUid, year)
+		url := fmt.Sprintf("%s/api/gambler/%s/year/%d/team", c.hostname, gamblerUid, year)
 
 		c.Err = doPost(url, command)
 
@@ -117,42 +139,40 @@ func doPost(url string, command interface{}) error {
 	// serialize request to json
 	requestBody, err := encodeRequest(command)
 	if err != nil {
-		log.Printf("Error marshalling request %+v", err)
-		return err
+		return fmt.Errorf("Error unmarshalling request: %s", err.Error())
 	}
 
 	log.Printf("Posting on url '%s' <- %v", url, requestBody)
 
-	// perform httc call
+	// perform http call
 	httpResponse, err := http.Post(url, "application/json", requestBody)
 	if err != nil {
-		log.Printf("Error posting request %+v", err)
-		return err
-	}
-
-	// evaluate response
-	if httpResponse.StatusCode != http.StatusOK {
-		errMsg := fmt.Sprintf("Http error: %d (%+v)", httpResponse.StatusCode, httpResponse.Status)
-		log.Printf(errMsg)
-		// err = errors.New(errMsg)
-		// return err
+		return fmt.Errorf("Error performing http POST: %s", err.Error())
 	}
 
 	// decode response
-	dec := json.NewDecoder(httpResponse.Body)
-	var applicationResponse Response
-	err = dec.Decode(&applicationResponse)
+	applicationResponse, err := decodeResponse(httpResponse.Body)
 	if err != nil {
-		log.Printf("Error unmarshalling response: %+v", err)
-		return err
+		return fmt.Errorf("Error unmarshalling response: %s", err.Error())
 	}
 
 	// evaluate application status
-	if applicationResponse.Status == false {
-		errMsg := fmt.Sprintf("Applicative error: %s", applicationResponse.Error.Message)
-		log.Printf(errMsg)
-		err = errors.New(errMsg)
-		return err
+	if httpResponse.StatusCode != http.StatusOK {
+		errMsg := "unknown error"
+		if applicationResponse.Error != nil {
+			errMsg = fmt.Sprintf(applicationResponse.Error.Message)
+		}
+		if httpResponse.StatusCode == http.StatusInternalServerError {
+			return myerrors.NewInternalError(errors.New(errMsg))
+		} else if httpResponse.StatusCode == http.StatusNotFound {
+			return myerrors.NewNotFoundError(errors.New(errMsg))
+		} else if httpResponse.StatusCode == http.StatusBadRequest {
+			return myerrors.NewInvalidInputError(errors.New(errMsg))
+		} else if httpResponse.StatusCode == http.StatusUnauthorized {
+			return myerrors.NewNotAuthorizedError(errors.New(errMsg))
+		} else {
+			return errors.New(errMsg)
+		}
 	}
 
 	log.Printf("Succesfully performed POST on url %s", url)
@@ -168,4 +188,14 @@ func encodeRequest(command interface{}) (*bytes.Buffer, error) {
 		return nil, err
 	}
 	return &requestBody, nil
+}
+
+func decodeResponse(responseBody io.ReadCloser) (*Response, error) {
+	dec := json.NewDecoder(responseBody)
+	var applicationResponse Response
+	err := dec.Decode(&applicationResponse)
+	if err != nil {
+		return nil, err
+	}
+	return &applicationResponse, nil
 }

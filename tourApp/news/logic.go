@@ -131,27 +131,27 @@ func getNews(store infra.Store, year int) (*News, error) {
 }
 
 func (news *News) ApplyTourCreated(event *events.TourCreated) {
-	log.Fatal("news.%s not implemented", "ApplyTourCreated")
+	log.Fatalf("news - %s not implemented", "ApplyTourCreated")
 	// TODO create news item out of this
 }
 
 func (news *News) ApplyCyclistCreated(event *events.CyclistCreated) {
-	log.Fatal("news.%s not implemented", "ApplyCyclistCreated")
+	log.Fatalf("news - %s not implemented", "ApplyCyclistCreated")
 	// TODO create news item out of this
 }
 
 func (news *News) ApplyEtappeCreated(event *events.EtappeCreated) {
-	log.Fatal("news.%s not implemented", "ApplyEtappeCreated")
+	log.Fatalf("news - %s not implemented", "ApplyEtappeCreated")
 	// TODO create news item out of this
 }
 
 func (news *News) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
-	log.Fatal("news.%s not implemented", "ApplyEtappeResultsCreated")
+	log.Fatalf("news - %s not implemented", "ApplyEtappeResultsCreated")
 	// TODO create news item out of this
 }
 
 func (news *News) ApplyNewsItemCreated(event *events.NewsItemCreated) {
-	log.Fatal("news.%s not implemented", "ApplyNewsItemCreated")
+	log.Fatalf("news - %s not implemented", "ApplyNewsItemCreated")
 	news.NewItems = append(news.NewItems,
 		NewsItem{Message: event.Message,
 			Sender:    event.Sender,
