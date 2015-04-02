@@ -1,5 +1,8 @@
 #!/bin/sh -x
 
+pkill nsqadmin
+pkill nsqd
+pkill  nsqlookupd
 MICROGEN_ROOT=${GOPATH}/src/github.com/MarcGrol/microgen/
 
 mkdir -p ${MICROGEN_ROOT}/log

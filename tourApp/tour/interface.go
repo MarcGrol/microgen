@@ -16,25 +16,25 @@ type CreateTourCommand struct {
 }
 
 type CreateCyclistCommand struct {
-	Year int    `json:"year" binding:"required"`
-	Id   int    `json:"id" binding:"required"`
-	Name string `json:"name" binding:"required"`
-	Team string `json:"team" binding:"required"`
+	Year int    `json:"year"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+	Team string `json:"team"`
 }
 
 type CreateEtappeCommand struct {
-	Year           int       `json:"year" binding:"required"`
-	Id             int       `json:"id" binding:"required"`
-	Date           time.Time `json:"date" binding:"required"`
-	StartLocation  string    `json:"startLocation" binding:"required"`
-	FinishLocation string    `json:"finishLocation" binding:"required"`
-	Length         int       `json:"length" binding:"required"`
-	Kind           int       `json:"kind" binding:"required"`
+	Year           int       `json:"year"`
+	Id             int       `json:"id"`
+	Date           time.Time `json:"date"`
+	StartLocation  string    `json:"startLocation"`
+	FinishLocation string    `json:"finishLocation"`
+	Length         int       `json:"length"`
+	Kind           int       `json:"kind"`
 }
 
 type CreateEtappeResultsCommand struct {
-	Year                   int   `json:"year" binding:"required"`
-	EtappeId               int   `json:"etappeId" binding:"required"`
+	Year                   int   `json:"year"`
+	EtappeId               int   `json:"etappeId"`
 	BestDayCyclistIds      []int `json:"bestDayCyclistIds" `
 	BestAllroundCyclistIds []int `json:"bestAllroundCyclistIds" `
 	BestClimbCyclistIds    []int `json:"bestClimbCyclistIds" `

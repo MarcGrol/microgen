@@ -1,5 +1,7 @@
 package news
 
+//go:generate gen
+
 import (
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
@@ -113,6 +115,7 @@ type News struct {
 	NewItems []NewsItem
 }
 
+// +gen slice:"SortBy,Where"
 type NewsItem struct {
 	Message   string
 	Sender    string
@@ -153,7 +156,8 @@ func (news *News) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) 
 func (news *News) ApplyNewsItemCreated(event *events.NewsItemCreated) {
 	log.Fatalf("news - %s not implemented", "ApplyNewsItemCreated")
 	news.NewItems = append(news.NewItems,
-		NewsItem{Message: event.Message,
+		NewsItem{
+			Message:   event.Message,
 			Sender:    event.Sender,
 			Timestamp: event.Timestamp})
 	// TODO create news item out of this

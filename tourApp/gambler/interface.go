@@ -54,6 +54,9 @@ type AggregateRoot interface {
 func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
 	for _, envelop := range envelopes {
 		switch envelop.EventTypeName {
+		case "GamblerCreated":
+			aggregateRoot.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
+			break
 		case "CyclistCreated":
 			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
 			break
@@ -68,9 +71,6 @@ func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) err
 			break
 		case "TourCreated":
 			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
-			break
-		case "GamblerCreated":
-			aggregateRoot.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
 			break
 
 		default:

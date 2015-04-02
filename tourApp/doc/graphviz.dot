@@ -50,13 +50,13 @@ digraph G {
 
 		// events
 		 
-			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
-		 
 			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
 			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
 			"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
+		 
+			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		

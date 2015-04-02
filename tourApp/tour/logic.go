@@ -1,5 +1,7 @@
 package tour
 
+//go:generate gen
+
 import (
 	"errors"
 	"fmt"
@@ -12,13 +14,14 @@ import (
 	"time"
 )
 
+// +gen stringer
 type EtappeKind int
 
 const (
-	Flat      = 1
-	Hilly     = 2
-	Mountains = 3
-	TimeTrial = 4
+	Flat = 1 + iota
+	Hilly
+	Mountains
+	TimeTrial
 )
 
 type TourEventHandler struct {
@@ -183,12 +186,14 @@ type Tour struct {
 	Cyclists []Cyclist `json:"cyclists"`
 }
 
+// +gen slice:"SortBy,Where"
 type Cyclist struct {
 	Number int    `json:"number"`
 	Name   string `json:"name"`
 	Team   string `json:"team"`
 }
 
+// +gen slice:"SortBy,Where"
 type Etappe struct {
 	Id             int       `json:"id"`
 	Date           time.Time `json:"date"`

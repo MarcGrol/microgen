@@ -1,5 +1,7 @@
 package gambler
 
+//go:generate gen
+
 import (
 	"errors"
 	"fmt"
@@ -215,6 +217,7 @@ func NewGambler(uid string, name string, email string) *Gambler {
 	return gambler
 }
 
+// +gen slice:"SortBy,Where"
 type Cyclist struct {
 	Id   int
 	Name string

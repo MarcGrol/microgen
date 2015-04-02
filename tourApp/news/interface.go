@@ -34,16 +34,19 @@ type EventHandler interface {
 }
 
 type AggregateRoot interface {
-	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
-	ApplyNewsItemCreated(event *events.NewsItemCreated)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+	ApplyNewsItemCreated(event *events.NewsItemCreated)
 }
 
 func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
 	for _, envelop := range envelopes {
 		switch envelop.EventTypeName {
+		case "EtappeResultsCreated":
+			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+			break
 		case "NewsItemCreated":
 			aggregateRoot.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
 			break
@@ -55,9 +58,6 @@ func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) err
 			break
 		case "CyclistCreated":
 			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
-			break
-		case "EtappeResultsCreated":
-			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
 			break
 
 		default:

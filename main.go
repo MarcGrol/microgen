@@ -65,54 +65,70 @@ func main() {
 	// from running as service, proxy or act as code-generation tool
 	// Advantage is that application wiuth all its services ships as a single executable
 	if len(*service) > 0 {
-		if *service == "tour" {
+
+		switch *service {
+
+		case "tour":
 			err := tour.Start(*httpPort, *busAddress, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
-		} else if *service == "gambler" {
+
+		case "gambler":
 			err := gambler.Start(*httpPort, *busAddress, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
-		} else if *service == "news" {
+
+		case "news":
 			err := news.Start(*httpPort, *busAddress, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'news'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
-		} else if *service == "collector" {
+
+		case "collector":
 			err := collector.Start(*httpPort, *busAddress, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'collector'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
 					*httpPort, *busAddress, *baseDir, err)
 			}
-		} else if *service == "proxy" {
+
+		case "proxy":
 			err := proxy.Start(*baseDir, *httpPort, 8081, 8082, 8083, 8084)
 			if err != nil {
 				log.Fatalf("Error starting 'proxy'-service on port %d (%+v)", *httpPort, err)
 			}
-		} else {
+
+		default:
 			fmt.Fprintf(os.Stderr, "Unrecognized service name %s", *service)
 			printUsage()
 		}
+
 	} else if len(*tool) > 0 {
-		if *tool == "gen" {
+
+		switch *tool {
+
+		case "gen":
 			err := dsl.GenerateApplication(application, *baseDir)
 			if err != nil {
 				log.Fatalf("Error generating application: %s", err)
 			}
-		} else if *tool == "prov" {
+
+		case "prov":
 			err := prov.Start(*targetHostPort)
 			if err != nil {
 				log.Fatalf("Error provisioning application: %s", err)
 			}
-		} else {
+
+		default:
 			fmt.Fprintf(os.Stderr, "Unrecognized tool name: %s", *tool)
 			printUsage()
+
 		}
+
 	} else {
 		fmt.Fprintf(os.Stderr, "Unrecognized command")
 		printUsage()
