@@ -1,10 +1,11 @@
 package prov
 
 import (
-	"github.com/MarcGrol/microgen/tourApp/client"
-	"github.com/MarcGrol/microgen/tourApp/tour"
 	"log"
 	"time"
+
+	"github.com/MarcGrol/microgen/tourApp/client"
+	"github.com/MarcGrol/microgen/tourApp/tour"
 )
 
 func provision2012(targetHost string) error {

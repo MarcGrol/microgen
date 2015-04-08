@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/MarcGrol/microgen/tourApp/gambler"
-	"github.com/MarcGrol/microgen/tourApp/tour"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/MarcGrol/microgen/tourApp/gambler"
+	"github.com/MarcGrol/microgen/tourApp/tour"
 )
 
 type Client struct {

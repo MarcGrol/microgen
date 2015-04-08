@@ -1,8 +1,9 @@
 package bus
 
 import (
-	"github.com/bitly/go-nsq"
 	"log"
+
+	"github.com/bitly/go-nsq"
 )
 
 type NsqBus struct {

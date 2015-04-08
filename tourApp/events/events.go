@@ -3,12 +3,13 @@ package events
 // Generated automatically by microgen: do not edit manually
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"encoding/json"
-	"github.com/MarcGrol/microgen/lib/envelope"
 	"log"
 	"strconv"
 	"time"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/MarcGrol/microgen/lib/envelope"
 )
 
 type Type int

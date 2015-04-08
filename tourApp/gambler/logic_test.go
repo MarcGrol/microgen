@@ -1,12 +1,13 @@
 package gambler
 
 import (
+	"testing"
+	"time"
+
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/test"
 	"github.com/MarcGrol/microgen/tourApp/events"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func TestTourCreatedEvent(t *testing.T) {

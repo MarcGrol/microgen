@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/MarcGrol/microgen/infra"
-	"github.com/MarcGrol/microgen/lib/envelope"
-	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/lib/envelope"
+	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/stretchr/testify/assert"
 )
 
 type CommandScenarioExecutorFunc func(scenario *CommandScenario) error

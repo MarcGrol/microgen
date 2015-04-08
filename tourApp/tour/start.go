@@ -3,14 +3,15 @@ package tour
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/infra/store"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/gin-gonic/gin"
-	"os"
-	"strconv"
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {

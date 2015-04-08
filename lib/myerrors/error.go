@@ -1,7 +1,5 @@
 package myerrors
 
-import ()
-
 type Error struct {
 	underlyingError error
 	errorType       errorType

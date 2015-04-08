@@ -1,7 +1,5 @@
 package myerrors
 
-import ()
-
 type InternalError interface {
 	IsInternalError() bool
 }

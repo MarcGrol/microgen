@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/MarcGrol/microgen/tool/dsl"
 	"github.com/MarcGrol/microgen/tourApp/collector"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
@@ -10,8 +13,6 @@ import (
 	"github.com/MarcGrol/microgen/tourApp/prov"
 	"github.com/MarcGrol/microgen/tourApp/proxy"
 	"github.com/MarcGrol/microgen/tourApp/tour"
-	"log"
-	"os"
 )
 
 const (

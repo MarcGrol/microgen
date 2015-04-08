@@ -1,9 +1,8 @@
 #!/bin/sh
 
-find . -name "*.dat" -exec rm -f {} \;
-find . -name "*.db" -exec rm -f {} \;
-
 pkill microgen
+
+find . -name "*.db" -exec rm -f {} \;
 
 microgen -service=proxy -port=8080 &
 microgen -service=tour -port=8081 &

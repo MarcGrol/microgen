@@ -2,12 +2,13 @@ package client
 
 import (
 	"fmt"
-	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateTourOk(t *testing.T) {

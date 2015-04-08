@@ -5,13 +5,14 @@ package tour
 import (
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
+	"time"
+
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"log"
-	"strconv"
-	"time"
 )
 
 // +gen stringer

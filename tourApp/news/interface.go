@@ -4,9 +4,10 @@ package news
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"time"
 )
 
 // commands

@@ -3,12 +3,13 @@ package collector
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
 	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/infra/store"
 	"github.com/gin-gonic/gin"
-	"os"
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
