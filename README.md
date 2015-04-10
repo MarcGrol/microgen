@@ -109,7 +109,8 @@ An "application" consists of the following concepts:
     
     # Sync source-code with application-dsl
     ${GOPATH}/bin/microgen -tool=gen -base-dir=. # to generate interfaces based on ./application.go
-    go fmt ./...            # to re-format generated code
+    go fmt ./...            # to re-format generated code or
+    goimports -w=true .     # requires goimports
     
     # Start the bus
     ./bus/start_nsq.sh
