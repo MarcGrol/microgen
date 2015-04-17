@@ -1,0 +1,40 @@
+{
+	"ImportPath": "github.com/MarcGrol/microgen",
+	"GoVersion": "go1.4",
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-15",
+			"Rev": "35bc42037350f0078e3c974c6ea690f1926603ab"
+		},
+		{
+			"ImportPath": "code.google.com/p/snappy-go/snappy",
+			"Comment": "null-15",
+			"Rev": "12e4b4183793ac4b061921e7980845e750679fd0"
+		},
+		{
+			"ImportPath": "github.com/bitly/go-nsq",
+			"Comment": "v1.0.3-4-g4b786ba",
+			"Rev": "4b786bac12b80586920ca4cc25fafaa1c7143fbf"
+		},
+		{
+			"ImportPath": "github.com/bitly/go-simplejson",
+			"Comment": "v0.4.3-28-g3378bdc",
+			"Rev": "3378bdcb5cebedcbf8b5750edee28010f128fe24"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v0.4-8-g3b079bb",
+			"Rev": "3b079bb6f79ae501e73a5401c41b589f6616b61e"
+		},
+		{
+			"ImportPath": "github.com/julienschmidt/httprouter",
+			"Rev": "46807412fe50aaceb73bb57061c2230fd26a1640"
+		},
+		{
+			"ImportPath": "github.com/mreiferson/go-snappystream",
+			"Comment": "v0.2.2-8-ga5260a3",
+			"Rev": "a5260a307b3e7dd583283c1e2717445244d506c7"
+		}
+	]
+}
