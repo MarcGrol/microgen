@@ -9,11 +9,9 @@ import (
 	"regexp"
 )
 
-func Start(baseDir string, listenPort int, tourPort int, gamblerPort int, scorePort int, collectorPort int) error {
+func Start(baseDir string, listenPort int, targetHost string, tourPort int, gamblerPort int, scorePort int, collectorPort int) error {
 	var err error
 	server := newServer()
-
-	targetHost := "localhost"
 
 	server.addForwardRule("/api/tour", fmt.Sprintf("%s:%d", targetHost, tourPort))
 	server.addForwardRule("/api/gambler", fmt.Sprintf("%s:%d", targetHost, gamblerPort))

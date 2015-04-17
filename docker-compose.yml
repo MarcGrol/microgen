@@ -1,0 +1,49 @@
+lookupd:
+  image: nsqio/nsqd
+  ports:
+   - "4160:4160"
+   - "4161:4161"
+  command: -broadcast-address=192.168.59.103
+
+nsqd:
+  image: nsqio/nsqd
+  ports:
+   - "4150:4150"
+   - "4151:4151"
+  command: --broadcast-address=192.168.59.103 --lookupd-tcp-address=192.168.59.103:4160
+
+nsqadmin:
+  image: nsqio/nsqadmin
+  ports:
+    - "4171:4171"
+  command: -lookupd-http-address=192.168.59.103:4161
+
+proxy:
+  build: .
+  command: /go/bin/microgen -service=proxy -address=192.168.59.103 -port=8080 -base-dir=/go/src/github.com/MarcGrol/microgen
+  ports:
+   - "8080:8080"
+
+tour:
+  build: .
+  command: /go/bin/microgen -service=tour -address=192.168.59.103 -port=8081 -base-dir=.
+  ports:
+   - "8081:8081"
+
+gambler:
+  build: .
+  command: /go/bin/microgen -service=gambler -address=192.168.59.103 -port=8082 -base-dir=.
+  ports:
+   - "8082:8082"
+
+news:
+  build: .
+  command: /go/bin/microgen -service=news -address=192.168.59.103 -port=8083 -base-dir=.
+  ports:
+   - "8083:8083"
+
+collector:
+  build: .
+  command: /go/bin/microgen -service=collector -address=192.168.59.103 -port=8084 -base-dir=.
+  ports:
+   - "8084:8084"

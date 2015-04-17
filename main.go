@@ -22,7 +22,7 @@ const (
 var tool *string
 var service *string
 var httpPort *int
-var busAddress *string
+var address *string
 var baseDir *string
 var targetHostPort *string
 
@@ -44,7 +44,7 @@ func processArgs() {
 	baseDir = flag.String("base-dir", ".", "For modus 'tool': Base directory used in both 'tool' and 'service'-modus")
 	service = flag.String("service", "", "For modus 'service': service to run: 'tour', 'gambler','news', 'proxy' or 'collector'")
 	httpPort = flag.Int("port", 8081, "For modus 'service': listen port of http-server")
-	busAddress = flag.String("bus-address", "localhost", "For modus 'service': Hostname where nsq-bus is running")
+	address = flag.String("address", "localhost", "For modus 'service': Hostname where application running")
 	targetHostPort = flag.String("target-host", "localhost:8080", "For tool 'prov': Hostname where the application is running")
 
 	help := flag.Bool("help", false, "Usage information")
@@ -70,35 +70,35 @@ func main() {
 		switch *service {
 
 		case "tour":
-			err := tour.Start(*httpPort, *busAddress, *baseDir)
+			err := tour.Start(*httpPort, *address, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
-					*httpPort, *busAddress, *baseDir, err)
+					*httpPort, *address, *baseDir, err)
 			}
 
 		case "gambler":
-			err := gambler.Start(*httpPort, *busAddress, *baseDir)
+			err := gambler.Start(*httpPort, *address, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
-					*httpPort, *busAddress, *baseDir, err)
+					*httpPort, *address, *baseDir, err)
 			}
 
 		case "news":
-			err := news.Start(*httpPort, *busAddress, *baseDir)
+			err := news.Start(*httpPort, *address, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'news'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
-					*httpPort, *busAddress, *baseDir, err)
+					*httpPort, *address, *baseDir, err)
 			}
 
 		case "collector":
-			err := collector.Start(*httpPort, *busAddress, *baseDir)
+			err := collector.Start(*httpPort, *address, *baseDir)
 			if err != nil {
 				log.Fatalf("Error starting 'collector'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
-					*httpPort, *busAddress, *baseDir, err)
+					*httpPort, *address, *baseDir, err)
 			}
 
 		case "proxy":
-			err := proxy.Start(*baseDir, *httpPort, 8081, 8082, 8083, 8084)
+			err := proxy.Start(*baseDir, *httpPort, *address, 8081, 8082, 8083, 8084)
 			if err != nil {
 				log.Fatalf("Error starting 'proxy'-service on port %d (%+v)", *httpPort, err)
 			}
