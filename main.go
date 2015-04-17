@@ -72,21 +72,21 @@ func main() {
 		case "tour":
 			err := tour.Start(*httpPort, *address, *baseDir)
 			if err != nil {
-				log.Fatalf("Error starting 'tour'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
+				log.Fatalf("Error starting 'tour'-service on port %d, address:%s and base-dir: %s (%+v)",
 					*httpPort, *address, *baseDir, err)
 			}
 
 		case "gambler":
 			err := gambler.Start(*httpPort, *address, *baseDir)
 			if err != nil {
-				log.Fatalf("Error starting 'gambler'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
+				log.Fatalf("Error starting 'gambler'-service on port %d, address:%s and base-dir: %s (%+v)",
 					*httpPort, *address, *baseDir, err)
 			}
 
 		case "news":
 			err := news.Start(*httpPort, *address, *baseDir)
 			if err != nil {
-				log.Fatalf("Error starting 'news'-service on port %d, bus-address:%s and base-dir: %s (%+v)",
+				log.Fatalf("Error starting 'news'-service on port %d, address:%s and base-dir: %s (%+v)",
 					*httpPort, *address, *baseDir, err)
 			}
 

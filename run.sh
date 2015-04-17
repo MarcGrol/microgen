@@ -16,7 +16,7 @@ ps -eaf|grep microgen |grep -v grep
 # boot2docker stop
 # boot2docker download
 # boot2docker up
-# docker build -t microgen .
+# docker build  --no-cache -t microgen .
 # docker run -ti -p 8081:8081 microgen /go/bin/microgen -service=tour -port=8081
 
 # docker run --name lookupd -p 4160:4160 -p 4161:4161 nsqio/nsq /nsqlookupd
