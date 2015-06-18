@@ -188,8 +188,8 @@ func (bus *FakeBus) Publish(envelop *envelope.Envelope) error {
 	callback, ok := bus.callbacks[envelop.EventTypeName]
 	if ok == false {
 		bus.undeliverable[envelop.EventTypeName] = append(bus.undeliverable[envelop.EventTypeName], *envelop)
-		//log.Printf("FakeBus: undeliverable: %v", envelope)
-		return errors.New(fmt.Sprintf("Received event on non-subscribed channel %s", envelop.EventTypeName))
+		log.Printf("FakeBus: undeliverable: %+v", envelop)
+		return errors.New(fmt.Sprintf("Received unexpected event %s", envelop.EventTypeName))
 	} else {
 		callback(envelop)
 	}

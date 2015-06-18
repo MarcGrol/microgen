@@ -11,6 +11,7 @@ import (
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
+
 	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
@@ -202,6 +203,7 @@ func NewGamblerContext() *GamblerContext {
 	return context
 }
 
+// +gen slice:"SortBy,Where,Select[string],GroupBy[string]"
 type Gambler struct {
 	Uid      string
 	Name     string
@@ -218,7 +220,7 @@ func NewGambler(uid string, name string, email string) *Gambler {
 	return gambler
 }
 
-// +gen slice:"SortBy,Where"
+// +gen slice:"SortBy,Where,Select[string],GroupBy[string]"
 type Cyclist struct {
 	Id   int
 	Name string
@@ -280,6 +282,6 @@ func (context *GamblerContext) ApplyEtappeResultsCreated(event *events.EtappeRes
 }
 
 type Results struct {
-	BestGamblers []Gambler
-	BestCyclists []Cyclist
+	BestGamblers GamblerSlice
+	BestCyclists CyclistSlice
 }

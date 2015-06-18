@@ -4,6 +4,8 @@
 
 package tour
 
+import "errors"
+
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
 // Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -35,6 +37,36 @@ func (rcv EtappeSlice) Where(fn func(Etappe) bool) (result EtappeSlice) {
 		}
 	}
 	return result
+}
+
+// SelectString projects a slice of string from EtappeSlice, typically called a map in other frameworks. See: http://clipperhouse.github.io/gen/#Select
+func (rcv EtappeSlice) SelectString(fn func(Etappe) string) (result []string) {
+	for _, v := range rcv {
+		result = append(result, fn(v))
+	}
+	return
+}
+
+// Any verifies that one or more elements of EtappeSlice return true for the passed func. See: http://clipperhouse.github.io/gen/#Any
+func (rcv EtappeSlice) Any(fn func(Etappe) bool) bool {
+	for _, v := range rcv {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
+func (rcv EtappeSlice) First(fn func(Etappe) bool) (result Etappe, err error) {
+	for _, v := range rcv {
+		if fn(v) {
+			result = v
+			return
+		}
+	}
+	err = errors.New("no EtappeSlice elements return true for passed func")
+	return
 }
 
 // Sort implementation based on http://golang.org/pkg/sort/#Sort, see top of this file

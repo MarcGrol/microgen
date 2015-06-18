@@ -12,10 +12,10 @@ import (
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/MarcGrol/microgen/lib/validation"
 	"github.com/MarcGrol/microgen/tourApp/events"
 )
 
-// +gen stringer
 type EtappeKind int
 
 const (
@@ -55,8 +55,9 @@ func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store) Comma
 }
 
 func (ch *TourCommandHandler) validateCreateTourCommand(command *CreateTourCommand) error {
-	// TODO
-	return nil
+	v := validation.Validator{}
+	v.GreaterThan("Year", 2010, command.Year)
+	return v.Err
 }
 
 func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand) error {
@@ -68,9 +69,10 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 	// get tour based on year
 	_, found := getTourOnYear(ch.store, command.Year)
 	if found == true {
-		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("Tour %d already exists", command.Year)))
+		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Tour %d already exists", command.Year))
 	}
 
+	// create event
 	tourCreatedEvent := events.TourCreated{Year: command.Year}
 
 	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
@@ -80,8 +82,12 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 }
 
 func (ch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclistCommand) error {
-	// TODO
-	return nil
+	v := validation.Validator{}
+	v.GreaterThan("Year", 2010, command.Year)
+	v.GreaterThan("Id", 0, command.Id)
+	v.NotEmpty("Name", command.Name)
+	v.NotEmpty("Team", command.Team)
+	return v.Err
 }
 
 func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistCommand) error {
@@ -91,42 +97,65 @@ func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistC
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(ch.store, command.Year)
+	tour, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
+		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Tour %d does not exists", command.Year))
 	}
 
-	// apply business logic
+	// verify if cyclist already exists
+	cb := func(c Cyclist) bool {
+		return c.Number == command.Id
+	}
+	if tour.Cyclists.Any(cb) {
+		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Cyclist with %d already exists", command.Id))
+	}
+
+	// create event
 	cyclistCreatedEvent := events.CyclistCreated{Year: command.Year,
 		CyclistId:   command.Id,
 		CyclistName: command.Name,
 		CyclistTeam: command.Team}
 
-	//log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
+	log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
 
 	// store and emit resulting event
 	return ch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
 }
 
 func (ch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeCommand) error {
-	// TODO
-	return nil
+	v := validation.Validator{}
+	v.GreaterThan("Year", 2010, command.Year)
+	v.GreaterThan("Id", 0, command.Id)
+	v.NotEmpty("StartLocation", command.StartLocation)
+	v.NotEmpty("FinishLocation", command.FinishLocation)
+	v.GreaterThan("Length", 0, command.Length)
+	v.GreaterThan("Kind", -1, command.Kind)
+	v.After("Date", "2015-07-01T00:00:00Z", command.Date)
+
+	return v.Err
 }
 
 func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
-	log.Printf("create etappe command: %+v", command)
 	err := ch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(ch.store, command.Year)
+	tour, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
 	}
 
-	// apply business logic
+	// verify if etappe already exists
+	cb := func(e Etappe) bool {
+		return e.Id == command.Id
+	}
+	if tour.Etappes.Any(cb) {
+		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Etappe with %d already exists", command.Id))
+	}
+
+	// create event
 	etappeCreatedEvent := events.EtappeCreated{Year: command.Year,
 		EtappeId:             command.Id,
 		EtappeDate:           command.Date,
@@ -141,8 +170,67 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 	return ch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
 }
 
+func (ch *TourCommandHandler) validateCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error {
+	v := validation.Validator{}
+	v.GreaterThan("Year", 2010, command.Year)
+	v.GreaterThan("EtappeId", 0, command.EtappeId)
+	v.SliceLength("BestDayCyclistIds", 10, command.BestDayCyclistIds)
+	v.SliceLength("BestAllroundCyclistIds", 5, command.BestAllroundCyclistIds)
+	v.SliceLength("BestClimbCyclistIds", 5, command.BestClimbCyclistIds)
+	v.SliceLength("BestSprintCyclistIds", 5, command.BestSprintCyclistIds)
+
+	return v.Err
+}
+
 func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error {
-	return errors.New("HandleCreateEtappeResultsCommand not implemented")
+	err := ch.validateCreateEtappeResultsCommand(command)
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
+
+	// get tour based on year
+	tour, found := getTourOnYear(ch.store, command.Year)
+	if found == false {
+		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exists", command.Year)))
+	}
+
+	// TODO verify etappe exists
+	// verify if etappe already exists
+	if tour.Etappes.Any(func(e Etappe) bool {
+		return e.Id == command.EtappeId
+	}) == false {
+		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Etappe with %d does not exists", command.EtappeId))
+	}
+
+	// verify if cyclists exist
+	combined := make([]int, 0, 25)
+	copy(combined, command.BestDayCyclistIds)
+	copy(combined, command.BestAllroundCyclistIds)
+	copy(combined, command.BestClimbCyclistIds)
+	copy(combined, command.BestSprintCyclistIds)
+	for _, id := range combined {
+		cb := func(c Cyclist) bool {
+			return c.Number == id
+		}
+		if tour.Cyclists.Any(cb) == false {
+			return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Cyclist with %d does not exists", id))
+		}
+	}
+	// TODO check duplicate cyclists per category
+
+	// compose event
+	etappeResultCreatedEvent := events.EtappeResultsCreated{
+		Year:                     command.Year,
+		LastEtappeId:             command.EtappeId,
+		BestDayCyclistIds:        command.BestDayCyclistIds,
+		BestAllrondersCyclistIds: command.BestAllroundCyclistIds,
+		BestSprintersCyclistIds:  command.BestSprintCyclistIds,
+		BestClimberCyclistIds:    command.BestClimbCyclistIds}
+
+	log.Printf("HandleCreateEtappeResultsCommand completed:%+v -> %+v", command, etappeResultCreatedEvent)
+
+	// store and emit resulting event
+	return ch.storeAndPublish([]*envelope.Envelope{etappeResultCreatedEvent.Wrap()})
 }
 
 func (ch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
@@ -182,19 +270,19 @@ func getTourOnYear(store infra.Store, year int) (*Tour, bool) {
 }
 
 type Tour struct {
-	Year     int       `json:"year"`
-	Etappes  []Etappe  `json:"etappes"`
-	Cyclists []Cyclist `json:"cyclists"`
+	Year     int          `json:"year"`
+	Etappes  EtappeSlice  `json:"etappes"`
+	Cyclists CyclistSlice `json:"cyclists"`
 }
 
-// +gen slice:"SortBy,Where"
+// +gen slice:"SortBy,Where,Select[string],GroupBy[string],Any,First"
 type Cyclist struct {
 	Number int    `json:"number"`
 	Name   string `json:"name"`
 	Team   string `json:"team"`
 }
 
-// +gen slice:"SortBy,Where"
+// +gen slice:"SortBy,Where,Select[string],Any,First"
 type Etappe struct {
 	Id             int       `json:"id"`
 	Date           time.Time `json:"date"`
@@ -202,6 +290,14 @@ type Etappe struct {
 	FinishLocation string    `json:"finishLocation"`
 	Length         int       `json:"length"`
 	Kind           int       `json:"kind"`
+	Results        *Result   `json:"results"`
+}
+
+type Result struct {
+	BestDayCyclists        []*Cyclist
+	BestAllrondersCyclists []*Cyclist
+	BestSprintersCyclists  []*Cyclist
+	BestClimberCyclists    []*Cyclist
 }
 
 func NewTour() *Tour {
@@ -251,6 +347,29 @@ func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
 }
 
 func (t *Tour) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
-	log.Fatal("ApplyEtappeResultsCreated not implemented")
+	e, err := t.Etappes.First(func(e Etappe) bool {
+		return e.Id == event.LastEtappeId
+	})
+	if err != nil {
+		r := new(Result)
+		r.BestDayCyclists = t.CyclistsForIds(event.BestDayCyclistIds)
+		r.BestAllrondersCyclists = t.CyclistsForIds(event.BestAllrondersCyclistIds)
+		r.BestSprintersCyclists = t.CyclistsForIds(event.BestSprintersCyclistIds)
+		r.BestClimberCyclists = t.CyclistsForIds(event.BestClimberCyclistIds)
 
+		e.Results = r
+	}
+}
+
+func (t *Tour) CyclistsForIds(ids []int) []*Cyclist {
+	cyclists := make([]*Cyclist, 0, len(ids))
+	for _, id := range ids {
+		c, err := t.Cyclists.First(func(c Cyclist) bool {
+			return c.Number == id
+		})
+		if err == nil {
+			cyclists = append(cyclists, &c)
+		}
+	}
+	return cyclists
 }

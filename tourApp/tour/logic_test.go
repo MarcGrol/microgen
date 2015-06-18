@@ -92,6 +92,60 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 }
 
+func TestCreateInvalidCyclistCommand(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create invalid new cyclist",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+		},
+		Command: &CreateCyclistCommand{
+			Year: 2015,
+			Name: "My name",
+			Team: "My team"},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.NotNil(t, scenario.ErrMsg)
+	assert.Equal(t, "Invalid parameter Id", *scenario.ErrMsg)
+}
+
+func TestCreateDuplicateCyclistCommand(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create invalid new cyclist",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   42,
+				CyclistName: "My name",
+				CyclistTeam: "My team"}).Wrap(),
+		},
+		Command: &CreateCyclistCommand{
+			Year: 2015,
+			Id:   42,
+			Name: "My name",
+			Team: "My team"},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.NotNil(t, scenario.ErrMsg)
+	assert.Equal(t, "Cyclist with 42 already exists", *scenario.ErrMsg)
+}
+
 func TestCreateEtappeCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
@@ -154,4 +208,67 @@ func TestCreateEtappeCommand(t *testing.T) {
 	assert.Equal(t, expected.EtappeFinishLocation, tour.Etappes[0].FinishLocation)
 	assert.Equal(t, expected.EtappeLength, tour.Etappes[0].Length)
 	assert.Equal(t, expected.EtappeKind, tour.Etappes[0].Kind)
+}
+
+func TestCreateInvalidEtappeCommand(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create invalid etappe",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+		},
+		Command: &CreateEtappeCommand{
+			Year:           2015,
+			Id:             2,
+			StartLocation:  "Parijs",
+			FinishLocation: "Roubaix",
+			Length:         255,
+			Kind:           3},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.NotNil(t, scenario.ErrMsg)
+	assert.Equal(t, "Invalid parameter Date", *scenario.ErrMsg)
+}
+
+func TestCreateDuplicateEtappeCommand(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create duplicate etappe",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+			(&events.EtappeCreated{
+				Year:                 2015,
+				EtappeId:             2,
+				EtappeDate:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
+				EtappeStartLocation:  "Parijs",
+				EtappeFinishLocation: "Roubaix",
+				EtappeLength:         255,
+				EtappeKind:           3}).Wrap(),
+		},
+		Command: &CreateEtappeCommand{
+			Year:           2015,
+			Id:             2,
+			Date:           time.Date(2015, time.July, 14, 9, 0, 0, 0, time.Local),
+			StartLocation:  "Parijs",
+			FinishLocation: "Roubaix",
+			Length:         255,
+			Kind:           3},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.NotNil(t, scenario.ErrMsg)
+	assert.Equal(t, "Etappe with 2 already exists", *scenario.ErrMsg)
 }

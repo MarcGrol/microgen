@@ -1,5 +1,7 @@
 package myerrors
 
+import "errors"
+
 type Error struct {
 	underlyingError error
 	errorType       errorType
@@ -15,11 +17,19 @@ const (
 	errorTypeNotAuthorized
 )
 
+func NewInternalErrorf(msg string) *Error {
+	return NewInternalError(errors.New(msg))
+}
+
 func NewInternalError(err error) *Error {
 	newError := new(Error)
 	newError.underlyingError = err
 	newError.errorType = errorTypeInternal
 	return newError
+}
+
+func NewInvalidInputErrorf(msg string) *Error {
+	return NewInvalidInputError(errors.New(msg))
 }
 
 func NewInvalidInputError(err error) *Error {
@@ -29,11 +39,19 @@ func NewInvalidInputError(err error) *Error {
 	return newError
 }
 
+func NewNotFoundErrorf(msg string) *Error {
+	return NewNotFoundError(errors.New(msg))
+}
+
 func NewNotFoundError(err error) *Error {
 	newError := new(Error)
 	newError.underlyingError = err
 	newError.errorType = errorTypeNotFound
 	return newError
+}
+
+func NewNotAuthorizedErrorf(msg string) *Error {
+	return NewNotAuthorizedError(errors.New(msg))
 }
 
 func NewNotAuthorizedError(err error) *Error {

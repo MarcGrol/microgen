@@ -4,6 +4,8 @@
 
 package tour
 
+import "errors"
+
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
 // Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -35,6 +37,46 @@ func (rcv CyclistSlice) Where(fn func(Cyclist) bool) (result CyclistSlice) {
 		}
 	}
 	return result
+}
+
+// SelectString projects a slice of string from CyclistSlice, typically called a map in other frameworks. See: http://clipperhouse.github.io/gen/#Select
+func (rcv CyclistSlice) SelectString(fn func(Cyclist) string) (result []string) {
+	for _, v := range rcv {
+		result = append(result, fn(v))
+	}
+	return
+}
+
+// GroupByString groups elements into a map keyed by string. See: http://clipperhouse.github.io/gen/#GroupBy
+func (rcv CyclistSlice) GroupByString(fn func(Cyclist) string) map[string]CyclistSlice {
+	result := make(map[string]CyclistSlice)
+	for _, v := range rcv {
+		key := fn(v)
+		result[key] = append(result[key], v)
+	}
+	return result
+}
+
+// Any verifies that one or more elements of CyclistSlice return true for the passed func. See: http://clipperhouse.github.io/gen/#Any
+func (rcv CyclistSlice) Any(fn func(Cyclist) bool) bool {
+	for _, v := range rcv {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
+func (rcv CyclistSlice) First(fn func(Cyclist) bool) (result Cyclist, err error) {
+	for _, v := range rcv {
+		if fn(v) {
+			result = v
+			return
+		}
+	}
+	err = errors.New("no CyclistSlice elements return true for passed func")
+	return
 }
 
 // Sort implementation based on http://golang.org/pkg/sort/#Sort, see top of this file
