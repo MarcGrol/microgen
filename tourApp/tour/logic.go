@@ -207,7 +207,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	}
 
 	// verify that referenced cyclists already exists
-	verify := verifier{}
+	verify := fluentError{}
 	verify.cyclistsExist("BestDayCyclistIds", tour, command.BestDayCyclistIds)
 	verify.cyclistsExist("BestAllroundCyclistIds", tour, command.BestAllroundCyclistIds)
 	verify.cyclistsExist("BestSprintCyclistIds", tour, command.BestSprintCyclistIds)
@@ -231,11 +231,11 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	return ch.storeAndPublish([]*envelope.Envelope{etappeResultCreatedEvent.Wrap()})
 }
 
-type verifier struct {
+type fluentError struct {
 	err error
 }
 
-func (v *verifier) cyclistsExist(name string, tour *Tour, cyclistIds []int) error {
+func (v *fluentError) cyclistsExist(name string, tour *Tour, cyclistIds []int) error {
 	if v.err == nil {
 		for _, id := range cyclistIds {
 			if tour.hasCyclist(id) == false {
