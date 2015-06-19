@@ -61,6 +61,7 @@ func (ch *TourCommandHandler) validateCreateTourCommand(command *CreateTourComma
 }
 
 func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand) error {
+	// validate command
 	err := ch.validateCreateTourCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -91,6 +92,7 @@ func (ch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclis
 }
 
 func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistCommand) error {
+	// validate command
 	err := ch.validateCreateCyclistCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -133,6 +135,7 @@ func (ch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeC
 }
 
 func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCommand) error {
+	// validate command
 	err := ch.validateCreateEtappeCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -158,7 +161,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 		EtappeLength:         command.Length,
 		EtappeKind:           command.Kind}
 
-	//log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
+	log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
 
 	// store and emit resulting event
 	return ch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
@@ -168,15 +171,24 @@ func (ch *TourCommandHandler) validateCreateEtappeResultsCommand(command *Create
 	v := validation.Validator{}
 	v.GreaterThan("Year", 2010, command.Year)
 	v.GreaterThan("EtappeId", 0, command.EtappeId)
-	v.SliceLength("BestDayCyclistIds", 10, command.BestDayCyclistIds)
-	v.SliceLength("BestAllroundCyclistIds", 5, command.BestAllroundCyclistIds)
-	v.SliceLength("BestClimbCyclistIds", 5, command.BestClimbCyclistIds)
-	v.SliceLength("BestSprintCyclistIds", 5, command.BestSprintCyclistIds)
+
+	v.MinSliceLength("BestDayCyclistIds", 10, command.BestDayCyclistIds)
+	v.NoDuplicates("BestDayCyclistIds", command.BestDayCyclistIds)
+
+	v.MinSliceLength("BestAllroundCyclistIds", 5, command.BestAllroundCyclistIds)
+	v.NoDuplicates("BestAllroundCyclistIds", command.BestAllroundCyclistIds)
+
+	v.MinSliceLength("BestClimbCyclistIds", 5, command.BestClimbCyclistIds)
+	v.NoDuplicates("BestClimbCyclistIds", command.BestClimbCyclistIds)
+
+	v.MinSliceLength("BestSprintCyclistIds", 5, command.BestSprintCyclistIds)
+	v.NoDuplicates("BestSprintCyclistIds", command.BestSprintCyclistIds)
 
 	return v.Err
 }
 
 func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error {
+	// validate command
 	err := ch.validateCreateEtappeResultsCommand(command)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
@@ -194,39 +206,13 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	}
 
 	// verify that referenced cyclists already exists
-	for _, id := range command.BestDayCyclistIds {
-		if tour.hasCyclist(id) == false {
-			return myerrors.NewInvalidInputErrorf(fmt.Sprintf("BestDayCyclistIds: Cyclist %d does not exist", id))
-		}
-	}
-	for _, id := range command.BestAllroundCyclistIds {
-		if tour.hasCyclist(id) == false {
-			return myerrors.NewInvalidInputErrorf(fmt.Sprintf("BestAllroundCyclistIds: Cyclist %d does not exist", id))
-		}
-	}
-	for _, id := range command.BestSprintCyclistIds {
-		if tour.hasCyclist(id) == false {
-			return myerrors.NewInvalidInputErrorf(fmt.Sprintf("BestSprintCyclistIds: Cyclist %d does not exist", id))
-		}
-	}
-	for _, id := range command.BestClimbCyclistIds {
-		if tour.hasCyclist(id) == false {
-			return myerrors.NewInvalidInputErrorf(fmt.Sprintf("BestClimbCyclistIds: Cyclist %d does not exist", id))
-		}
-	}
-
-	//check for duplicate cyclists per category
-	if len(uniq(command.BestDayCyclistIds)) < len(command.BestDayCyclistIds) {
-		return myerrors.NewInvalidInputErrorf("BestDayCyclistIds contains duplicates")
-	}
-	if len(uniq(command.BestAllroundCyclistIds)) < len(command.BestAllroundCyclistIds) {
-		return myerrors.NewInvalidInputErrorf("BestAllroundCyclistIds contains duplicates")
-	}
-	if len(uniq(command.BestSprintCyclistIds)) < len(command.BestSprintCyclistIds) {
-		return myerrors.NewInvalidInputErrorf("BestSprintCyclistIds contains duplicates")
-	}
-	if len(uniq(command.BestClimbCyclistIds)) < len(command.BestClimbCyclistIds) {
-		return myerrors.NewInvalidInputErrorf("BestClimbCyclistIds contains duplicates")
+	verify := verifier{}
+	verify.cyclistsExist("BestDayCyclistIds", tour, command.BestDayCyclistIds)
+	verify.cyclistsExist("BestAllroundCyclistIds", tour, command.BestAllroundCyclistIds)
+	verify.cyclistsExist("BestSprintCyclistIds", tour, command.BestSprintCyclistIds)
+	verify.cyclistsExist("BestClimbCyclistIds", tour, command.BestClimbCyclistIds)
+	if verify.err != nil {
+		return myerrors.NewInvalidInputError(verify.err)
 	}
 
 	// compose event
@@ -244,20 +230,20 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	return ch.storeAndPublish([]*envelope.Envelope{etappeResultCreatedEvent.Wrap()})
 }
 
-func uniq(list []int) []int {
-	unique_set := make(map[int]int, len(list))
-	i := 0
-	for _, x := range list {
-		if _, there := unique_set[x]; !there {
-			unique_set[x] = i
-			i++
+type verifier struct {
+	err error
+}
+
+func (v *verifier) cyclistsExist(name string, tour *Tour, cyclistIds []int) error {
+	if v.err == nil {
+		for _, id := range cyclistIds {
+			if tour.hasCyclist(id) == false {
+				v.err = fmt.Errorf("%s: Cyclist %d does not exist", name, id)
+				break
+			}
 		}
 	}
-	result := make([]int, len(unique_set))
-	for x, i := range unique_set {
-		result[i] = x
-	}
-	return result
+	return v.err
 }
 
 func (ch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
