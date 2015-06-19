@@ -327,16 +327,13 @@ func (t Tour) hasEtappe(id int) bool {
 }
 
 func (t Tour) findEtappe(id int) (*Etappe, bool) {
-	found := false
-	var etappe *Etappe = nil
-	for _, e := range t.Etappes {
+	for idx, e := range t.Etappes {
 		if e.Id == id {
-			etappe = &e
-			found = true
-			break
+			// access the slice directly otherwise settings pointer doesn't stick
+			return &t.Etappes[idx], true
 		}
 	}
-	return etappe, found
+	return nil, false
 }
 
 func (t Tour) hasCyclist(id int) bool {
@@ -385,16 +382,13 @@ func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
 }
 
 func (t *Tour) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
-	for idx, etappe := range t.Etappes {
-		if etappe.Id == event.LastEtappeId {
-			// access the slice directly otherwise settings pointer doesn't stick
-			t.Etappes[idx].Results = &Result{
-				BestDayCyclists:        t.CyclistsForIds(event.BestDayCyclistIds),
-				BestAllrounderCyclists: t.CyclistsForIds(event.BestAllrounderCyclistIds),
-				BestSprinterCyclists:   t.CyclistsForIds(event.BestSprinterCyclistIds),
-				BestClimberCyclists:    t.CyclistsForIds(event.BestClimberCyclistIds)}
-			break
-		}
+	etappe, found := t.findEtappe(event.LastEtappeId)
+	if found {
+		etappe.Results = &Result{
+			BestDayCyclists:        t.CyclistsForIds(event.BestDayCyclistIds),
+			BestAllrounderCyclists: t.CyclistsForIds(event.BestAllrounderCyclistIds),
+			BestSprinterCyclists:   t.CyclistsForIds(event.BestSprinterCyclistIds),
+			BestClimberCyclists:    t.CyclistsForIds(event.BestClimberCyclistIds)}
 	}
 	//log.Printf("ApplyEtappeResultsCreated after: %+v -> %+v", event, t)
 }
