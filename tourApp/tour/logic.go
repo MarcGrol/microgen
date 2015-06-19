@@ -38,7 +38,7 @@ func NewTourEventHandler(bus infra.PublishSubscriber, store infra.Store) *TourEv
 }
 
 func (eventHandler *TourEventHandler) Start() error {
-	// subscribe to events?
+	// do not subscribe to any events
 	return nil
 }
 
@@ -153,7 +153,8 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 	}
 
 	// create event
-	etappeCreatedEvent := events.EtappeCreated{Year: command.Year,
+	etappeCreatedEvent := events.EtappeCreated{
+		Year:                 command.Year,
 		EtappeId:             command.Id,
 		EtappeDate:           command.Date,
 		EtappeStartLocation:  command.StartLocation,
@@ -353,11 +354,11 @@ func (t *Tour) ApplyTourCreated(event *events.TourCreated) {
 
 func (t *Tour) ApplyCyclistCreated(event *events.CyclistCreated) {
 
-	cyclist := new(Cyclist)
-	cyclist.Number = event.CyclistId
-	cyclist.Name = event.CyclistName
-	cyclist.Team = event.CyclistTeam
-	t.Cyclists = append(t.Cyclists, *cyclist)
+	t.Cyclists = append(t.Cyclists,
+		Cyclist{
+			Number: event.CyclistId,
+			Name:   event.CyclistName,
+			Team:   event.CyclistTeam})
 
 	//log.Printf("ApplyCyclistCreated after:%+v -> %+v", event, t)
 
@@ -365,16 +366,14 @@ func (t *Tour) ApplyCyclistCreated(event *events.CyclistCreated) {
 }
 
 func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
-
-	etappe := new(Etappe)
-
-	etappe.Id = event.EtappeId
-	etappe.Date = event.EtappeDate
-	etappe.StartLocation = event.EtappeStartLocation
-	etappe.FinishLocation = event.EtappeFinishLocation
-	etappe.Length = event.EtappeLength
-	etappe.Kind = event.EtappeKind
-	t.Etappes = append(t.Etappes, *etappe)
+	t.Etappes = append(t.Etappes,
+		Etappe{
+			Id:             event.EtappeId,
+			Date:           event.EtappeDate,
+			StartLocation:  event.EtappeStartLocation,
+			FinishLocation: event.EtappeFinishLocation,
+			Length:         event.EtappeLength,
+			Kind:           event.EtappeKind})
 
 	//log.Printf("ApplyEtappeCreated after:%+v -> %+v", event, t)
 
@@ -385,15 +384,15 @@ func (t *Tour) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
 	etappe, found := t.findEtappe(event.LastEtappeId)
 	if found {
 		etappe.Results = &Result{
-			BestDayCyclists:        t.CyclistsForIds(event.BestDayCyclistIds),
-			BestAllrounderCyclists: t.CyclistsForIds(event.BestAllrounderCyclistIds),
-			BestSprinterCyclists:   t.CyclistsForIds(event.BestSprinterCyclistIds),
-			BestClimberCyclists:    t.CyclistsForIds(event.BestClimberCyclistIds)}
+			BestDayCyclists:        t.cyclistsForIds(event.BestDayCyclistIds),
+			BestAllrounderCyclists: t.cyclistsForIds(event.BestAllrounderCyclistIds),
+			BestSprinterCyclists:   t.cyclistsForIds(event.BestSprinterCyclistIds),
+			BestClimberCyclists:    t.cyclistsForIds(event.BestClimberCyclistIds)}
 	}
 	//log.Printf("ApplyEtappeResultsCreated after: %+v -> %+v", event, t)
 }
 
-func (t *Tour) CyclistsForIds(ids []int) []*Cyclist {
+func (t *Tour) cyclistsForIds(ids []int) []*Cyclist {
 	cyclists := make([]*Cyclist, 0, len(ids))
 	for _, id := range ids {
 		c, err := t.Cyclists.First(func(c Cyclist) bool {
