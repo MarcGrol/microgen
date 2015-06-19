@@ -50,13 +50,13 @@ digraph G {
 
 		// events
 		 
+			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
+		 
 			"GamblerTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
 			"GamblerCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
 			"GamblerEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
-		 
-			"GamblerEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		
@@ -114,15 +114,15 @@ digraph G {
 
 		// events
 		 
+			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
+		 
+			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=diamond];
+		 
 			"NotificationTourCreated" [label="TourCreated\nevent-handler", shape=diamond];
 		 
 			"NotificationCyclistCreated" [label="CyclistCreated\nevent-handler", shape=diamond];
 		 
 			"NotificationEtappeCreated" [label="EtappeCreated\nevent-handler", shape=diamond];
-		 
-			"NotificationEtappeResultsCreated" [label="EtappeResultsCreated\nevent-handler", shape=diamond];
-		 
-			"NotificationNewsItemCreated" [label="NewsItemCreated\nevent-handler", shape=diamond];
 		
 		// commands
 		

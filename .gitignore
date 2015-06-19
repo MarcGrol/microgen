@@ -5,3 +5,5 @@ tourApp/doc/*.json
 *.sublime*
 *.gone
 .project
+.DS_Store
+nohup.out
