@@ -147,7 +147,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 		Command: &CreateGamblerCommand{
 			GamblerUid: "my uid",
 			Name:       "My name",
-			mail:       "me@home.nl"},
+			Email:      "me@home.nl"},
 		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))

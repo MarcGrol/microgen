@@ -82,14 +82,24 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblerContext, err := getGamblerContext(ch.store, command.GamblerUid, -1)
+	gamblingContext, err := getGamblingContext(ch.store, command.GamblerUid, -1)
 	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
 
-	if gamblerContext.Gambler != nil {
-		return myerrors.NewInvalidInputError(errors.New(fmt.Sprintf("gambler %s already exists", command.GamblerUid)))
+	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
+	if found == true {
+		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler %s already exists",
+			command.GamblerUid))
 	}
+
+	gamblingContext.gamblersForTour[command.GamblerUid] =
+		&Gambler{
+			Uid:      command.GamblerUid,
+			Name:     command.Name,
+			Email:    command.Email,
+			Cyclists: make([]*Cyclist, 0, 10),
+		}
 
 	// apply business logic
 	gamblerCreatedEvent := events.GamblerCreated{
@@ -115,18 +125,19 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblerContext, err := getGamblerContext(ch.store, command.GamblerUid, command.Year)
+	gamblingContext, err := getGamblingContext(ch.store, command.GamblerUid, command.Year)
 	if err != nil {
 		return myerrors.NewInternalError(err)
 	}
-	if gamblerContext.Year == nil || *gamblerContext.Year != command.Year {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", command.Year)))
+	if gamblingContext.Year == nil || *gamblingContext.Year != command.Year {
+		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Tour %d not found", command.Year))
 	}
-	if gamblerContext.Gambler == nil {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Gambler %s not found", command.GamblerUid)))
+	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
+	if found == false {
+		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler %s not found", command.GamblerUid))
 	}
 
-	err = cyclistsExist(gamblerContext.cyclistsForTour, command.CyclistIds)
+	err = cyclistsExist(gamblingContext.cyclistsForTour, command.CyclistIds)
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
@@ -140,7 +151,7 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
 }
 
-func cyclistsExist(allCyclists map[int]Cyclist, cyclistIds []int) error {
+func cyclistsExist(allCyclists map[int]*Cyclist, cyclistIds []int) error {
 	for _, id := range cyclistIds {
 		_, exists := allCyclists[id]
 		if exists == false {
@@ -178,25 +189,26 @@ func doStoreAndPublish(store infra.Store, bus infra.PublishSubscriber, envelopes
 
 func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, error) {
 	// TODO validate input
-	gamblerContext, err := getGamblerContext(ch.store, gamblerUid, year)
+	gamblingContext, err := getGamblingContext(ch.store, gamblerUid, year)
 	if err != nil {
 		return nil, myerrors.NewInternalError(err)
 	}
-	if gamblerContext.Gambler == nil {
-		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Gambler with uid %s not found", gamblerUid)))
+	gambler, found := gamblingContext.gamblersForTour[gamblerUid]
+	if found == false {
+		return nil, myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler with uid %s not found", gamblerUid))
 	}
 
-	//log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblerContext.Gambler)
+	//log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblingContext.Gambler)
 
-	return gamblerContext.Gambler, nil
+	return gambler, nil
 }
 
 func (ch *GamblerCommandHandler) HandleGetResultsQuery(year int) (*Results, error) {
 	return nil, errors.New("HandleGetResultsQuery not implemented")
 }
 
-func getGamblerContext(store infra.Store, gamblerUid string, year int) (*GamblerContext, error) {
-	context := NewGamblerContext()
+func getGamblingContext(store infra.Store, gamblerUid string, year int) (*GamblingContext, error) {
+	context := NewGamblingContext()
 
 	tourRelatedEvents, err := store.Get("tour", strconv.Itoa(year))
 	if err != nil {
@@ -213,17 +225,20 @@ func getGamblerContext(store infra.Store, gamblerUid string, year int) (*Gambler
 	return context, nil
 }
 
-type GamblerContext struct {
+type GamblingContext struct {
 	Year            *int
-	cyclistsForTour map[int]Cyclist
-	Gambler         *Gambler
+	cyclistsForTour map[int]*Cyclist
+	etappes         map[int]*Etappe
+	gamblersForTour map[string]*Gambler
 }
 
-func NewGamblerContext() *GamblerContext {
-	context := new(GamblerContext)
+func NewGamblingContext() *GamblingContext {
+	context := new(GamblingContext)
 	context.Year = nil
-	context.cyclistsForTour = make(map[int]Cyclist)
-	context.Gambler = nil
+	context.cyclistsForTour = make(map[int]*Cyclist)
+	context.etappes = make(map[int]*Etappe)
+	context.gamblersForTour = make(map[string]*Gambler)
+
 	return context
 }
 
@@ -232,7 +247,8 @@ type Gambler struct {
 	Uid      string
 	Name     string
 	Email    string
-	Cyclists []Cyclist
+	Cyclists []*Cyclist
+	Points   int
 }
 
 func NewGambler(uid string, name string, email string) *Gambler {
@@ -240,69 +256,128 @@ func NewGambler(uid string, name string, email string) *Gambler {
 	gambler.Uid = uid
 	gambler.Name = name
 	gambler.Email = email
-	gambler.Cyclists = make([]Cyclist, 0, 10)
+	gambler.Cyclists = make([]*Cyclist, 0, 10)
 	return gambler
 }
 
 // +gen slice:"SortBy,Where,Select[string],GroupBy[string]"
 type Cyclist struct {
-	Id   int
-	Name string
-	Team string
+	Id     int
+	Name   string
+	Team   string
+	Points int
 }
 
-func (context *GamblerContext) ApplyTourCreated(event *events.TourCreated) {
+type Etappe struct {
+	id   int
+	kind int
+}
+
+func (context *GamblingContext) ApplyTourCreated(event *events.TourCreated) {
 	//log.Printf("ApplyTourCreated: context before: %+v, event: %+v", context, event)
 
 	context.Year = new(int)
 	*context.Year = event.Year
 
-	//log.Printf("ApplyTourCreated: context after: %+v", context)
+	log.Printf("ApplyTourCreated: context after: %+v", context)
 
 	return
 }
 
-func (context *GamblerContext) ApplyCyclistCreated(event *events.CyclistCreated) {
+func (context *GamblingContext) ApplyCyclistCreated(event *events.CyclistCreated) {
 	//log.Printf("ApplyCyclistCreated: context before: %+v, event: %+v", context, event)
 
 	context.cyclistsForTour[event.CyclistId] =
-		Cyclist{Id: event.CyclistId, Name: event.CyclistName, Team: event.CyclistTeam}
+		&Cyclist{
+			Id:   event.CyclistId,
+			Name: event.CyclistName,
+			Team: event.CyclistTeam}
 
-	//log.Printf("ApplyCyclistCreated: context after: %+v", context)
+	log.Printf("ApplyCyclistCreated: context after: %+v", context)
 
 	return
 }
 
-func (context *GamblerContext) ApplyGamblerCreated(event *events.GamblerCreated) {
+func (context *GamblingContext) ApplyGamblerCreated(event *events.GamblerCreated) {
 	//log.Printf("ApplyGamblerCreated: context before: %+v, event: %+v", context, event)
 
-	context.Gambler = NewGambler(event.GamblerUid, event.GamblerName, event.GamblerEmail)
+	context.gamblersForTour[event.GamblerUid] =
+		NewGambler(event.GamblerUid, event.GamblerName, event.GamblerEmail)
 
-	//log.Printf("ApplyGamblerCreated: context after: %+v", context)
+	log.Printf("ApplyGamblerCreated: context after: %+v", context)
 
 	return
 }
 
-func (context *GamblerContext) ApplyGamblerTeamCreated(event *events.GamblerTeamCreated) {
+func (context *GamblingContext) ApplyGamblerTeamCreated(event *events.GamblerTeamCreated) {
 	//log.Printf("ApplyGamblerTeamCreated: context: %+v, event: %+v", context, event)
 
-	for _, cyclistId := range event.GamblerCyclists {
-		cyclist, found := context.cyclistsForTour[cyclistId]
-		if found {
-			context.Gambler.Cyclists = append(context.Gambler.Cyclists, cyclist)
+	gambler, found := context.gamblersForTour[event.GamblerUid]
+	if found {
+		for _, cyclistId := range event.GamblerCyclists {
+			cyclist, found := context.cyclistsForTour[cyclistId]
+			if found {
+				gambler.Cyclists = append(gambler.Cyclists, cyclist)
+			}
 		}
 	}
 
-	//log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
+	log.Printf("ApplyGamblerTeamCreated: context after: %+v", context)
 	return
 }
 
-func (context *GamblerContext) ApplyEtappeCreated(event *events.EtappeCreated) {
-	log.Fatal("gambler.ApplyEtappeCreated not implemented")
+func (context *GamblingContext) ApplyEtappeCreated(event *events.EtappeCreated) {
+	context.etappes[event.EtappeId] = &Etappe{
+		id:   event.EtappeId,
+		kind: event.EtappeKind}
+
+	log.Printf("ApplyEtappeCreated: context after: %+v", context)
+
+	return
 }
 
-func (context *GamblerContext) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
-	log.Fatal("gambler.ApplyEtappeResultsCreated not implemented")
+type Classement int
+
+const (
+	ClassementUnknown Classement = iota
+	ClassementDay
+	ClassementAllround
+	ClassementSprint
+	ClassementClimb
+)
+
+func (context *GamblingContext) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
+	etappe, found := context.etappes[event.LastEtappeId]
+	if found {
+		context.calculateCyclistPointsForEtappe(etappe, event.BestDayCyclistIds, ClassementDay)
+		context.calculateCyclistPointsForEtappe(etappe, event.BestAllrounderCyclistIds, ClassementAllround)
+		context.calculateCyclistPointsForEtappe(etappe, event.BestSprinterCyclistIds, ClassementSprint)
+		context.calculateCyclistPointsForEtappe(etappe, event.BestClimberCyclistIds, ClassementClimb)
+
+		/*
+		 * calculate points for gamblers
+		 */
+		for _, gambler := range context.gamblersForTour {
+			for _, cyclist := range gambler.Cyclists {
+				gambler.Points += cyclist.Points
+			}
+		}
+
+	}
+	//log.Printf("ApplyEtappeResultsCreated: context after: %+v", context)
+}
+
+func (context *GamblingContext) calculateCyclistPointsForEtappe(etappe *Etappe, cyclistIds []int, classementType Classement) {
+	for rank, cyclistId := range cyclistIds {
+		cyclist, found := context.cyclistsForTour[cyclistId]
+		if found {
+			cyclist.Points += getPointsFor(etappe, rank, classementType, cyclist)
+		}
+	}
+}
+
+func getPointsFor(etappe *Etappe, rank int, classsementType Classement, cyclist *Cyclist) int {
+	return 42
 }
 
 type Results struct {
