@@ -128,7 +128,10 @@ func TestEtappeResultsEvent(t *testing.T) {
 			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
 			return service.OnEvent(scenario.Envelop)
 		},
-		Expect: []*envelope.Envelope{givenTour, givenEtappe, givenCyclist1, givenCyclist2, givenCyclist3, input},
+		Expect: []*envelope.Envelope{
+			givenTour, givenEtappe,
+			givenCyclist1, givenCyclist2, givenCyclist3,
+			input},
 	}
 
 	scenario.RunAndVerify(t)
@@ -139,15 +142,21 @@ func TestEtappeResultsEvent(t *testing.T) {
 func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title:   "Create new gambler success",
-		Given:   []*envelope.Envelope{},
-		Command: &CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
+		Title: "Create new gambler success",
+		Given: []*envelope.Envelope{},
+		Command: &CreateGamblerCommand{
+			GamblerUid: "my uid",
+			Name:       "My name",
+			mail:       "me@home.nl"},
 		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
 		},
 		Expect: []*envelope.Envelope{
-			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
+			(&events.GamblerCreated{
+				GamblerUid:   "my uid",
+				GamblerName:  "My name",
+				GamblerEmail: "me@home.nl"}).Wrap(),
 		},
 	}
 
