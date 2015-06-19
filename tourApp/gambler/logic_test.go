@@ -139,10 +139,8 @@ func TestEtappeResultsEvent(t *testing.T) {
 func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title: "Create new gambler success",
-		Given: []*envelope.Envelope{
-			(&events.TourCreated{Year: 2015}).Wrap(),
-		},
+		Title:   "Create new gambler success",
+		Given:   []*envelope.Envelope{},
 		Command: &CreateGamblerCommand{GamblerUid: "my uid", Name: "My name", Email: "me@home.nl"},
 		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
@@ -176,17 +174,93 @@ func TestCreateGamblerCommand(t *testing.T) {
 	assert.Equal(t, expected.GamblerEmail, gambler.Email)
 }
 
+func TestCreateGamblerCommandInvalidInput(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create new gambler invalid input",
+		Given: []*envelope.Envelope{},
+		Command: &CreateGamblerCommand{
+			GamblerUid: "my uid",
+			// missing name
+			Email: "me@home.nl"},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Equal(t, "Missing parameter Name", *scenario.ErrMsg)
+}
+
 func TestCreateGamblerTeamCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title: "Create new gambler team success",
+		Title: "Create new gambler team: success",
 		Given: []*envelope.Envelope{
-			(&events.TourCreated{Year: 2015}).Wrap(),
-			(&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "cyclist 1", CyclistTeam: "team 1"}).Wrap(),
-			(&events.CyclistCreated{Year: 2015, CyclistId: 2, CyclistName: "cyclist 2", CyclistTeam: "team 2"}).Wrap(),
-			(&events.GamblerCreated{GamblerUid: "my uid", GamblerName: "My name", GamblerEmail: "me@home.nl"}).Wrap(),
+			(&events.TourCreated{
+				Year: 2015}).Wrap(),
+			(&events.GamblerCreated{
+				GamblerUid:   "my uid",
+				GamblerName:  "My name",
+				GamblerEmail: "me@home.nl"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   1,
+				CyclistName: "1",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   2,
+				CyclistName: "2",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   3,
+				CyclistName: "3",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   4,
+				CyclistName: "4",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   5,
+				CyclistName: "5",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   6,
+				CyclistName: "6",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   7,
+				CyclistName: "7",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   8,
+				CyclistName: "8",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   9,
+				CyclistName: "9",
+				CyclistTeam: "My team"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   10,
+				CyclistName: "10",
+				CyclistTeam: "My team"}).Wrap(),
 		},
-		Command: &CreateGamblerTeamCommand{GamblerUid: "my uid", Year: 2015, CyclistIds: []int{1, 2}},
+		Command: &CreateGamblerTeamCommand{
+			GamblerUid: "my uid",
+			Year:       2015,
+			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
 			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
@@ -204,7 +278,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 	actual := events.UnWrapGamblerTeamCreated(&scenario.Actual[0])
 	assert.Equal(t, expected.Year, actual.Year)
 	assert.Equal(t, expected.GamblerUid, actual.GamblerUid)
-	assert.Equal(t, 2, len(actual.GamblerCyclists))
+	assert.Equal(t, 10, len(actual.GamblerCyclists))
 
 	// Test query
 	gambler, err := service.HandleGetGamblerQuery(expected.GamblerUid, expected.Year)
@@ -214,12 +288,112 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 	assert.Equal(t, "My name", gambler.Name)
 	assert.Equal(t, "me@home.nl", gambler.Email)
 
-	assert.Equal(t, 2, len(gambler.Cyclists))
+	assert.Equal(t, 10, len(gambler.Cyclists))
 	assert.Equal(t, 1, gambler.Cyclists[0].Id)
-	assert.Equal(t, "cyclist 1", gambler.Cyclists[0].Name)
-	assert.Equal(t, "team 1", gambler.Cyclists[0].Team)
+	assert.Equal(t, "1", gambler.Cyclists[0].Name)
+	assert.Equal(t, "My team", gambler.Cyclists[0].Team)
 	assert.Equal(t, 2, gambler.Cyclists[1].Id)
-	assert.Equal(t, "cyclist 2", gambler.Cyclists[1].Name)
-	assert.Equal(t, "team 2", gambler.Cyclists[1].Team)
+	assert.Equal(t, "2", gambler.Cyclists[1].Name)
+	assert.Equal(t, "My team", gambler.Cyclists[1].Team)
+}
 
+func TestCreateGamblerTeamCommandUnknownTour(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create new gambler team unknown tour",
+		Given: []*envelope.Envelope{},
+		Command: &CreateGamblerTeamCommand{
+			GamblerUid: "my uid",
+			Year:       2015,
+			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Equal(t, "Tour 2015 not found", *scenario.ErrMsg)
+}
+
+func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create new gambler team: unknown gambler",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+		},
+		Command: &CreateGamblerTeamCommand{
+			GamblerUid: "my uid",
+			Year:       2015,
+			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Equal(t, "Gambler my uid not found", *scenario.ErrMsg)
+}
+
+func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create new gambler team: invalid input (duplicate cyclist)",
+		Given: []*envelope.Envelope{},
+		Command: &CreateGamblerTeamCommand{
+			GamblerUid: "my uid",
+			Year:       2015,
+			CyclistIds: []int{1, 1, 3, 4, 5, 6, 7, 8, 9, 10}},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Equal(t, "CyclistIds contains duplicates", *scenario.ErrMsg)
+}
+
+func TestCreateGamblerTeamCommandUnknownCyclist(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create new gambler team: unknown cyclist",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+			(&events.GamblerCreated{
+				GamblerUid:   "my uid",
+				GamblerName:  "My name",
+				GamblerEmail: "me@home.nl"}).Wrap(),
+			(&events.GamblerCreated{
+				GamblerUid:   "my uid",
+				GamblerName:  "My name",
+				GamblerEmail: "me@home.nl"}).Wrap(),
+			(&events.CyclistCreated{
+				Year:        2015,
+				CyclistId:   1,
+				CyclistName: "1",
+				CyclistTeam: "My team"}).Wrap(),
+		},
+		Command: &CreateGamblerTeamCommand{
+			GamblerUid: "my uid",
+			Year:       2015,
+			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.Equal(t, "Cyclist 2 does not exist", *scenario.ErrMsg)
 }

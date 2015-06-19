@@ -11,6 +11,7 @@ import (
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
+	"github.com/MarcGrol/microgen/lib/validation"
 
 	"github.com/MarcGrol/microgen/tourApp/events"
 )
@@ -68,8 +69,12 @@ func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) *G
 }
 
 func (ch *GamblerCommandHandler) validateCreateGamblerCommand(command *CreateGamblerCommand) error {
-	// TODO
-	return nil
+	v := validation.Validator{}
+	v.NotEmpty("GamblerUid", command.GamblerUid)
+	v.NotEmpty("Name", command.Name)
+	v.NotEmpty("Email", command.Email)
+
+	return v.Err
 }
 
 func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGamblerCommand) error {
@@ -97,8 +102,12 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 }
 
 func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
-	// TODO
-	return nil
+	v := validation.Validator{}
+	v.GreaterThan("Year", 2014, command.Year)
+	v.NotEmpty("GamblerUid", command.GamblerUid)
+	v.MinSliceLength("CyclistIds", 10, command.CyclistIds)
+	v.NoDuplicates("CyclistIds", command.CyclistIds)
+	return v.Err
 }
 
 func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
@@ -117,6 +126,11 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Gambler %s not found", command.GamblerUid)))
 	}
 
+	err = cyclistsExist(gamblerContext.cyclistsForTour, command.CyclistIds)
+	if err != nil {
+		return myerrors.NewInvalidInputError(err)
+	}
+
 	// apply business logic
 	gamblerTeamCreatedEvent := events.GamblerTeamCreated{
 		GamblerUid:      command.GamblerUid,
@@ -124,6 +138,16 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 		GamblerCyclists: command.CyclistIds}
 
 	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
+}
+
+func cyclistsExist(allCyclists map[int]Cyclist, cyclistIds []int) error {
+	for _, id := range cyclistIds {
+		_, exists := allCyclists[id]
+		if exists == false {
+			return fmt.Errorf("Cyclist %d does not exist", id)
+		}
+	}
+	return nil
 }
 
 func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
