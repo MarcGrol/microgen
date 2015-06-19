@@ -115,8 +115,8 @@ func TestEtappeResultsEvent(t *testing.T) {
 		Year:                     2015,
 		LastEtappeId:             3,
 		BestDayCyclistIds:        []int{1, 2},
-		BestAllrondersCyclistIds: []int{1, 2, 3},
-		BestSprintersCyclistIds:  []int{3, 2, 1},
+		BestAllrounderCyclistIds: []int{1, 2, 3},
+		BestSprinterCyclistIds:   []int{3, 2, 1},
 		BestClimberCyclistIds:    []int{3, 2},
 	}).Wrap()
 
