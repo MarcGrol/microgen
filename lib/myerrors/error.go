@@ -1,6 +1,6 @@
 package myerrors
 
-import "errors"
+import "fmt"
 
 type Error struct {
 	underlyingError error
@@ -17,8 +17,8 @@ const (
 	errorTypeNotAuthorized
 )
 
-func NewInternalErrorf(msg string) *Error {
-	return NewInternalError(errors.New(msg))
+func NewInternalErrorf(format string, args interface{}) *Error {
+	return NewInternalError(fmt.Errorf(format, args))
 }
 
 func NewInternalError(err error) *Error {
@@ -28,8 +28,8 @@ func NewInternalError(err error) *Error {
 	return newError
 }
 
-func NewInvalidInputErrorf(msg string) *Error {
-	return NewInvalidInputError(errors.New(msg))
+func NewInvalidInputErrorf(format string, args interface{}) *Error {
+	return NewInvalidInputError(fmt.Errorf(format, args))
 }
 
 func NewInvalidInputError(err error) *Error {
@@ -39,8 +39,8 @@ func NewInvalidInputError(err error) *Error {
 	return newError
 }
 
-func NewNotFoundErrorf(msg string) *Error {
-	return NewNotFoundError(errors.New(msg))
+func NewNotFoundErrorf(format string, args interface{}) *Error {
+	return NewNotFoundError(fmt.Errorf(format, args))
 }
 
 func NewNotFoundError(err error) *Error {
@@ -50,8 +50,8 @@ func NewNotFoundError(err error) *Error {
 	return newError
 }
 
-func NewNotAuthorizedErrorf(msg string) *Error {
-	return NewNotAuthorizedError(errors.New(msg))
+func NewNotAuthorizedErrorf(format string, args interface{}) *Error {
+	return NewNotAuthorizedError(fmt.Errorf(format, args))
 }
 
 func NewNotAuthorizedError(err error) *Error {

@@ -70,7 +70,7 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 	// get tour based on year
 	_, found := getTourOnYear(ch.store, command.Year)
 	if found == true {
-		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Tour %d already exists", command.Year))
+		return myerrors.NewInvalidInputErrorf("Tour %d already exists", command.Year)
 	}
 
 	// create event
@@ -101,12 +101,12 @@ func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistC
 	// get tour based on year
 	tour, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
-		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Tour %d does not exist", command.Year))
+		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
 
 	// verify if cyclist already exists
 	if tour.hasCyclist(command.Id) {
-		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Cyclist with %d already exists", command.Id))
+		return myerrors.NewInvalidInputErrorf("Cyclist with %d already exists", command.Id)
 	}
 
 	// create event
@@ -144,12 +144,12 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 	// get tour based on year
 	tour, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exist", command.Year)))
+		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
 
 	// verify if etappe already exists
 	if tour.hasEtappe(command.Id) {
-		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Etappe with %d already exists", command.Id))
+		return myerrors.NewInvalidInputErrorf("Etappe with %d already exists", command.Id)
 	}
 
 	// create event
@@ -203,7 +203,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 
 	// verify that etappe already exists
 	if tour.hasEtappe(command.EtappeId) == false {
-		return myerrors.NewInvalidInputErrorf(fmt.Sprintf("Etappe %d does not exist", command.EtappeId))
+		return myerrors.NewInvalidInputErrorf("Etappe %d does not exist", command.EtappeId)
 	}
 
 	// verify that referenced cyclists already exists

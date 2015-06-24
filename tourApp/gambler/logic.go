@@ -42,18 +42,7 @@ func (eventHandler *GamblerEventHandler) Start() error {
 }
 
 func (eh *GamblerEventHandler) OnEvent(envelop *envelope.Envelope) error {
-	{
-		event, ok := events.GetIfIsEtappeResultsCreated(envelop)
-		if ok {
-			eh.OnEtappeResultsCreated(event)
-		}
-	}
 	return doStore(eh.store, []*envelope.Envelope{envelop})
-}
-
-func (eh *GamblerEventHandler) OnEtappeResultsCreated(event *events.EtappeResultsCreated) error {
-	//log.Printf("OnEtappeResultsCreated: event: %+v", event)
-	return nil
 }
 
 type GamblerCommandHandler struct {
@@ -89,8 +78,8 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 
 	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
 	if found == true {
-		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler %s already exists",
-			command.GamblerUid))
+		return myerrors.NewNotFoundErrorf("Gambler %s already exists",
+			command.GamblerUid)
 	}
 
 	gamblingContext.gamblersForTour[command.GamblerUid] =
@@ -130,11 +119,11 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 		return myerrors.NewInternalError(err)
 	}
 	if gamblingContext.Year == nil || *gamblingContext.Year != command.Year {
-		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Tour %d not found", command.Year))
+		return myerrors.NewNotFoundErrorf("Tour %d not found", command.Year)
 	}
 	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
 	if found == false {
-		return myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler %s not found", command.GamblerUid))
+		return myerrors.NewNotFoundErrorf("Gambler %s not found", command.GamblerUid)
 	}
 
 	err = cyclistsExist(gamblingContext.cyclistsForTour, command.CyclistIds)
@@ -195,7 +184,7 @@ func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year i
 	}
 	gambler, found := gamblingContext.gamblersForTour[gamblerUid]
 	if found == false {
-		return nil, myerrors.NewNotFoundErrorf(fmt.Sprintf("Gambler with uid %s not found", gamblerUid))
+		return nil, myerrors.NewNotFoundErrorf("Gambler with uid %s not found", gamblerUid)
 	}
 
 	//log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblingContext.Gambler)
