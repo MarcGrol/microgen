@@ -42,6 +42,28 @@ func TestCreateTourCommand(t *testing.T) {
 	assert.Equal(t, 0, len(tour.Cyclists))
 }
 
+func TestCreateTourCommandTourExists(t *testing.T) {
+	var service CommandHandler
+	scenario := test.CommandScenario{
+		Title: "Create tour with existing tour",
+		Given: []*envelope.Envelope{
+			(&events.TourCreated{Year: 2015}).Wrap(),
+		},
+		Command: &CreateTourCommand{Year: 2015},
+		When: func(scenario *test.CommandScenario) error {
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store)
+			return service.HandleCreateTourCommand(scenario.Command.(*CreateTourCommand))
+		},
+		Expect: []*envelope.Envelope{},
+	}
+
+	scenario.RunAndVerify(t)
+
+	assert.NotNil(t, scenario.ErrMsg)
+	assert.Equal(t, "Tour 2015 already exists", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
+}
+
 func TestCreateCyclistCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
@@ -92,7 +114,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 }
 
-func TestCreateCyclistUnknownTourCommand(t *testing.T) {
+func TestCreateCyclistCommandUnknownTour(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create cyclist with unknown tour",
@@ -113,9 +135,10 @@ func TestCreateCyclistUnknownTourCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Tour 2015 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
-func TestCreateInvalidCyclistCommand(t *testing.T) {
+func TestCreateCyclistCommandInvalidCyclist(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create invalid new cyclist",
@@ -137,9 +160,10 @@ func TestCreateInvalidCyclistCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Invalid parameter Id", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
-func TestCreateDuplicateCyclistCommand(t *testing.T) {
+func TestCreateCyclistCommandDuplicateCyclist(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create duplicate new cyclist",
@@ -166,7 +190,8 @@ func TestCreateDuplicateCyclistCommand(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.NotNil(t, scenario.ErrMsg)
-	assert.Equal(t, "Cyclist with 42 already exists", *scenario.ErrMsg)
+	assert.Equal(t, "Cyclist with id 42 already exists", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
 func TestCreateEtappeCommand(t *testing.T) {
@@ -233,7 +258,7 @@ func TestCreateEtappeCommand(t *testing.T) {
 	assert.Equal(t, expected.EtappeKind, tour.Etappes[0].Kind)
 }
 
-func TestCreateEtappeUnknownTourCommand(t *testing.T) {
+func TestCreateEtappeVommandUnknownTour(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create etappe with unknown tour",
@@ -259,9 +284,10 @@ func TestCreateEtappeUnknownTourCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Tour 2015 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
-func TestCreateInvalidEtappeCommand(t *testing.T) {
+func TestCreateEtappeCommandInvalidEtappe(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create invalid etappe",
@@ -286,9 +312,10 @@ func TestCreateInvalidEtappeCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Invalid parameter Date", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
-func TestCreateDuplicateEtappeCommand(t *testing.T) {
+func TestCreateEtappeCommandDuplicateEtappe(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create duplicate etappe",
@@ -321,13 +348,14 @@ func TestCreateDuplicateEtappeCommand(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.NotNil(t, scenario.ErrMsg)
-	assert.Equal(t, "Etappe with 2 already exists", *scenario.ErrMsg)
+	assert.Equal(t, "Etappe with id 2 already exists", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
-func TestCreateEtappeResultsInvalidRequestCommand(t *testing.T) {
+func TestCreateEtappeResultsCommandInvalidRequest(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title: "Create new etappe result invalidRequest",
+		Title: "Create new etappe result invalid request",
 		Given: []*envelope.Envelope{},
 		Command: &CreateEtappeResultsCommand{
 			Year:                   2015,
@@ -347,6 +375,7 @@ func TestCreateEtappeResultsInvalidRequestCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Invalid parameter BestDayCyclistIds", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
 func TestCreateEtappeResultsUnknownTourCommand(t *testing.T) {
@@ -373,9 +402,10 @@ func TestCreateEtappeResultsUnknownTourCommand(t *testing.T) {
 
 	assert.NotNil(t, scenario.ErrMsg)
 	assert.Equal(t, "Tour 2015 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
-func TestCreateEtappeResultsUnknownEtappeCommand(t *testing.T) {
+func TestCreateEtappeResultsCommandUnknownEtappe(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result unknown etappe",
@@ -400,7 +430,8 @@ func TestCreateEtappeResultsUnknownEtappeCommand(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.NotNil(t, scenario.ErrMsg)
-	assert.Equal(t, "Etappe 2 does not exist", *scenario.ErrMsg)
+	assert.Equal(t, "Etappe with id 2 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
 func TestCreateEtappeResultsUnknownCyclistCommand(t *testing.T) {
@@ -436,7 +467,8 @@ func TestCreateEtappeResultsUnknownCyclistCommand(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.NotNil(t, scenario.ErrMsg)
-	assert.Equal(t, "BestDayCyclistIds: Cyclist 1 does not exist", *scenario.ErrMsg)
+	assert.Equal(t, "BestDayCyclistIds: Cyclist with id 1 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
 func TestCreateEtappeResultsDuplicateCyclistCommand(t *testing.T) {

@@ -106,7 +106,7 @@ func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistC
 
 	// verify if cyclist already exists
 	if tour.hasCyclist(command.Id) {
-		return myerrors.NewInvalidInputErrorf("Cyclist with %d already exists", command.Id)
+		return myerrors.NewInvalidInputErrorf("Cyclist with id %d already exists", command.Id)
 	}
 
 	// create event
@@ -149,7 +149,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 
 	// verify if etappe already exists
 	if tour.hasEtappe(command.Id) {
-		return myerrors.NewInvalidInputErrorf("Etappe with %d already exists", command.Id)
+		return myerrors.NewInvalidInputErrorf("Etappe with id %d already exists", command.Id)
 	}
 
 	// create event
@@ -198,12 +198,12 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	// get tour based on year
 	tour, found := getTourOnYear(ch.store, command.Year)
 	if found == false {
-		return myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d does not exist", command.Year)))
+		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
 
 	// verify that etappe already exists
 	if tour.hasEtappe(command.EtappeId) == false {
-		return myerrors.NewInvalidInputErrorf("Etappe %d does not exist", command.EtappeId)
+		return myerrors.NewNotFoundErrorf("Etappe with id %d does not exist", command.EtappeId)
 	}
 
 	// verify that referenced cyclists already exists
@@ -213,7 +213,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	verify.cyclistsExist("BestSprintCyclistIds", tour, command.BestSprintCyclistIds)
 	verify.cyclistsExist("BestClimbCyclistIds", tour, command.BestClimbCyclistIds)
 	if verify.err != nil {
-		return myerrors.NewInvalidInputError(verify.err)
+		return verify.err
 	}
 
 	// compose event
@@ -239,7 +239,8 @@ func (v *fluentError) cyclistsExist(name string, tour *Tour, cyclistIds []int) e
 	if v.err == nil {
 		for _, id := range cyclistIds {
 			if tour.hasCyclist(id) == false {
-				v.err = fmt.Errorf("%s: Cyclist %d does not exist", name, id)
+				v.err = myerrors.NewNotFoundErrorf("%s: Cyclist with id %s does not exist",
+					name, fmt.Sprintf("%d", id))
 				break
 			}
 		}
