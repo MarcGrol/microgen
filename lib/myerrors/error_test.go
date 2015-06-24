@@ -25,7 +25,7 @@ func TestError(t *testing.T) {
 		assert.Equal(t, "my unclassified error", err.Error())
 	}
 	{
-		err := makeInternalError()
+		err := NewInternalErrorf("my %s error", "internal")
 		assert.True(t, IsInternalError(err))
 		assert.False(t, IsInvalidInputError(err))
 		assert.False(t, IsNotFoundError(err))
@@ -33,7 +33,7 @@ func TestError(t *testing.T) {
 		assert.Equal(t, "my internal error", err.Error())
 	}
 	{
-		err := makeInvalidInputError()
+		err := NewInvalidInputErrorf("my %s error", "invalid input")
 		assert.False(t, IsInternalError(err))
 		assert.True(t, IsInvalidInputError(err))
 		assert.False(t, IsNotFoundError(err))
@@ -41,7 +41,7 @@ func TestError(t *testing.T) {
 		assert.Equal(t, "my invalid input error", err.Error())
 	}
 	{
-		err := makeNotFoundError()
+		err := NewNotFoundErrorf("my %s error", "not found")
 		assert.False(t, IsInternalError(err))
 		assert.False(t, IsInvalidInputError(err))
 		assert.True(t, IsNotFoundError(err))
@@ -49,7 +49,7 @@ func TestError(t *testing.T) {
 		assert.Equal(t, "my not found error", err.Error())
 	}
 	{
-		err := makeAuthorisationError()
+		err := NewNotAuthorizedErrorf("my %s error", "not authorized")
 		assert.False(t, IsInternalError(err))
 		assert.False(t, IsInvalidInputError(err))
 		assert.False(t, IsNotFoundError(err))
@@ -60,20 +60,4 @@ func TestError(t *testing.T) {
 
 func makeNil() error {
 	return nil
-}
-
-func makeInternalError() error {
-	return NewInternalError(errors.New("my internal error"))
-}
-
-func makeInvalidInputError() error {
-	return NewInvalidInputError(errors.New("my invalid input error"))
-}
-
-func makeNotFoundError() error {
-	return NewNotFoundError(errors.New("my not found error"))
-}
-
-func makeAuthorisationError() error {
-	return NewNotAuthorizedError(errors.New("my not authorized error"))
 }
