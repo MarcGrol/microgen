@@ -183,8 +183,7 @@ func doPost(url string, command interface{}) error {
 
 func encodeRequest(command interface{}) (*bytes.Buffer, error) {
 	var requestBody bytes.Buffer
-	enc := json.NewEncoder(&requestBody)
-	err := enc.Encode(command)
+	err := json.NewEncoder(&requestBody).Encode(command)
 	if err != nil {
 		return nil, err
 	}
@@ -192,9 +191,8 @@ func encodeRequest(command interface{}) (*bytes.Buffer, error) {
 }
 
 func decodeResponse(responseBody io.ReadCloser) (*Response, error) {
-	dec := json.NewDecoder(responseBody)
 	var applicationResponse Response
-	err := dec.Decode(&applicationResponse)
+	err := json.NewDecoder(responseBody).Decode(&applicationResponse)
 	if err != nil {
 		return nil, err
 	}
