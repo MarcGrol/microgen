@@ -202,6 +202,7 @@ func TestCreateGamblerCommandInvalidInput(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, "Missing parameter Name", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
 func TestCreateGamblerTeamCommand(t *testing.T) {
@@ -325,6 +326,7 @@ func TestCreateGamblerTeamCommandUnknownTour(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, "Tour 2015 not found", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
 func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
@@ -348,6 +350,7 @@ func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, "Gambler my uid not found", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }
 
 func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
@@ -369,6 +372,7 @@ func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, "CyclistIds contains duplicates", *scenario.ErrMsg)
+	assert.True(t, scenario.InvalidInputError)
 }
 
 func TestCreateGamblerTeamCommandUnknownCyclist(t *testing.T) {
@@ -405,4 +409,5 @@ func TestCreateGamblerTeamCommandUnknownCyclist(t *testing.T) {
 	scenario.RunAndVerify(t)
 
 	assert.Equal(t, "Cyclist 2 does not exist", *scenario.ErrMsg)
+	assert.True(t, scenario.NotFoundError)
 }

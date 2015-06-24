@@ -128,7 +128,7 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 
 	err = cyclistsExist(gamblingContext.cyclistsForTour, command.CyclistIds)
 	if err != nil {
-		return myerrors.NewInvalidInputError(err)
+		return myerrors.NewNotFoundError(err)
 	}
 
 	// apply business logic
