@@ -129,7 +129,7 @@ func (ch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeC
 	v.NotEmpty("FinishLocation", command.FinishLocation)
 	v.GreaterThan("Length", 0, command.Length)
 	v.GreaterThan("Kind", -1, command.Kind)
-	v.After("Date", "2015-07-01T00:00:00Z", command.Date)
+	v.After("Date", "2010-07-01T00:00:00Z", command.Date)
 
 	return v.Err
 }

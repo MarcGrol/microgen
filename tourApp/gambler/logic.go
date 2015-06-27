@@ -102,7 +102,7 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 
 func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
 	v := validation.Validator{}
-	v.GreaterThan("Year", 2014, command.Year)
+	v.GreaterThan("Year", 2010, command.Year)
 	v.NotEmpty("GamblerUid", command.GamblerUid)
 	v.MinSliceLength("CyclistIds", 10, command.CyclistIds)
 	v.NoDuplicates("CyclistIds", command.CyclistIds)

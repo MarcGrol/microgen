@@ -59,8 +59,8 @@ func NewNewsCommandHandler(bus infra.PublishSubscriber, store infra.Store) *News
 
 func (ch *NewsCommandHandler) validateCreateNewsItemCommand(command *CreateNewsItemCommand) error {
 	v := validation.Validator{}
-	v.GreaterThan("Year", 2014, command.Year)
-	v.After("Timestamp", "2015-07-01T00:00:00Z", command.Timestamp)
+	v.GreaterThan("Year", 2010, command.Year)
+	v.After("Timestamp", "2010-07-01T00:00:00Z", command.Timestamp)
 	v.NotEmpty("Message", command.Message)
 	v.NotEmpty("Sender", command.Sender)
 	return v.Err
