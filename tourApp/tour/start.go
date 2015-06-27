@@ -39,6 +39,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 }
 
 func (commandHandler *TourCommandHandler) Start(listenPort int) error {
+	var err error
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -57,8 +58,8 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("/tour", func(c *gin.Context) {
 			var command CreateTourCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
 				return
 			}
@@ -71,12 +72,12 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("/tour/:year/etappe", func(c *gin.Context) {
 			var command CreateEtappeCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
 				return
 			}
-			err := commandHandler.HandleCreateEtappeCommand(&command)
+			err = commandHandler.HandleCreateEtappeCommand(&command)
 			if err != nil {
 				myhttp.HandleError(c, err)
 				return
@@ -85,8 +86,8 @@ func (commandHandler *TourCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
 			var command CreateCyclistCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
 				return
 			}

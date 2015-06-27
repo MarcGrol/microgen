@@ -64,6 +64,7 @@ func createBus(busAddress string) (infra.PublishSubscriber, error) {
 }
 
 func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
+	var err error
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -82,12 +83,12 @@ func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("/tour/:year/news", func(c *gin.Context) {
 			var command CreateNewsItemCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
 				return
 			}
-			err := commandHandler.HandleCreateNewsItemCommand(&command)
+			err = commandHandler.HandleCreateNewsItemCommand(&command)
 			if err != nil {
 				myhttp.HandleError(c, err)
 				return

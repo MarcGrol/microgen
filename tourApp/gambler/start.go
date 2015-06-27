@@ -43,6 +43,7 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 }
 
 func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
+	var err error
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
@@ -75,8 +76,8 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("/gambler", func(c *gin.Context) {
 			var command CreateGamblerCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
 				return
 			}
@@ -89,8 +90,8 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 		})
 		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
 			var command CreateGamblerTeamCommand
-			ok := c.Bind(&command)
-			if ok == false {
+			err = c.Bind(&command)
+			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
 				return
 			}

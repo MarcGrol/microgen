@@ -142,7 +142,7 @@ func TestEtappeResultsEvent(t *testing.T) {
 func TestCreateNewsItemCommand(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title: "Create new gambler success",
+		Title: "Create news item success",
 		Given: []*envelope.Envelope{
 			(&events.TourCreated{Year: 2015}).Wrap(),
 			(&events.EtappeCreated{
@@ -265,7 +265,7 @@ func TestCreateNewsItemCommand(t *testing.T) {
 func TestCreateNewsItemCommandInvalidInput(t *testing.T) {
 	var service CommandHandler
 	scenario := test.CommandScenario{
-		Title: "Create new news-item invalid input",
+		Title: "Create new news item invalid input",
 		Given: []*envelope.Envelope{},
 		Command: &CreateNewsItemCommand{
 			Year:      2015,
