@@ -82,6 +82,7 @@ func provision2012(targetHost string) error {
 	client.CreateCyclist(year, 47, "PETACCHI Alessandro", "LAM")
 	client.CreateCyclist(year, 46, "MARZANO Marco", "LAM")
 	client.CreateCyclist(year, 45, "LLOYD Matthew", "LAM")
+	client.CreateCyclist(year, 44, "GROL Freek", "LAM")
 	client.CreateCyclist(year, 43, "HONDO Danilo", "LAM")
 	client.CreateCyclist(year, 42, "BOLE Grega", "LAM")
 	client.CreateCyclist(year, 41, "SCARPONI Michele", "LAM")
