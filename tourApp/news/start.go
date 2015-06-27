@@ -68,7 +68,7 @@ func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
-		api.GET("/tour/:year/news", func(c *gin.Context) {
+		api.GET("/news/:year/news", func(c *gin.Context) {
 			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
 				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
@@ -81,7 +81,7 @@ func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
 			}
 			c.JSON(200, *tour)
 		})
-		api.POST("/tour/:year/news", func(c *gin.Context) {
+		api.POST("/news/:year/news", func(c *gin.Context) {
 			var command CreateNewsItemCommand
 			err = c.Bind(&command)
 			if err != nil {

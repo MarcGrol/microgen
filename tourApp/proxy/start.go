@@ -9,14 +9,14 @@ import (
 	"regexp"
 )
 
-func Start(baseDir string, listenPort int, targetHost string, tourPort int, gamblerPort int, scorePort int, collectorPort int) error {
+func Start(baseDir string, listenPort int, targetHost string, tourPort int, gamblerPort int, newsPort int, collectorPort int) error {
 	var err error
 	server := newServer()
 
 	server.addForwardRule("/api/tour", fmt.Sprintf("%s:%d", targetHost, tourPort))
 	server.addForwardRule("/api/gambler", fmt.Sprintf("%s:%d", targetHost, gamblerPort))
-	server.addForwardRule("/api/score", fmt.Sprintf("%s:%d", targetHost, scorePort))
-	server.addForwardRule("/admin/events", fmt.Sprintf("%s:%d", targetHost, collectorPort))
+	server.addForwardRule("/api/news", fmt.Sprintf("%s:%d", targetHost, newsPort))
+	server.addForwardRule("/api/events", fmt.Sprintf("%s:%d", targetHost, collectorPort))
 	server.addServeRule("/static", fmt.Sprintf("%s/tourApp/ui/", baseDir))
 	if server.err != nil {
 		log.Printf("Error registrering handler rule %s", server.err)
