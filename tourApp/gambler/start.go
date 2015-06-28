@@ -47,18 +47,41 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 	engine := gin.Default()
 	api := engine.Group("/api")
 	{
-		api.GET("/results/:year", func(c *gin.Context) {
-			year, err := strconv.Atoi(c.Params.ByName("year"))
+		api.POST("/gambler", func(c *gin.Context) {
+			var command CreateGamblerCommand
+			err = c.Bind(&command)
 			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
 				return
 			}
-			results, err := commandHandler.HandleGetResultsQuery(year)
+			err := commandHandler.HandleCreateGamblerCommand(&command)
 			if err != nil {
 				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *results)
+			c.JSON(200, *myhttp.SuccessResponse())
+		})
+		api.GET("/gambler", func(c *gin.Context) {
+			gamblers, err := commandHandler.HandleGetGamblersQuery()
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, gamblers)
+		})
+		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
+			var command CreateGamblerTeamCommand
+			err = c.Bind(&command)
+			if err != nil {
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
+				return
+			}
+			err := commandHandler.HandleCreateGamblerTeamCommand(&command)
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *myhttp.SuccessResponse())
 		})
 		api.GET("/gambler/:gamblerUid/year/:year", func(c *gin.Context) {
 			gamblerUid := c.Params.ByName("gamblerUid")
@@ -74,33 +97,18 @@ func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
 			}
 			c.JSON(200, *gambler)
 		})
-		api.POST("/gambler", func(c *gin.Context) {
-			var command CreateGamblerCommand
-			err = c.Bind(&command)
+		api.GET("/results/:year", func(c *gin.Context) {
+			year, err := strconv.Atoi(c.Params.ByName("year"))
 			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
 				return
 			}
-			err := commandHandler.HandleCreateGamblerCommand(&command)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *myhttp.SuccessResponse())
-		})
-		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
-			var command CreateGamblerTeamCommand
-			err = c.Bind(&command)
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
-				return
-			}
-			err := commandHandler.HandleCreateGamblerTeamCommand(&command)
+			results, err := commandHandler.HandleGetResultsQuery(year)
 			if err != nil {
 				myhttp.HandleError(c, err)
 				return
 			}
-			c.JSON(200, *myhttp.SuccessResponse())
+			c.JSON(200, *results)
 		})
 	}
 

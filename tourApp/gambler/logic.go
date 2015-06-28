@@ -192,6 +192,21 @@ func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year i
 	return gambler, nil
 }
 
+func (ch *GamblerCommandHandler) HandleGetGamblersQuery() ([]string, error) {
+	// gamblers := make([]string, 0, 10)
+
+	// callback := func(envelope *envelope.Envelope) {
+	// 	if envelope.EventTypeName == events.TypeGamblerCreated.String() {
+	// 		gamblers = append(gamblers, envelope.AggregateUid)
+	// 	}
+	// }
+	// err := gamblers.Iterate(callback)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return []string{"Me", "Myself", "I"}, nil
+}
+
 func (ch *GamblerCommandHandler) HandleGetResultsQuery(year int) (*Results, error) {
 	return nil, errors.New("HandleGetResultsQuery not implemented")
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/tourApp/gambler"
+	"github.com/MarcGrol/microgen/tourApp/news"
 	"github.com/MarcGrol/microgen/tourApp/tour"
 )
 
@@ -129,6 +130,22 @@ func (c *Client) CreateGamblerTeam(year int, gamblerUid string, cyclistsIds []in
 		// gambler/:gamblerUid/year/:year/team
 
 		url := fmt.Sprintf("%s/api/gambler/%s/year/%d/team", c.hostname, gamblerUid, year)
+
+		c.Err = doPost(url, command)
+
+	}
+	return c.Err
+}
+
+func (c *Client) CreateNewsItem(year int, timestamp time.Time, sender string, messageText string) error {
+	if c.Err == nil {
+		log.Printf("Create news item for year %d", year)
+		command := &news.CreateNewsItemCommand{
+			Year:      year,
+			Timestamp: time.Now(),
+			Message:   messageText,
+			Sender:    sender}
+		url := fmt.Sprintf("%s/api/news/%d/news", c.hostname, year)
 
 		c.Err = doPost(url, command)
 
