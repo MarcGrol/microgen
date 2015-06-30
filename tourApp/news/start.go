@@ -2,19 +2,17 @@ package news
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"os"
-	"strconv"
 
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
-	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/infra/store"
-	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/gin-gonic/gin"
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
+
+	log.Printf("---------------------- Starting -----")
 
 	//start store
 	store, err := createStore(baseDir)
@@ -28,12 +26,15 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 		return err
 	}
 
+	// load events from store and populate in memory structure
+	newsContext := NewNewsContext()
+
 	// no event-handler
-	eventHandler := NewNewsEventHandler(bus, store)
+	eventHandler := NewNewsEventHandler(bus, store, newsContext)
 	eventHandler.Start()
 
 	// command-handler: start web-server: blocking call
-	commandHandler := NewNewsCommandHandler(bus, store)
+	commandHandler := NewNewsCommandHandler(bus, store, newsContext)
 	commandHandler.Start(listenPort)
 
 	return nil
@@ -61,43 +62,4 @@ func createBus(busAddress string) (infra.PublishSubscriber, error) {
 		return nil, errors.New("Error starting bus")
 	}
 	return bus, nil
-}
-
-func (commandHandler *NewsCommandHandler) Start(listenPort int) error {
-	var err error
-	engine := gin.Default()
-	api := engine.Group("/api")
-	{
-		api.GET("/news/:year/news", func(c *gin.Context) {
-			year, err := strconv.Atoi(c.Params.ByName("year"))
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
-				return
-			}
-			tour, err := commandHandler.HandleGetNewsQuery(year)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *tour)
-		})
-		api.POST("/news/:year/news", func(c *gin.Context) {
-			var command CreateNewsItemCommand
-			err = c.Bind(&command)
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
-				return
-			}
-			err = commandHandler.HandleCreateNewsItemCommand(&command)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *myhttp.SuccessResponse())
-		})
-	}
-
-	engine.Run(fmt.Sprintf(":%d", listenPort))
-
-	return nil
 }

@@ -17,4 +17,5 @@ type Store interface {
 	Store(envelope *envelope.Envelope) error
 	Iterate(callback StoredItemHandlerFunc) error
 	Get(aggregateName string, aggregateUid string) ([]envelope.Envelope, error)
+	GetAll() ([]envelope.Envelope, error)
 }

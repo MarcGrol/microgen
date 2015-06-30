@@ -27,12 +27,13 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 		return err
 	}
 
+	tour := NewTour()
 	// no event-handler
-	eventHandler := NewTourEventHandler(bus, store)
+	eventHandler := NewTourEventHandler(bus, store, tour)
 	eventHandler.Start()
 
 	// command-handler: start web-server: blocking call
-	commandHandler := NewTourCommandHandler(bus, store)
+	commandHandler := NewTourCommandHandler(bus, store, tour)
 	commandHandler.Start(listenPort)
 
 	return nil

@@ -4,9 +4,10 @@ package tour
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
-	"time"
 )
 
 // commands
@@ -62,6 +63,7 @@ type EventHandler interface {
 }
 
 type AggregateRoot interface {
+	ApplyAll(envelopes []envelope.Envelope)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)

@@ -115,3 +115,17 @@ func (s *EventStore) Get(aggregateName string, aggregateUid string) ([]envelope.
 
 	return envelopes, nil
 }
+
+func (s *EventStore) GetAll() ([]envelope.Envelope, error) {
+	envelopes := make([]envelope.Envelope, 0, 10)
+
+	callback := func(envelope *envelope.Envelope) {
+		envelopes = append(envelopes, *envelope)
+	}
+	err := s.Iterate(callback)
+	if err != nil {
+		return nil, err
+	}
+
+	return envelopes, nil
+}

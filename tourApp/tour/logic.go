@@ -28,12 +28,14 @@ const (
 type TourEventHandler struct {
 	bus   infra.PublishSubscriber
 	store infra.Store
+	tour  *Tour
 }
 
-func NewTourEventHandler(bus infra.PublishSubscriber, store infra.Store) *TourEventHandler {
+func NewTourEventHandler(bus infra.PublishSubscriber, store infra.Store, tour *Tour) *TourEventHandler {
 	handler := new(TourEventHandler)
 	handler.bus = bus
 	handler.store = store
+	handler.tour = tour
 	return handler
 }
 
@@ -45,12 +47,14 @@ func (eventHandler *TourEventHandler) Start() error {
 type TourCommandHandler struct {
 	bus   infra.PublishSubscriber
 	store infra.Store
+	tour  *Tour
 }
 
-func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store) CommandHandler {
+func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store, tour *Tour) CommandHandler {
 	handler := new(TourCommandHandler)
 	handler.bus = bus
 	handler.store = store
+	handler.tour = tour
 	return handler
 }
 
@@ -342,6 +346,10 @@ func (t Tour) hasCyclist(id int) bool {
 	return t.Cyclists.Any(func(c Cyclist) bool {
 		return c.Number == id
 	})
+}
+
+func (t *Tour) ApplyAll(envelopes []envelope.Envelope) {
+	applyEvents(envelopes, t)
 }
 
 func (t *Tour) ApplyTourCreated(event *events.TourCreated) {
