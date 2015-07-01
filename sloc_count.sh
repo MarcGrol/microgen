@@ -40,17 +40,15 @@ countGeneratedLinesInDir() {
     _EXTRA=${2}
     _LINE_COUNT=$(find ${_DIR} -name "interface.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
     printLineCount ${_DIR}/interface.go ${_LINE_COUNT} "${_EXTRA}"
-    _LINE_COUNT=$(find ${_DIR} -name "start.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
-    printLineCount ${_DIR}/start.go ${_LINE_COUNT} "${_EXTRA}"
 }
 
 countLogicLinesInDir() {
     _DIR=${1}
     _EXTRA=${2}
-    _LINE_COUNT=$(find ${_DIR} -name "logic.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
-     printHighlighted ${_DIR}/logic.go ${_LINE_COUNT} 
-    _LINE_COUNT=$(find ${_DIR} -name "logic_test.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
-     printHighlighted ${_DIR}/logic_test.go ${_LINE_COUNT} "${_EXTRA}"
+    _LINE_COUNT=$(find ${_DIR} \( -name "event.go" -or -name "command.go" -or -name "aggregate.go" \) -exec cat {} \; | wc -l | tr -d '[[:space:]]')
+     printHighlighted ${_DIR}/logic ${_LINE_COUNT} 
+    _LINE_COUNT=$(find ${_DIR} -name "*_test.go" -exec cat {} \; | wc -l | tr -d '[[:space:]]')
+     printHighlighted ${_DIR}/*_test.go ${_LINE_COUNT} "${_EXTRA}"
 }
 
 countSpecLinesInDir() {
