@@ -44,39 +44,48 @@ type EventHandler interface {
 
 type AggregateRoot interface {
 	ApplyAll(envelopes []envelope.Envelope)
-	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
-	ApplyTourCreated(event *events.TourCreated)
-	ApplyGamblerCreated(event *events.GamblerCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyGamblerTeamCreated(event *events.GamblerTeamCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+	ApplyTourCreated(event *events.TourCreated)
+	ApplyGamblerCreated(event *events.GamblerCreated)
+}
+
+func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
+	switch envelop.EventTypeName {
+	case "TourCreated":
+		aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+		break
+	case "GamblerCreated":
+		aggregateRoot.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
+		break
+	case "CyclistCreated":
+		aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+		break
+	case "GamblerTeamCreated":
+		aggregateRoot.ApplyGamblerTeamCreated(events.UnWrapGamblerTeamCreated(&envelop))
+		break
+	case "EtappeCreated":
+		aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		break
+	case "EtappeResultsCreated":
+		aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+		break
+
+	default:
+		return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
+	}
+	return nil
 }
 
 func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
+	var err error
 	for _, envelop := range envelopes {
-		switch envelop.EventTypeName {
-		case "EtappeCreated":
-			aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		err = applyEvent(envelop, aggregateRoot)
+		if err != nil {
 			break
-		case "EtappeResultsCreated":
-			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
-			break
-		case "TourCreated":
-			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
-			break
-		case "GamblerCreated":
-			aggregateRoot.ApplyGamblerCreated(events.UnWrapGamblerCreated(&envelop))
-			break
-		case "CyclistCreated":
-			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
-			break
-		case "GamblerTeamCreated":
-			aggregateRoot.ApplyGamblerTeamCreated(events.UnWrapGamblerTeamCreated(&envelop))
-			break
-
-		default:
-			return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
 		}
 	}
-	return nil
+	return err
 }

@@ -4,10 +4,9 @@ package news
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"time"
 )
 
 // commands
@@ -45,6 +44,9 @@ type AggregateRoot interface {
 
 func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
 	switch envelop.EventTypeName {
+	case "TourCreated":
+		aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+		break
 	case "EtappeCreated":
 		aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
 		break
@@ -56,9 +58,6 @@ func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
 		break
 	case "NewsItemCreated":
 		aggregateRoot.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
-		break
-	case "TourCreated":
-		aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
 		break
 
 	default:

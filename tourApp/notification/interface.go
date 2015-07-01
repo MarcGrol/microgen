@@ -29,35 +29,45 @@ type EventHandler interface {
 }
 
 type AggregateRoot interface {
-	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
-	ApplyNewsItemCreated(event *events.NewsItemCreated)
+	ApplyAll(envelopes []envelope.Envelope)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyCyclistCreated(event *events.CyclistCreated)
 	ApplyEtappeCreated(event *events.EtappeCreated)
+	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
+	ApplyNewsItemCreated(event *events.NewsItemCreated)
+}
+
+func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
+	switch envelop.EventTypeName {
+	case "CyclistCreated":
+		aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+		break
+	case "EtappeCreated":
+		aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		break
+	case "EtappeResultsCreated":
+		aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+		break
+	case "NewsItemCreated":
+		aggregateRoot.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
+		break
+	case "TourCreated":
+		aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+		break
+
+	default:
+		return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
+	}
+	return nil
 }
 
 func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
+	var err error
 	for _, envelop := range envelopes {
-		switch envelop.EventTypeName {
-		case "EtappeCreated":
-			aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		err = applyEvent(envelop, aggregateRoot)
+		if err != nil {
 			break
-		case "EtappeResultsCreated":
-			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
-			break
-		case "NewsItemCreated":
-			aggregateRoot.ApplyNewsItemCreated(events.UnWrapNewsItemCreated(&envelop))
-			break
-		case "TourCreated":
-			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
-			break
-		case "CyclistCreated":
-			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
-			break
-
-		default:
-			return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
 		}
 	}
-	return nil
+	return err
 }

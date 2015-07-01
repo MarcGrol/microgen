@@ -2,16 +2,11 @@ package gambler
 
 import (
 	"errors"
-	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/MarcGrol/microgen/infra"
 	"github.com/MarcGrol/microgen/infra/bus"
-	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/infra/store"
-	"github.com/MarcGrol/microgen/lib/myerrors"
-	"github.com/gin-gonic/gin"
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
@@ -45,81 +40,6 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	// command-handler: start web-server: blocking call
 	commandHandler := NewGamblerCommandHandler(bus, store, gamblingContext)
 	commandHandler.Start(listenPort)
-
-	return nil
-}
-
-func (commandHandler *GamblerCommandHandler) Start(listenPort int) error {
-	var err error
-	engine := gin.Default()
-	api := engine.Group("/api")
-	{
-		api.POST("/gambler", func(c *gin.Context) {
-			var command CreateGamblerCommand
-			err = c.Bind(&command)
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-command")))
-				return
-			}
-			err := commandHandler.HandleCreateGamblerCommand(&command)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *myhttp.SuccessResponse())
-		})
-		api.GET("/gambler", func(c *gin.Context) {
-			gamblers, err := commandHandler.HandleGetGamblersQuery()
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, gamblers)
-		})
-		api.POST("gambler/:gamblerUid/year/:year/team", func(c *gin.Context) {
-			var command CreateGamblerTeamCommand
-			err = c.Bind(&command)
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid create-gambler-team-command")))
-				return
-			}
-			err := commandHandler.HandleCreateGamblerTeamCommand(&command)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *myhttp.SuccessResponse())
-		})
-		api.GET("/gambler/:gamblerUid/year/:year", func(c *gin.Context) {
-			gamblerUid := c.Params.ByName("gamblerUid")
-			year, err := strconv.Atoi(c.Params.ByName("year"))
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
-				return
-			}
-			gambler, err := commandHandler.HandleGetGamblerQuery(gamblerUid, year)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *gambler)
-		})
-		api.GET("/results/:year", func(c *gin.Context) {
-			year, err := strconv.Atoi(c.Params.ByName("year"))
-			if err != nil {
-				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
-				return
-			}
-			results, err := commandHandler.HandleGetResultsQuery(year)
-			if err != nil {
-				myhttp.HandleError(c, err)
-				return
-			}
-			c.JSON(200, *results)
-		})
-	}
-
-	engine.Run(fmt.Sprintf(":%d", listenPort))
 
 	return nil
 }

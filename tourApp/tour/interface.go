@@ -4,10 +4,9 @@ package tour
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"time"
 )
 
 // commands
@@ -70,25 +69,34 @@ type AggregateRoot interface {
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 }
 
-func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
-	for _, envelop := range envelopes {
-		switch envelop.EventTypeName {
-		case "CyclistCreated":
-			aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
-			break
-		case "EtappeCreated":
-			aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
-			break
-		case "EtappeResultsCreated":
-			aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
-			break
-		case "TourCreated":
-			aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
-			break
+func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
+	switch envelop.EventTypeName {
+	case "TourCreated":
+		aggregateRoot.ApplyTourCreated(events.UnWrapTourCreated(&envelop))
+		break
+	case "CyclistCreated":
+		aggregateRoot.ApplyCyclistCreated(events.UnWrapCyclistCreated(&envelop))
+		break
+	case "EtappeCreated":
+		aggregateRoot.ApplyEtappeCreated(events.UnWrapEtappeCreated(&envelop))
+		break
+	case "EtappeResultsCreated":
+		aggregateRoot.ApplyEtappeResultsCreated(events.UnWrapEtappeResultsCreated(&envelop))
+		break
 
-		default:
-			return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
-		}
+	default:
+		return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
 	}
 	return nil
+}
+
+func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
+	var err error
+	for _, envelop := range envelopes {
+		err = applyEvent(envelop, aggregateRoot)
+		if err != nil {
+			break
+		}
+	}
+	return err
 }
