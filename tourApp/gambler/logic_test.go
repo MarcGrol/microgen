@@ -12,6 +12,7 @@ import (
 
 func TestTourCreatedEvent(t *testing.T) {
 	var service EventHandler
+	gamblingContext := NewGamblingContext()
 	input := (&events.TourCreated{Year: 2015}).Wrap()
 
 	scenario := test.EventScenario{
@@ -19,7 +20,8 @@ func TestTourCreatedEvent(t *testing.T) {
 		Given:   []envelope.Envelope{},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
-			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []envelope.Envelope{*input},
@@ -33,6 +35,7 @@ func TestTourCreatedEvent(t *testing.T) {
 
 func TestCyclistCreatedEvent(t *testing.T) {
 	var service EventHandler
+	gamblingContext := NewGamblingContext()
 	given := (&events.TourCreated{Year: 2015}).Wrap()
 	input := (&events.CyclistCreated{Year: 2015, CyclistId: 1, CyclistName: "Lance", CyclistTeam: "Shack"}).Wrap()
 
@@ -41,7 +44,8 @@ func TestCyclistCreatedEvent(t *testing.T) {
 		Given:   []envelope.Envelope{*given},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
-			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []envelope.Envelope{*given, *input},
@@ -54,6 +58,7 @@ func TestCyclistCreatedEvent(t *testing.T) {
 
 func TestEtappeCreatedEvent(t *testing.T) {
 	var service EventHandler
+	gamblingContext := NewGamblingContext()
 	given := (&events.TourCreated{Year: 2015}).Wrap()
 	input := (&events.EtappeCreated{
 		Year:                 2015,
@@ -69,7 +74,8 @@ func TestEtappeCreatedEvent(t *testing.T) {
 		Given:   []envelope.Envelope{*given},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
-			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []envelope.Envelope{*given, *input},
@@ -82,6 +88,7 @@ func TestEtappeCreatedEvent(t *testing.T) {
 
 func TestEtappeResultsEvent(t *testing.T) {
 	var service EventHandler
+	gamblingContext := NewGamblingContext()
 	givenTour := (&events.TourCreated{Year: 2015}).Wrap()
 
 	givenEtappe := (&events.EtappeCreated{
@@ -125,7 +132,8 @@ func TestEtappeResultsEvent(t *testing.T) {
 		Given:   []envelope.Envelope{*givenTour, *givenEtappe, *givenCyclist1, *givenCyclist2, *givenCyclist3},
 		Envelop: input,
 		When: func(scenario *test.EventScenario) error {
-			service = NewGamblerEventHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerEventHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.OnEvent(scenario.Envelop)
 		},
 		Expect: []envelope.Envelope{
@@ -141,6 +149,7 @@ func TestEtappeResultsEvent(t *testing.T) {
 
 func TestCreateGamblerCommand(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler success",
 		Given: []envelope.Envelope{},
@@ -149,7 +158,8 @@ func TestCreateGamblerCommand(t *testing.T) {
 			Name:       "My name",
 			Email:      "me@home.nl"},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
 		},
 		Expect: []envelope.Envelope{
@@ -185,6 +195,7 @@ func TestCreateGamblerCommand(t *testing.T) {
 
 func TestCreateGamblerCommandInvalidInput(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler invalid input",
 		Given: []envelope.Envelope{},
@@ -193,7 +204,8 @@ func TestCreateGamblerCommandInvalidInput(t *testing.T) {
 			// missing name
 			Email: "me@home.nl"},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerCommand(scenario.Command.(*CreateGamblerCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -207,6 +219,7 @@ func TestCreateGamblerCommandInvalidInput(t *testing.T) {
 
 func TestCreateGamblerTeamCommand(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler team: success",
 		Given: []envelope.Envelope{
@@ -272,7 +285,8 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 			Year:       2015,
 			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
 		Expect: []envelope.Envelope{
@@ -309,6 +323,7 @@ func TestCreateGamblerTeamCommand(t *testing.T) {
 
 func TestCreateGamblerTeamCommandUnknownTour(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler team unknown tour",
 		Given: []envelope.Envelope{},
@@ -317,7 +332,8 @@ func TestCreateGamblerTeamCommandUnknownTour(t *testing.T) {
 			Year:       2015,
 			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -331,6 +347,7 @@ func TestCreateGamblerTeamCommandUnknownTour(t *testing.T) {
 
 func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler team: unknown gambler",
 		Given: []envelope.Envelope{
@@ -341,7 +358,8 @@ func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
 			Year:       2015,
 			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -355,6 +373,7 @@ func TestCreateGamblerTeamCommandUnknownGambler(t *testing.T) {
 
 func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler team: invalid input (duplicate cyclist)",
 		Given: []envelope.Envelope{},
@@ -363,7 +382,8 @@ func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
 			Year:       2015,
 			CyclistIds: []int{1, 1, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -377,6 +397,7 @@ func TestCreateGamblerTeamCommandDuplicateCyclist(t *testing.T) {
 
 func TestCreateGamblerTeamCommandUnknownCyclist(t *testing.T) {
 	var service CommandHandler
+	gamblingContext := NewGamblingContext()
 	scenario := test.CommandScenario{
 		Title: "Create new gambler team: unknown cyclist",
 		Given: []envelope.Envelope{
@@ -400,7 +421,8 @@ func TestCreateGamblerTeamCommandUnknownCyclist(t *testing.T) {
 			Year:       2015,
 			CyclistIds: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store)
+			gamblingContext.ApplyAll(scenario.Given)
+			service = NewGamblerCommandHandler(scenario.Bus, scenario.Store, gamblingContext)
 			return service.HandleCreateGamblerTeamCommand(scenario.Command.(*CreateGamblerTeamCommand))
 		},
 		Expect: []envelope.Envelope{},

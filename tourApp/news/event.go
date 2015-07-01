@@ -24,11 +24,6 @@ func NewNewsEventHandler(bus infra.PublishSubscriber, store infra.Store, newsCon
 }
 
 func (eventHandler *NewsEventHandler) Start() error {
-	envelopes, err := eventHandler.store.GetAll()
-	if err != nil {
-		return err
-	}
-	eventHandler.newsContext.ApplyAll(envelopes)
 
 	for _, eventType := range events.GetTourEventTypes() {
 		err := eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {

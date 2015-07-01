@@ -39,21 +39,30 @@ type EventHandler interface {
 }
 
 type AggregateRoot interface {
+    ApplyAll(envelopes []envelope.Envelope)
     {{range .Service.GetAllEvents}} Apply{{.NameToFirstUpper}} ( event *events.{{.NameToFirstUpper}} )
     {{end}}
 }
 
-func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
-    for _, envelop := range envelopes {
-        switch( envelop.EventTypeName ) {
-            {{range .Service.GetAllEvents}}case "{{.NameToFirstUpper}}":
-                aggregateRoot.Apply{{.NameToFirstUpper}}(events.UnWrap{{.NameToFirstUpper}}(&envelop))
-                break
-            {{end}}
-            default:
-            return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
-        }
+func applyEvent(envelop envelope.Envelope, aggregateRoot AggregateRoot) error {
+    switch( envelop.EventTypeName ) {
+        {{range .Service.GetAllEvents}}case "{{.NameToFirstUpper}}":
+            aggregateRoot.Apply{{.NameToFirstUpper}}(events.UnWrap{{.NameToFirstUpper}}(&envelop))
+            break
+        {{end}}
+        default:
+        return fmt.Errorf("applyEvents: Unexpected event %s", envelop.EventTypeName)
     }
     return nil
 }
 
+func applyEvents(envelopes []envelope.Envelope, aggregateRoot AggregateRoot) error {
+    var err error
+    for _, envelop := range envelopes {
+        err = applyEvent(envelop, aggregateRoot)
+        if err != nil {
+            break
+        }
+    }
+    return err
+}

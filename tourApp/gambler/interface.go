@@ -43,6 +43,7 @@ type EventHandler interface {
 }
 
 type AggregateRoot interface {
+	ApplyAll(envelopes []envelope.Envelope)
 	ApplyEtappeResultsCreated(event *events.EtappeResultsCreated)
 	ApplyTourCreated(event *events.TourCreated)
 	ApplyGamblerCreated(event *events.GamblerCreated)

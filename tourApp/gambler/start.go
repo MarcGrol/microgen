@@ -28,15 +28,22 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 		return err
 	}
 
+	gamblingContext := NewGamblingContext()
+	envelopes, err := store.GetAll()
+	if err != nil {
+		return err
+	}
+	gamblingContext.ApplyAll(envelopes)
+
 	// event-handler
-	eventHandler := NewGamblerEventHandler(bus, store)
+	eventHandler := NewGamblerEventHandler(bus, store, gamblingContext)
 	err = eventHandler.Start()
 	if err != nil {
 		return err
 	}
 
 	// command-handler: start web-server: blocking call
-	commandHandler := NewGamblerCommandHandler(bus, store)
+	commandHandler := NewGamblerCommandHandler(bus, store, gamblingContext)
 	commandHandler.Start(listenPort)
 
 	return nil

@@ -17,18 +17,26 @@ import (
 )
 
 type GamblerEventHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
+	bus     infra.PublishSubscriber
+	store   infra.Store
+	context *GamblingContext
 }
 
-func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store) *GamblerEventHandler {
+func NewGamblerEventHandler(bus infra.PublishSubscriber, store infra.Store, context *GamblingContext) *GamblerEventHandler {
 	handler := new(GamblerEventHandler)
 	handler.bus = bus
 	handler.store = store
+	handler.context = context
 	return handler
 }
 
 func (eventHandler *GamblerEventHandler) Start() error {
+	envelopes, err := eventHandler.store.GetAll()
+	if err != nil {
+		return err
+	}
+	eventHandler.context.ApplyAll(envelopes)
+
 	for _, eventType := range events.GetTourEventTypes() {
 		err := eventHandler.bus.Subscribe(eventType.String(), func(envelope *envelope.Envelope) error {
 			return eventHandler.OnEvent(envelope)
@@ -46,14 +54,16 @@ func (eh *GamblerEventHandler) OnEvent(envelop *envelope.Envelope) error {
 }
 
 type GamblerCommandHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
+	bus     infra.PublishSubscriber
+	store   infra.Store
+	context *GamblingContext
 }
 
-func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store) *GamblerCommandHandler {
+func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store, context *GamblingContext) *GamblerCommandHandler {
 	handler := new(GamblerCommandHandler)
 	handler.bus = bus
 	handler.store = store
+	handler.context = context
 	return handler
 }
 
@@ -275,6 +285,10 @@ type Cyclist struct {
 type Etappe struct {
 	id   int
 	kind int
+}
+
+func (context *GamblingContext) ApplyAll(envelopes []envelope.Envelope) {
+	applyEvents(envelopes, context)
 }
 
 func (context *GamblingContext) ApplyTourCreated(event *events.TourCreated) {

@@ -2,7 +2,6 @@ package news
 
 import (
 	"errors"
-	"log"
 	"os"
 
 	"github.com/MarcGrol/microgen/infra"
@@ -11,8 +10,6 @@ import (
 )
 
 func Start(listenPort int, busAddress string, baseDir string) error {
-
-	log.Printf("---------------------- Starting -----")
 
 	//start store
 	store, err := createStore(baseDir)
@@ -28,6 +25,11 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 
 	// load events from store and populate in memory structure
 	newsContext := NewNewsContext()
+	envelopes, err := store.GetAll()
+	if err != nil {
+		return err
+	}
+	newsContext.ApplyAll(envelopes)
 
 	// no event-handler
 	eventHandler := NewNewsEventHandler(bus, store, newsContext)

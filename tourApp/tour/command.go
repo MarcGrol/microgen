@@ -1,48 +1,19 @@
 package tour
 
-//go:generate gen
-
 import (
 	"errors"
 	"fmt"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/MarcGrol/microgen/infra"
+	"github.com/MarcGrol/microgen/infra/myhttp"
 	"github.com/MarcGrol/microgen/lib/envelope"
 	"github.com/MarcGrol/microgen/lib/myerrors"
 	"github.com/MarcGrol/microgen/lib/validation"
 	"github.com/MarcGrol/microgen/tourApp/events"
+	"github.com/gin-gonic/gin"
 )
-
-type EtappeKind int
-
-const (
-	Flat = 1 + iota
-	Hilly
-	Mountains
-	TimeTrial
-)
-
-type TourEventHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-	tour  *Tour
-}
-
-func NewTourEventHandler(bus infra.PublishSubscriber, store infra.Store, tour *Tour) *TourEventHandler {
-	handler := new(TourEventHandler)
-	handler.bus = bus
-	handler.store = store
-	handler.tour = tour
-	return handler
-}
-
-func (eventHandler *TourEventHandler) Start() error {
-	// do not subscribe to any events
-	return nil
-}
 
 type TourCommandHandler struct {
 	bus   infra.PublishSubscriber
@@ -56,6 +27,73 @@ func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store, tour 
 	handler.store = store
 	handler.tour = tour
 	return handler
+}
+
+func (commandHandler *TourCommandHandler) Start(listenPort int) error {
+	var err error
+	engine := gin.Default()
+	api := engine.Group("/api")
+	{
+		api.GET("/tour/:year", func(c *gin.Context) {
+			year, err := strconv.Atoi(c.Params.ByName("year"))
+			if err != nil {
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(err))
+				return
+			}
+			tour, err := commandHandler.HandleGetTourQuery(year)
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *tour)
+		})
+		api.POST("/tour", func(c *gin.Context) {
+			var command CreateTourCommand
+			err = c.Bind(&command)
+			if err != nil {
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid tour-command")))
+				return
+			}
+			err := commandHandler.HandleCreateTourCommand(&command)
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *myhttp.SuccessResponse())
+		})
+		api.POST("/tour/:year/etappe", func(c *gin.Context) {
+			var command CreateEtappeCommand
+			err = c.Bind(&command)
+			if err != nil {
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid etappe-command")))
+				return
+			}
+			err = commandHandler.HandleCreateEtappeCommand(&command)
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *myhttp.SuccessResponse())
+		})
+		api.POST("/tour/:year/cyclist", func(c *gin.Context) {
+			var command CreateCyclistCommand
+			err = c.Bind(&command)
+			if err != nil {
+				myhttp.HandleError(c, myerrors.NewInvalidInputError(errors.New("Invalid cyclist-command")))
+				return
+			}
+			err := commandHandler.HandleCreateCyclistCommand(&command)
+			if err != nil {
+				myhttp.HandleError(c, err)
+				return
+			}
+			c.JSON(200, *myhttp.SuccessResponse())
+		})
+	}
+
+	engine.Run(fmt.Sprintf(":%d", listenPort))
+
+	return nil
 }
 
 func (ch *TourCommandHandler) validateCreateTourCommand(command *CreateTourCommand) error {
@@ -275,141 +313,4 @@ func (ch *TourCommandHandler) storeAndPublish(envelopes []*envelope.Envelope) er
 		}
 	}
 	return nil
-}
-
-func getTourOnYear(store infra.Store, year int) (*Tour, bool) {
-	tourRelatedEvents, err := store.Get("tour", strconv.Itoa(year))
-	if err != nil || len(tourRelatedEvents) == 0 {
-		return nil, false
-	}
-
-	tour := NewTour()
-	applyEvents(tourRelatedEvents, tour)
-	return tour, true
-}
-
-type Tour struct {
-	Year     int          `json:"year"`
-	Etappes  EtappeSlice  `json:"etappes"`
-	Cyclists CyclistSlice `json:"cyclists"`
-}
-
-// +gen slice:"SortBy,Where,Select[string],GroupBy[string],Any,First"
-type Cyclist struct {
-	Number int    `json:"number"`
-	Name   string `json:"name"`
-	Team   string `json:"team"`
-}
-
-// +gen slice:"SortBy,Where,Select[string],Any,First"
-type Etappe struct {
-	Id             int       `json:"id"`
-	Date           time.Time `json:"date"`
-	StartLocation  string    `json:"startLocation"`
-	FinishLocation string    `json:"finishLocation"`
-	Length         int       `json:"length"`
-	Kind           int       `json:"kind"`
-	Results        *Result   `json:"results"`
-}
-
-type Result struct {
-	BestDayCyclists        []*Cyclist
-	BestAllrounderCyclists []*Cyclist
-	BestSprinterCyclists   []*Cyclist
-	BestClimberCyclists    []*Cyclist
-}
-
-func NewTour() *Tour {
-	tour := new(Tour)
-	tour.Etappes = make([]Etappe, 0, 30)
-	tour.Cyclists = make([]Cyclist, 0, 250)
-	return tour
-}
-
-func (t Tour) hasEtappe(id int) bool {
-	return t.Etappes.Any(func(e Etappe) bool {
-		return e.Id == id
-	})
-}
-
-func (t Tour) findEtappe(id int) (*Etappe, bool) {
-	for idx, e := range t.Etappes {
-		if e.Id == id {
-			// access the slice directly otherwise settings pointer doesn't stick
-			return &t.Etappes[idx], true
-		}
-	}
-	return nil, false
-}
-
-func (t Tour) hasCyclist(id int) bool {
-	return t.Cyclists.Any(func(c Cyclist) bool {
-		return c.Number == id
-	})
-}
-
-func (t *Tour) ApplyAll(envelopes []envelope.Envelope) {
-	applyEvents(envelopes, t)
-}
-
-func (t *Tour) ApplyTourCreated(event *events.TourCreated) {
-
-	t.Year = event.Year
-
-	//log.Printf("ApplyTourCreated after:%+v -> %+v", event, t)
-
-	return
-}
-
-func (t *Tour) ApplyCyclistCreated(event *events.CyclistCreated) {
-
-	t.Cyclists = append(t.Cyclists,
-		Cyclist{
-			Number: event.CyclistId,
-			Name:   event.CyclistName,
-			Team:   event.CyclistTeam})
-
-	//log.Printf("ApplyCyclistCreated after:%+v -> %+v", event, t)
-
-	return
-}
-
-func (t *Tour) ApplyEtappeCreated(event *events.EtappeCreated) {
-	t.Etappes = append(t.Etappes,
-		Etappe{
-			Id:             event.EtappeId,
-			Date:           event.EtappeDate,
-			StartLocation:  event.EtappeStartLocation,
-			FinishLocation: event.EtappeFinishLocation,
-			Length:         event.EtappeLength,
-			Kind:           event.EtappeKind})
-
-	//log.Printf("ApplyEtappeCreated after:%+v -> %+v", event, t)
-
-	return
-}
-
-func (t *Tour) ApplyEtappeResultsCreated(event *events.EtappeResultsCreated) {
-	etappe, found := t.findEtappe(event.LastEtappeId)
-	if found {
-		etappe.Results = &Result{
-			BestDayCyclists:        t.cyclistsForIds(event.BestDayCyclistIds),
-			BestAllrounderCyclists: t.cyclistsForIds(event.BestAllrounderCyclistIds),
-			BestSprinterCyclists:   t.cyclistsForIds(event.BestSprinterCyclistIds),
-			BestClimberCyclists:    t.cyclistsForIds(event.BestClimberCyclistIds)}
-	}
-	//log.Printf("ApplyEtappeResultsCreated after: %+v -> %+v", event, t)
-}
-
-func (t *Tour) cyclistsForIds(ids []int) []*Cyclist {
-	cyclists := make([]*Cyclist, 0, len(ids))
-	for _, id := range ids {
-		c, err := t.Cyclists.First(func(c Cyclist) bool {
-			return c.Number == id
-		})
-		if err == nil {
-			cyclists = append(cyclists, &c)
-		}
-	}
-	return cyclists
 }
