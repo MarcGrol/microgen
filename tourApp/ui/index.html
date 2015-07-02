@@ -40,7 +40,9 @@
 					<h2>Best gamblers</h2>
 					<a href="/static/tour/2015/gambler">Create a profile and compose a team</a>
 					<ul>
-						<li ng-repeat="gambler in gamblers">{{gambler.uid}}:{{gambler.name}}</li>	
+						<li ng-repeat="gambler in gamblers">
+						  <a href="/static/tour/2015/gambler/{{gambler.uid}}">{{gambler.uid}}:{{gambler.name}}</a>
+						</li>	
 					</ul>
 				</div>
 			  	<div class="col-md-3">
