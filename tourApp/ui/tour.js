@@ -3,7 +3,7 @@ function Tour($scope, $http) {
         success(function(data) {
             $scope.tour = data;
         });
-    $http.get('/api/gambler/2015').
+    $http.get('/api/gambler').
         success(function(data) {
             $scope.gamblers = data;
         });
