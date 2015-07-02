@@ -5,12 +5,12 @@ pkill nsqd
 pkill nsqlookupd
 MICROGEN_ROOT=${GOPATH}/src/github.com/MarcGrol/microgen/
 
-WORKDIR=/tmp/nsq
+LOGDIR=/tmp/nsq
 
-mkdir -p ${MICROGEN_ROOT}/log
-nohup nsqlookupd > ${WORKDIR}/nsqlookupd.log & 
-nohup nsqd --lookupd-tcp-address=127.0.0.1:4160 > ${WORKDIR}/nsq.log &
-nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > ${WORKDIR}/nsqadmin.log &
+mkdir -p ${LOGDIR}
+nohup nsqlookupd > ${LOGDIR}/nsqlookupd.log & 
+nohup nsqd --lookupd-tcp-address=127.0.0.1:4160 > ${LOGDIR}/nsq.log &
+nohup nsqadmin --lookupd-http-address=127.0.0.1:4161 > ${LOGDIR}/nsqadmin.log &
 
 sleep 1
 ps -eaf|grep nsq

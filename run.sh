@@ -1,14 +1,15 @@
 #!/bin/sh
 
-pkill microgen
+MICROGEN=/home/mgrol/go/bin/microgen
+DATADIR=/tmp/microgen
+BASEDIR=/home/mgrol/go/src/github.com/MarcGrol/microgen
 
-find . -name "*.db" -exec rm -f {} \;
+nohup $MICROGEN -service=tour -port=8081 -base-dir=${DATADIR}/tour &
+nohup $MICROGEN -service=gambler -port=8082 -base-dir=${DATADIR}/gambler &
+nohup $MICROGEN -service=news -port=8083 -base-dir=${DATADIR}/news &
+nohup $MICROGEN -service=collector -port=8084 -base-dir=${DATADIR}/collector &
 
-microgen -service=proxy -port=8080 &
-microgen -service=tour -port=8081 &
-microgen -service=gambler -port=8082 &
-microgen -service=news -port=8083 &
-microgen -service=collector -port=8084 &
+nohup $MICROGEN -service=proxy -port=8080 -base-dir=${BASEDIR} &
 
 ps -eaf|grep microgen |grep -v grep
 
@@ -29,8 +30,8 @@ ps -eaf|grep microgen |grep -v grep
 
 # docker-compose up
 
-nohup docker run -ti -p 8081:8080 microgen /go/bin/microgen -service=proxy -port=8080 -address=92.168.59.103 -base-dir=/go/src/github.com/MarcGrol/microgen&
-nohup docker run -ti -p 8081:8081 microgen /go/bin/microgen -service=tour -port=8081 -address=10.0.2.15 -base-dir=. &
-nohup docker run -ti -p 8081:8082 microgen /go/bin/microgen -service=gambler -port=8082 -address=92.168.59.103 -base-dir=. &
-nohup docker run -ti -p 8081:8083 microgen /go/bin/microgen -service=news -port=8083 -address=92.168.59.103 -base-dir=. &
-nohup docker run -ti -p 8081:8084 microgen /go/bin/microgen -service=collector -port=8084 -address=92.168.59.103 -base-dir=. &
+#nohup docker run -ti -p 8081:8080 microgen /go/bin/microgen -service=proxy -port=8080 -address=92.168.59.103 -base-dir=/go/src/github.com/MarcGrol/microgen&
+#nohup docker run -ti -p 8081:8081 microgen /go/bin/microgen -service=tour -port=8081 -address=10.0.2.15 -base-dir=. &
+#nohup docker run -ti -p 8081:8082 microgen /go/bin/microgen -service=gambler -port=8082 -address=92.168.59.103 -base-dir=. &
+#nohup docker run -ti -p 8081:8083 microgen /go/bin/microgen -service=news -port=8083 -address=92.168.59.103 -base-dir=. &
+#nohup docker run -ti -p 8081:8084 microgen /go/bin/microgen -service=collector -port=8084 -address=92.168.59.103 -base-dir=. &
