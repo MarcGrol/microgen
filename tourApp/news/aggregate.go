@@ -14,7 +14,7 @@ type NewsContext struct {
 }
 
 type News struct {
-	NewsItems []*NewsItem
+	NewsItems []*NewsItem `json:"newsItems"`
 	cyclists  map[int]*cyclist
 	etappes   map[int]*etappe
 }

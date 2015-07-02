@@ -7,9 +7,9 @@ function Tour($scope, $http) {
         success(function(data) {
             $scope.gamblers = data;
         });
-    $http.get('/api/news/2015/news').
+    $http.get('/api/news/2015/news  ').
         success(function(data) {
-            $scope.news = data;
+            $scope.news = data.newsItems;
         });
 
 }
