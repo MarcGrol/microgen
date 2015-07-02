@@ -49,11 +49,11 @@ func NewGamblingYear(year int) *GamblingYear {
 
 // +gen slice:"SortBy,Where,Select[string],GroupBy[string]"
 type Gambler struct {
-	Uid      string
-	Name     string
-	Email    string
-	Cyclists []*Cyclist
-	Points   int
+	Uid      string     `json:"uid"`
+	Name     string     `json:"name"`
+	Email    string     `json:"email"`
+	Cyclists []*Cyclist `json:"cyclists"`
+	Points   int        `json:"points"`
 }
 
 func NewGambler(uid string, name string, email string) *Gambler {
@@ -67,10 +67,10 @@ func NewGambler(uid string, name string, email string) *Gambler {
 
 // +gen slice:"SortBy,Where,Select[string],GroupBy[string]"
 type Cyclist struct {
-	Id     int
-	Name   string
-	Team   string
-	Points int
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Team   string `json:"team"`
+	Points int    `json:"Points"`
 }
 
 type Etappe struct {
