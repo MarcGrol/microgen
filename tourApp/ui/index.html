@@ -19,7 +19,7 @@
 			  	<div class="col-md-3">
 					<h2>Etappes</h2>
 					<ul>
-						<li ng-repeat="etappe in tour.etappes">{{etappe.date}} </br> {{etappe.startLocation}} - {{etappe.finishLocation}}</li>	
+						<li ng-repeat="etappe in tour.etappes">{{etappe.date | date:'dd-MM'}} </br> {{etappe.startLocation}} - {{etappe.finishLocation}}</li>	
 					</ul>
 				</div>
 			  	<div class="col-md-3">
