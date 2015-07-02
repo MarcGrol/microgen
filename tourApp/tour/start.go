@@ -23,19 +23,19 @@ func Start(listenPort int, busAddress string, baseDir string) error {
 	}
 
 	// load events from store and populate in memory structure
-	tour := NewTour()
+	tc := newTourContext()
 	envelopes, err := store.GetAll()
 	if err != nil {
 		return err
 	}
-	tour.ApplyAll(envelopes)
+	tc.ApplyAll(envelopes)
 
 	// has no events to listem for: start anyway
-	eventHandler := NewTourEventHandler(bus, store, tour)
+	eventHandler := NewTourEventHandler(bus, store, tc)
 	eventHandler.Start()
 
 	// command-handler: start web-server: blocking call
-	commandHandler := NewTourCommandHandler(bus, store, tour)
+	commandHandler := NewTourCommandHandler(bus, store, tc)
 	commandHandler.Start(listenPort)
 
 	return nil

@@ -16,16 +16,16 @@ import (
 )
 
 type TourCommandHandler struct {
-	bus   infra.PublishSubscriber
-	store infra.Store
-	tour  *Tour
+	bus     infra.PublishSubscriber
+	store   infra.Store
+	context *tourContext
 }
 
-func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store, tour *Tour) CommandHandler {
+func NewTourCommandHandler(bus infra.PublishSubscriber, store infra.Store, context *tourContext) CommandHandler {
 	handler := new(TourCommandHandler)
 	handler.bus = bus
 	handler.store = store
-	handler.tour = tour
+	handler.context = context
 	return handler
 }
 
@@ -110,7 +110,7 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 	}
 
 	// get tour based on year
-	_, found := getTourOnYear(ch.store, command.Year)
+	_, found := ch.context.tours[command.Year]
 	if found == true {
 		return myerrors.NewInvalidInputErrorf("Tour %d already exists", command.Year)
 	}
@@ -118,10 +118,18 @@ func (ch *TourCommandHandler) HandleCreateTourCommand(command *CreateTourCommand
 	// create event
 	tourCreatedEvent := events.TourCreated{Year: command.Year}
 
+	// store and emit resulting event
+	err = ch.storeAndPublish([]*envelope.Envelope{tourCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	// add to local memory
+	ch.context.ApplyTourCreated(&tourCreatedEvent)
+
 	log.Printf("HandleCreateTourCommand completed:%+v -> %+v", command, tourCreatedEvent)
 
-	// store and emit resulting event
-	return ch.storeAndPublish([]*envelope.Envelope{tourCreatedEvent.Wrap()})
+	return nil
 }
 
 func (ch *TourCommandHandler) validateCreateCyclistCommand(command *CreateCyclistCommand) error {
@@ -141,7 +149,7 @@ func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistC
 	}
 
 	// get tour based on year
-	tour, found := getTourOnYear(ch.store, command.Year)
+	tour, found := ch.context.tours[command.Year]
 	if found == false {
 		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
@@ -157,10 +165,17 @@ func (ch *TourCommandHandler) HandleCreateCyclistCommand(command *CreateCyclistC
 		CyclistName: command.Name,
 		CyclistTeam: command.Team}
 
+	// store and emit resulting event
+	err = ch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	ch.context.ApplyCyclistCreated(&cyclistCreatedEvent)
+
 	log.Printf("HandleCreateCyclistCommand completed:%+v -> %+v", command, cyclistCreatedEvent)
 
-	// store and emit resulting event
-	return ch.storeAndPublish([]*envelope.Envelope{cyclistCreatedEvent.Wrap()})
+	return nil
 }
 
 func (ch *TourCommandHandler) validateCreateEtappeCommand(command *CreateEtappeCommand) error {
@@ -184,7 +199,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 	}
 
 	// get tour based on year
-	tour, found := getTourOnYear(ch.store, command.Year)
+	tour, found := ch.context.tours[command.Year]
 	if found == false {
 		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
@@ -204,10 +219,17 @@ func (ch *TourCommandHandler) HandleCreateEtappeCommand(command *CreateEtappeCom
 		EtappeLength:         command.Length,
 		EtappeKind:           command.Kind}
 
+	// store and emit resulting event
+	err = ch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	ch.context.ApplyEtappeCreated(&etappeCreatedEvent)
+
 	log.Printf("HandleCreateEtappeCommand completed:%+v -> %+v", command, etappeCreatedEvent)
 
-	// store and emit resulting event
-	return ch.storeAndPublish([]*envelope.Envelope{etappeCreatedEvent.Wrap()})
+	return nil
 }
 
 func (ch *TourCommandHandler) validateCreateEtappeResultsCommand(command *CreateEtappeResultsCommand) error {
@@ -238,7 +260,7 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 	}
 
 	// get tour based on year
-	tour, found := getTourOnYear(ch.store, command.Year)
+	tour, found := ch.context.tours[command.Year]
 	if found == false {
 		return myerrors.NewNotFoundErrorf("Tour %d does not exist", command.Year)
 	}
@@ -267,10 +289,17 @@ func (ch *TourCommandHandler) HandleCreateEtappeResultsCommand(command *CreateEt
 		BestSprinterCyclistIds:   command.BestSprintCyclistIds,
 		BestClimberCyclistIds:    command.BestClimbCyclistIds}
 
+	// store and emit resulting event
+	err = ch.storeAndPublish([]*envelope.Envelope{etappeResultCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	ch.context.ApplyEtappeResultsCreated(&etappeResultCreatedEvent)
+
 	log.Printf("HandleCreateEtappeResultsCommand completed:%+v -> %+v", command, etappeResultCreatedEvent)
 
-	// store and emit resulting event
-	return ch.storeAndPublish([]*envelope.Envelope{etappeResultCreatedEvent.Wrap()})
+	return nil
 }
 
 type fluentError struct {
@@ -292,9 +321,10 @@ func (v *fluentError) cyclistsExist(name string, tour *Tour, cyclistIds []int) e
 
 func (ch *TourCommandHandler) HandleGetTourQuery(year int) (*Tour, error) {
 	// TODO validate input
-	tour, found := getTourOnYear(ch.store, year)
+	tour, found := ch.context.tours[year]
 	if found == false {
-		return nil, myerrors.NewNotFoundError(errors.New(fmt.Sprintf("Tour %d not found", year)))
+		log.Printf("not found")
+		return nil, myerrors.NewNotFoundErrorf("Tour %d not found", year)
 	}
 	log.Printf("GetTour:%+v", tour)
 

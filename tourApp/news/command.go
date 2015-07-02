@@ -91,13 +91,18 @@ func (ch *NewsCommandHandler) HandleCreateNewsItemCommand(command *CreateNewsIte
 		Message:   command.Message,
 		Sender:    command.Sender}
 
-	envelop := newsItemEvent.Wrap()
+	// store and emit resulting event
+	err = doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{newsItemEvent.Wrap()})
+	if err != nil {
+		return err
+	}
 
 	// apply event in memory
-	applyEvent(*envelop, ch.newsContext)
+	ch.newsContext.ApplyNewsItemCreated(&newsItemEvent)
 
-	// store and emit resulting event
-	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{envelop})
+	log.Printf("HandleCreateNewsItemCommand completed:%+v -> %+v", command, newsItemEvent)
+
+	return nil
 }
 
 func (ch *NewsCommandHandler) HandleGetNewsQuery(year int) (*News, error) {

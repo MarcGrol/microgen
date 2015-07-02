@@ -1,6 +1,7 @@
 package tour
 
 import (
+	"log"
 	"testing"
 	"time"
 
@@ -12,14 +13,14 @@ import (
 
 func TestCreateTourCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title:   "Create new tour success",
 		Given:   []envelope.Envelope{},
 		Command: &CreateTourCommand{Year: 2015},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateTourCommand(scenario.Command.(*CreateTourCommand))
 		},
 		Expect: []envelope.Envelope{
@@ -37,6 +38,8 @@ func TestCreateTourCommand(t *testing.T) {
 
 	// Test query
 	tour, err := service.HandleGetTourQuery(expected.Year)
+	log.Printf("err: %+v", err)
+	log.Printf("tour: %+v", tour)
 	assert.Nil(t, err)
 	assert.NotNil(t, tour)
 	assert.Equal(t, expected.Year, tour.Year)
@@ -46,7 +49,7 @@ func TestCreateTourCommand(t *testing.T) {
 
 func TestCreateTourCommandTourExists(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create tour with existing tour",
 		Given: []envelope.Envelope{
@@ -54,8 +57,8 @@ func TestCreateTourCommandTourExists(t *testing.T) {
 		},
 		Command: &CreateTourCommand{Year: 2015},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateTourCommand(scenario.Command.(*CreateTourCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -70,7 +73,7 @@ func TestCreateTourCommandTourExists(t *testing.T) {
 
 func TestCreateCyclistCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new cyclist success",
 		Given: []envelope.Envelope{
@@ -82,8 +85,8 @@ func TestCreateCyclistCommand(t *testing.T) {
 			Name: "My name",
 			Team: "My team"},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
 		},
 		Expect: []envelope.Envelope{
@@ -122,7 +125,7 @@ func TestCreateCyclistCommand(t *testing.T) {
 
 func TestCreateCyclistCommandUnknownTour(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create cyclist with unknown tour",
 		Given: []envelope.Envelope{},
@@ -132,8 +135,8 @@ func TestCreateCyclistCommandUnknownTour(t *testing.T) {
 			Name: "My name",
 			Team: "My team"},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -148,7 +151,7 @@ func TestCreateCyclistCommandUnknownTour(t *testing.T) {
 
 func TestCreateCyclistCommandInvalidCyclist(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create invalid new cyclist",
 		Given: []envelope.Envelope{
@@ -159,8 +162,8 @@ func TestCreateCyclistCommandInvalidCyclist(t *testing.T) {
 			Name: "My name",
 			Team: "My team"},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -175,7 +178,7 @@ func TestCreateCyclistCommandInvalidCyclist(t *testing.T) {
 
 func TestCreateCyclistCommandDuplicateCyclist(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create duplicate new cyclist",
 		Given: []envelope.Envelope{
@@ -192,8 +195,8 @@ func TestCreateCyclistCommandDuplicateCyclist(t *testing.T) {
 			Name: "My name",
 			Team: "My team"},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateCyclistCommand(scenario.Command.(*CreateCyclistCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -208,7 +211,7 @@ func TestCreateCyclistCommandDuplicateCyclist(t *testing.T) {
 
 func TestCreateEtappeCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe success",
 		Given: []envelope.Envelope{
@@ -223,8 +226,8 @@ func TestCreateEtappeCommand(t *testing.T) {
 			Length:         255,
 			Kind:           3},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
 		},
 		Expect: []envelope.Envelope{
@@ -274,7 +277,7 @@ func TestCreateEtappeCommand(t *testing.T) {
 
 func TestCreateEtappeVommandUnknownTour(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create etappe with unknown tour",
 		Given: []envelope.Envelope{
@@ -289,8 +292,8 @@ func TestCreateEtappeVommandUnknownTour(t *testing.T) {
 			Length:         255,
 			Kind:           3},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -305,7 +308,7 @@ func TestCreateEtappeVommandUnknownTour(t *testing.T) {
 
 func TestCreateEtappeCommandInvalidEtappe(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create invalid etappe",
 		Given: []envelope.Envelope{
@@ -319,8 +322,8 @@ func TestCreateEtappeCommandInvalidEtappe(t *testing.T) {
 			Length:         255,
 			Kind:           3},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -335,7 +338,7 @@ func TestCreateEtappeCommandInvalidEtappe(t *testing.T) {
 
 func TestCreateEtappeCommandDuplicateEtappe(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create duplicate etappe",
 		Given: []envelope.Envelope{
@@ -358,8 +361,8 @@ func TestCreateEtappeCommandDuplicateEtappe(t *testing.T) {
 			Length:         255,
 			Kind:           3},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeCommand(scenario.Command.(*CreateEtappeCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -374,7 +377,7 @@ func TestCreateEtappeCommandDuplicateEtappe(t *testing.T) {
 
 func TestCreateEtappeResultsCommandInvalidRequest(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result invalid request",
 		Given: []envelope.Envelope{},
@@ -386,8 +389,8 @@ func TestCreateEtappeResultsCommandInvalidRequest(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -402,7 +405,7 @@ func TestCreateEtappeResultsCommandInvalidRequest(t *testing.T) {
 
 func TestCreateEtappeResultsUnknownTourCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result unknown tour",
 		Given: []envelope.Envelope{},
@@ -415,7 +418,7 @@ func TestCreateEtappeResultsUnknownTourCommand(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -430,7 +433,7 @@ func TestCreateEtappeResultsUnknownTourCommand(t *testing.T) {
 
 func TestCreateEtappeResultsCommandUnknownEtappe(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result unknown etappe",
 		Given: []envelope.Envelope{
@@ -445,8 +448,8 @@ func TestCreateEtappeResultsCommandUnknownEtappe(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -461,7 +464,7 @@ func TestCreateEtappeResultsCommandUnknownEtappe(t *testing.T) {
 
 func TestCreateEtappeResultsUnknownCyclistCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result unknown cyclist",
 		Given: []envelope.Envelope{
@@ -484,8 +487,8 @@ func TestCreateEtappeResultsUnknownCyclistCommand(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -500,7 +503,7 @@ func TestCreateEtappeResultsUnknownCyclistCommand(t *testing.T) {
 
 func TestCreateEtappeResultsDuplicateCyclistCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result duplicate cyclist",
 		Given: []envelope.Envelope{
@@ -573,8 +576,8 @@ func TestCreateEtappeResultsDuplicateCyclistCommand(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{},
@@ -588,7 +591,7 @@ func TestCreateEtappeResultsDuplicateCyclistCommand(t *testing.T) {
 
 func TestCreateEtappeResultsSuccessCommand(t *testing.T) {
 	var service CommandHandler
-	tour := NewTour()
+	tc := newTourContext()
 	scenario := test.CommandScenario{
 		Title: "Create new etappe result success",
 		Given: []envelope.Envelope{
@@ -661,8 +664,8 @@ func TestCreateEtappeResultsSuccessCommand(t *testing.T) {
 			BestSprintCyclistIds:   []int{1, 2, 3, 4, 5},
 		},
 		When: func(scenario *test.CommandScenario) error {
-			tour.ApplyAll(scenario.Given)
-			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tour)
+			tc.ApplyAll(scenario.Given)
+			service = NewTourCommandHandler(scenario.Bus, scenario.Store, tc)
 			return service.HandleCreateEtappeResultsCommand(scenario.Command.(*CreateEtappeResultsCommand))
 		},
 		Expect: []envelope.Envelope{
