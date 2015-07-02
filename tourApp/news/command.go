@@ -111,6 +111,7 @@ func (ch *NewsCommandHandler) HandleGetNewsQuery(year int) (*News, error) {
 	if exists == false {
 		return nil, myerrors.NewNotFoundErrorf("No news for year %d found", year)
 	}
+	log.Printf("******* HandleGetNewsQuery for year:%+v", yearNews)
 
 	return yearNews, nil
 }

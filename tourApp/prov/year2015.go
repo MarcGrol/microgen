@@ -297,6 +297,7 @@ func provision2015(targetHost string) error {
 	client.CreateGamblerTeam(year, "freek", []int{41, 42, 43, 44, 45, 46, 47, 48, 49, 51})
 
 	client.CreateNewsItem(year, date(year, time.July, 4), "Marcus", "De tour gaat weer beginnen")
+	client.CreateNewsItem(year, date(year, time.July, 5), "Grol", "Echt waar")
 
 	if client.Err != nil {
 
