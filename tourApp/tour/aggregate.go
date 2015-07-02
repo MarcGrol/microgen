@@ -17,6 +17,7 @@ const (
 	Hilly
 	Mountains
 	TimeTrial
+	TeamTimeTrial
 )
 
 type tourContext struct {
