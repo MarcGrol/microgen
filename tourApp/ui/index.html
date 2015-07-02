@@ -19,23 +19,33 @@
 			  	<div class="col-md-3">
 					<h2>Etappes</h2>
 					<ul>
-						<li ng-repeat="etappe in tour.etappes">{{etappe.date | date:'dd-MM'}}:{{etappe.startLocation}} - {{etappe.finishLocation}}</li>	
+						<li ng-repeat="etappe in tour.etappes">
+							<a href="/static/tour/2015/etappe/{{etappe.id}}">
+								{{etappe.date | date:'dd-MM'}}:{{etappe.startLocation}} - {{etappe.finishLocation}}
+							</a>
+						</li>	
 					</ul>
 				</div>
 			  	<div class="col-md-3">
 					<h2>Best cyclists</h2>
 					<ul>
-						<li ng-repeat="cyclist in tour.cyclists">{{cyclist.number}} -> {{cyclist.name}}</li>	
+						<li ng-repeat="cyclist in tour.cyclists">
+							<a href="/static/tour/2015/cyclist/{{cyclist.number}}">
+								{{cyclist.number}} -> {{cyclist.name}}
+							</a>
+						</li>	
 					</ul>
 				</div>
 			  	<div class="col-md-3">
 					<h2>Best gamblers</h2>
+					<a href="/static/tour/2015/gambler">Create a profile and compose a team</a>
 					<ul>
 						<li ng-repeat="gambler in gamblers">{{gambler.uid}}:{{gambler.name}}</li>	
 					</ul>
 				</div>
 			  	<div class="col-md-3">
 					<h2>News</h2>
+					<a href="/static/tour/2015/news">Add a news item</a>
 					<ul>
 						<li ng-repeat="newsItem in news">{{newsItem.sender}}:{{newsItem.message}}</li>	
 					</ul>
