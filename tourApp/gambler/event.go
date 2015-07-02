@@ -40,11 +40,12 @@ func (eventHandler *GamblerEventHandler) Start() error {
 }
 
 func (eh *GamblerEventHandler) OnEvent(envelop *envelope.Envelope) error {
-	return doStore(eh.store, []*envelope.Envelope{envelop})
-}
+	err := doStore(eh.store, []*envelope.Envelope{envelop})
+	if err != nil {
+		return err
+	}
+	// apply event in memory
+	applyEvent(*envelop, eh.context)
 
-type GamblerCommandHandler struct {
-	bus     infra.PublishSubscriber
-	store   infra.Store
-	context *GamblingContext
+	return nil
 }

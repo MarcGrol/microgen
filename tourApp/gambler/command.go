@@ -15,6 +15,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GamblerCommandHandler struct {
+	bus     infra.PublishSubscriber
+	store   infra.Store
+	context *GamblingContext
+}
+
 func NewGamblerCommandHandler(bus infra.PublishSubscriber, store infra.Store, context *GamblingContext) *GamblerCommandHandler {
 	handler := new(GamblerCommandHandler)
 	handler.bus = bus
@@ -112,24 +118,6 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblingContext, err := getGamblingContext(ch.store, command.GamblerUid, -1)
-	if err != nil {
-		return myerrors.NewInternalError(err)
-	}
-
-	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
-	if found == true {
-		return myerrors.NewNotFoundErrorf("Gambler %s already exists",
-			command.GamblerUid)
-	}
-
-	gamblingContext.gamblersForTour[command.GamblerUid] =
-		&Gambler{
-			Uid:      command.GamblerUid,
-			Name:     command.Name,
-			Email:    command.Email,
-			Cyclists: make([]*Cyclist, 0, 10),
-		}
 
 	// apply business logic
 	gamblerCreatedEvent := events.GamblerCreated{
@@ -138,7 +126,14 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerCommand(command *CreateGambl
 		GamblerEmail: command.Email}
 
 	// store and emit resulting event
-	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerCreatedEvent.Wrap()})
+	err = doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	ch.context.ApplyGamblerCreated(&gamblerCreatedEvent)
+
+	return nil
 }
 
 func (ch *GamblerCommandHandler) validateCreateGamblerTeamCommand(command *CreateGamblerTeamCommand) error {
@@ -155,19 +150,17 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 	if err != nil {
 		return myerrors.NewInvalidInputError(err)
 	}
-	gamblingContext, err := getGamblingContext(ch.store, command.GamblerUid, command.Year)
-	if err != nil {
-		return myerrors.NewInternalError(err)
-	}
-	if gamblingContext.Year == nil || *gamblingContext.Year != command.Year {
+
+	gamblingYear, exists := ch.context.years[command.Year]
+	if exists == false {
 		return myerrors.NewNotFoundErrorf("Tour %d not found", command.Year)
 	}
-	_, found := gamblingContext.gamblersForTour[command.GamblerUid]
-	if found == false {
+	_, exists = ch.context.gamblers[command.GamblerUid]
+	if exists == false {
 		return myerrors.NewNotFoundErrorf("Gambler %s not found", command.GamblerUid)
 	}
 
-	err = cyclistsExist(gamblingContext.cyclistsForTour, command.CyclistIds)
+	err = cyclistsExist(gamblingYear.cyclistsForTour, command.CyclistIds)
 	if err != nil {
 		return myerrors.NewNotFoundError(err)
 	}
@@ -178,7 +171,14 @@ func (ch *GamblerCommandHandler) HandleCreateGamblerTeamCommand(command *CreateG
 		Year:            command.Year,
 		GamblerCyclists: command.CyclistIds}
 
-	return doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
+	err = doStoreAndPublish(ch.store, ch.bus, []*envelope.Envelope{gamblerTeamCreatedEvent.Wrap()})
+	if err != nil {
+		return err
+	}
+
+	ch.context.ApplyGamblerTeamCreated(&gamblerTeamCreatedEvent)
+
+	return nil
 }
 
 func cyclistsExist(allCyclists map[int]*Cyclist, cyclistIds []int) error {
@@ -218,17 +218,22 @@ func doStoreAndPublish(store infra.Store, bus infra.PublishSubscriber, envelopes
 }
 
 func (ch *GamblerCommandHandler) HandleGetGamblerQuery(gamblerUid string, year int) (*Gambler, error) {
-	// TODO validate input
-	gamblingContext, err := getGamblingContext(ch.store, gamblerUid, year)
-	if err != nil {
-		return nil, myerrors.NewInternalError(err)
+
+	log.Printf("************* HandleGetGamblerQuery:%+v", ch)
+	gamblingYear, exists := ch.context.years[year]
+	if exists == false {
+		gambler, exists := ch.context.gamblers[gamblerUid]
+		if exists == false {
+			return nil, myerrors.NewNotFoundErrorf("Gambler %s not found", gamblerUid)
+		}
+		return &gambler, nil
 	}
-	gambler, found := gamblingContext.gamblersForTour[gamblerUid]
+	gambler, found := gamblingYear.gamblersForTour[gamblerUid]
 	if found == false {
 		return nil, myerrors.NewNotFoundErrorf("Gambler with uid %s not found", gamblerUid)
 	}
 
-	//log.Printf("HandleGetGamblerQuery.Gambler:%+v", gamblingContext.Gambler)
+	log.Printf("HandleGetGamblerQuery.Gambler:%+v", gambler)
 
 	return gambler, nil
 }

@@ -38,10 +38,15 @@ func (eventHandler *NewsEventHandler) Start() error {
 }
 
 func (eh *NewsEventHandler) OnEvent(envelop *envelope.Envelope) error {
+	// store event on disk to testore
+	err := doStore(eh.store, []*envelope.Envelope{envelop})
+	if err != nil {
+		return err
+	}
 	// apply event in memory
 	applyEvent(*envelop, eh.newsContext)
-	// store event on disk to testore
-	return doStore(eh.store, []*envelope.Envelope{envelop})
+
+	return nil
 }
 
 func doStore(store infra.Store, envelopes []*envelope.Envelope) error {
