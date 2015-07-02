@@ -14,7 +14,7 @@ type NewsContext struct {
 }
 
 type News struct {
-	newsItems []*NewsItem
+	NewsItems []*NewsItem
 	cyclists  map[int]*cyclist
 	etappes   map[int]*etappe
 }
@@ -52,7 +52,7 @@ func getYearNews(newsContext *NewsContext, year int) *News {
 	news, exists := newsContext.years[year]
 	if exists == false {
 		newsContext.years[year] = &News{
-			newsItems: make([]*NewsItem, 0, 10),
+			NewsItems: make([]*NewsItem, 0, 10),
 			cyclists:  make(map[int]*cyclist),
 			etappes:   make(map[int]*etappe),
 		}
@@ -70,9 +70,9 @@ func (newsContext *NewsContext) ApplyTourCreated(event *events.TourCreated) {
 	yearData := getYearNews(newsContext, event.Year)
 
 	log.Printf(">>> ApplyTourCreated before:%+v -> %+v (%d)",
-		event, newsContext, len(yearData.newsItems))
+		event, newsContext, len(yearData.NewsItems))
 
-	yearData.newsItems = append(yearData.newsItems,
+	yearData.NewsItems = append(yearData.NewsItems,
 		&NewsItem{
 			Timestamp: time.Now(),
 			Sender:    "admin",
@@ -80,13 +80,13 @@ func (newsContext *NewsContext) ApplyTourCreated(event *events.TourCreated) {
 		})
 
 	log.Printf(">>> ApplyTourCreated after:%+v -> %+v (%d)", event, newsContext,
-		len(yearData.newsItems))
+		len(yearData.NewsItems))
 }
 
 func (newsContext *NewsContext) ApplyCyclistCreated(event *events.CyclistCreated) {
 	yearData := getYearNews(newsContext, event.Year)
 
-	log.Printf(">>> ApplyCyclistCreated before:%+v -> %+v (%d)", event, newsContext, len(yearData.newsItems))
+	log.Printf(">>> ApplyCyclistCreated before:%+v -> %+v (%d)", event, newsContext, len(yearData.NewsItems))
 
 	yearData.cyclists[event.CyclistId] =
 		&cyclist{
@@ -94,14 +94,14 @@ func (newsContext *NewsContext) ApplyCyclistCreated(event *events.CyclistCreated
 			name:   event.CyclistName,
 			team:   event.CyclistTeam}
 
-	log.Printf(">>> ApplyCyclistCreated after:%+v -> %+v (%d)", event, newsContext, len(yearData.newsItems))
+	log.Printf(">>> ApplyCyclistCreated after:%+v -> %+v (%d)", event, newsContext, len(yearData.NewsItems))
 }
 
 func (newsContext *NewsContext) ApplyEtappeCreated(event *events.EtappeCreated) {
 	yearData := getYearNews(newsContext, event.Year)
 
 	log.Printf(">>> ApplyEtappeCreated before:%+v -> %+v (%d)",
-		event, newsContext, len(yearData.newsItems))
+		event, newsContext, len(yearData.NewsItems))
 
 	yearData.etappes[event.EtappeId] =
 		&etappe{
@@ -113,7 +113,7 @@ func (newsContext *NewsContext) ApplyEtappeCreated(event *events.EtappeCreated) 
 			kind:           event.EtappeKind}
 
 	log.Printf(">>> ApplyEtappeCreated after:%+v -> %+v (%d)",
-		event, newsContext, len(yearData.newsItems))
+		event, newsContext, len(yearData.NewsItems))
 }
 
 func composeMsgText(yearData *News, event *events.EtappeResultsCreated) (string, error) {
@@ -151,27 +151,27 @@ func (newsContext *NewsContext) ApplyEtappeResultsCreated(event *events.EtappeRe
 	yearData := getYearNews(newsContext, event.Year)
 
 	log.Printf(">>> ApplyEtappeResultsCreated before:%+v -> %+v (%d)",
-		event, newsContext, len(yearData.newsItems))
+		event, newsContext, len(yearData.NewsItems))
 
 	msg, err := composeMsgText(yearData, event)
 	if err != nil {
 		return
 	}
 
-	yearData.newsItems = append(yearData.newsItems,
+	yearData.NewsItems = append(yearData.NewsItems,
 		&NewsItem{
 			Sender:    "admin",
 			Timestamp: yearData.etappes[event.LastEtappeId].date,
 			Message:   msg})
 
 	log.Printf(">>> ApplyEtappeResultsCreated after:%+v -> %+v (%d)", event, newsContext,
-		len(yearData.newsItems))
+		len(yearData.NewsItems))
 }
 
 func (newsContext *NewsContext) ApplyNewsItemCreated(event *events.NewsItemCreated) {
 	log.Printf(">>> ApplyNewsItemCreated before:%+v -> %+v", event, newsContext)
 	yearData := getYearNews(newsContext, event.Year)
-	yearData.newsItems = append(yearData.newsItems,
+	yearData.NewsItems = append(yearData.NewsItems,
 		&NewsItem{
 			Sender:    event.Sender,
 			Timestamp: event.Timestamp,

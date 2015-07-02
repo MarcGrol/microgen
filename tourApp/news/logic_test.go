@@ -256,17 +256,17 @@ func TestCreateNewsItemCommand(t *testing.T) {
 	news, err := service.HandleGetNewsQuery(2015)
 	assert.Nil(t, err)
 	assert.NotNil(t, news)
-	assert.Equal(t, 3, len(news.newsItems))
+	assert.Equal(t, 3, len(news.NewsItems))
 
-	assert.Equal(t, "admin", news.newsItems[1].Sender)
-	assert.Equal(t, "The tour of 2015 is about to start", news.newsItems[0].Message)
+	assert.Equal(t, "admin", news.NewsItems[1].Sender)
+	assert.Equal(t, "The tour of 2015 is about to start", news.NewsItems[0].Message)
 
-	assert.Equal(t, "admin", news.newsItems[1].Sender)
+	assert.Equal(t, "admin", news.NewsItems[1].Sender)
 	assert.Equal(t, "Results for etappe 2 from Parijs to Roubaix:\n-1- 1\n-2- 2\n-3- 3\n",
-		news.newsItems[1].Message)
+		news.NewsItems[1].Message)
 
-	assert.Equal(t, "Marc", news.newsItems[2].Sender)
-	assert.Equal(t, "Hi there", news.newsItems[2].Message)
+	assert.Equal(t, "Marc", news.NewsItems[2].Sender)
+	assert.Equal(t, "Hi there", news.NewsItems[2].Message)
 
 }
 
