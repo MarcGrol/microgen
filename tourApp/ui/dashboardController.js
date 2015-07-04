@@ -27,7 +27,7 @@ angular.module('tourApp')
 	   $resource('/api/news/:year/news',{year:$scope.year})
 	   		.get(function(data) {
 		        console.log("got tour-news:");
-		        $scope.news = data;
+		        $scope.tour.news = data;
         });
 
  }]);

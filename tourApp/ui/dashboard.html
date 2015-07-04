@@ -1,49 +1,49 @@
 
 <div class="container-fluid">
-			<div class="row">
-			<h1>Tour of year {{year}}</h1>
-			</div>
+	<div class="row">
+		<h1>Tour of year {{year}}</h1>
+	</div>
 
-			<div class="row">
-			  	<div class="col-md-3">
-					<h2>Etappes</h2>
-					<ul>
-						<li ng-repeat="etappe in tour.etappes">
-							<a href="/static/tour/2015/{{year}}/{{etappe.id}}">
-								{{etappe.date | date:'dd-MM'}}:{{etappe.startLocation}} - {{etappe.finishLocation}}
-							</a>
-						</li>	
-					</ul>
-				</div>
-			  	<div class="col-md-3">
-					<h2>Best cyclists</h2>
-					<ul>
-						<li ng-repeat="cyclist in tour.cyclists">
-							{{cyclist.number}} -> {{cyclist.name}}
-						</li>	
-					</ul>
-				</div>
-			  	<div class="col-md-3">
-					<h2>Best gamblers</h2>
-					<a href="/static/tour/{{year}}/gambler">Create a profile and compose a team</a>
-					<ul>
-						<li ng-repeat="gambler in gamblers">
-						  <a href="/static/tour/{{year}}/gambler/{{gambler.uid}}">
-						  	{{gambler.uid}}:{{gambler.name}}
-						  </a>
-						</li>	
-					</ul>
-				</div>
-			  	<div class="col-md-3">
-					<h2>News</h2>
-					<a href="/static/tour/{{year}}/news">Add a news item</a>
-					<ul>
-						<li ng-repeat="newsItem in news">{{newsItem.sender}}:{{newsItem.message}}</li>	
-					</ul>
-				</div>
+	<div class="row">
+	  	<div class="col-md-3">
+			<h2>Etappes</h2>
+				<ul>
+					<li ng-repeat="etappe in tour.etappes">
+						<a href="/static/tour/{{year}}/etappe/{{etappe.id}}">
+							{{etappe.date | date:'dd-MM'}}:{{etappe.startLocation}} - {{etappe.finishLocation}}
+						</a>
+					</li>	
+				</ul>
 			</div>
-			<div class="row">
+		  	<div class="col-md-3">
+				<h2>Best cyclists</h2>
+				<ul>
+					<li ng-repeat="cyclist in tour.cyclists">
+						{{cyclist.number}} -> {{cyclist.name}}
+					</li>	
+				</ul>
+			</div>
+		  	<div class="col-md-3">
+				<h2>Best gamblers</h2>
+				<a href="/static/tour/{{year}}/gambler">Create a profile and compose a team</a>
+				<ul>
+					<li ng-repeat="gambler in gamblers">
+					  <a href="/static/tour/{{year}}/gambler/{{gambler.uid}}">
+					  	{{gambler.uid}}:{{gambler.name}}
+					  </a>
+					</li>	
+				</ul>
+			</div>
+		  	<div class="col-md-3">
+				<h2>News</h2>
+				<a href="/static/tour/{{year}}/news">Add a news item</a>
+				<ul>
+					<li ng-repeat="newsItem in tour.news">{{newsItem.sender}}:{{newsItem.message}}</li>	
+				</ul>
+			</div>
+		</div>
+		<div class="row">
 			<strong></strong>
-			</div>
+		</div>
 
 </div>
