@@ -8,7 +8,7 @@ angular.module('tourApp')
           
         console.log("dashboard");
 
-	   $resource('api/tour/:year', {year:$scope.year})
+	   $resource('/api/tour/:year', {year:$scope.year})
 	   		.get(function(data) {
 		        console.log("got tour-data:");
             	$scope.tour = data;
