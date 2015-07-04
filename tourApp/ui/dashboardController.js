@@ -14,7 +14,7 @@ angular.module('tourApp')
             	$scope.tour = data;
         });
 
-	   $resource('/api/gambler', {year:$scope.year})
+	   $resource('/api/gambler')
 	   		.get(function(data) {
 		        console.log("got tour-gamblers:");
 	            $scope.gamblers = data;
