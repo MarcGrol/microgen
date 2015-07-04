@@ -4,6 +4,10 @@ angular.module('tourApp')
     .controller('DashboardController', ['$scope', '$stateParams', '$state', '$resource',
         function ($scope, $stateParams, $state, $resource) {
 
+        $scope.tour = {}
+        $scope.gamblers = {}
+        $scope.news = {}
+
         $scope.year = $stateParams.year;
           
         console.log("dashboard");
@@ -15,7 +19,7 @@ angular.module('tourApp')
         });
 
 	   $resource('/api/gambler')
-	   		.get(function(data) {
+	   		.query(function(data) {
 		        console.log("got tour-gamblers:");
 	            $scope.gamblers = data;
         });
