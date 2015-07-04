@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('tour')
+angular.module('tourApp')
     .config(function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('/tour/2015/dashboard');
+
+        console.log("routing");
 
         $stateProvider
             .state('dashboard', {

@@ -1,9 +1,10 @@
 'use strict';
 
-angular.module('tour')
+angular.module('tourApp')
     .controller('NewsController', ['$scope', '$stateParams', '$state', '$resource',
         function ($scope, $stateParams, $state, $resource) {
 
-        $scope.param.year = $stateParams.year;
+	console.log("news");
+        $scope.year = $stateParams.year;
 
  }]);

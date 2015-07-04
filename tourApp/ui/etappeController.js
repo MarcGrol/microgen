@@ -1,9 +1,10 @@
 'use strict';
 
-angular.module('tour')
+angular.module('tourApp')
     .controller('EtappeController', ['$scope', '$stateParams', '$state', '$resource',
         function ($scope, $stateParams, $state, $resource) {
 
-        $scope.param.year = $stateParams.year;
+        console.log("etappe");
+        $scope.year = $stateParams.year;
 
  }]);

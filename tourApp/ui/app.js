@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('webApp', [
+angular.module('tourApp', [
     'ui.router',
     'ngResource',
-    'ngSanitize',
-    'interceptors',
-    'ui.bootstrap',
-    'ui.select'])
+ //   'ngSanitize',
+//    'ui.bootstrap',
+ //   'ui.select'
+])
 .config(function ($stateProvider) {
     $stateProvider
         .state('error', {
@@ -14,8 +14,4 @@ angular.module('webApp', [
             templateUrl: 'error.html'
         });
 })
-.run(function ($rootScope, $state, ERROR_EVENTS) {
-    $rootScope.$on(ERROR_EVENTS.serverError, function () {
-        $state.go('error');
-    });
-});
+;
