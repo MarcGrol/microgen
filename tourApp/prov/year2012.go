@@ -255,19 +255,10 @@ func provision2012(targetHost string) error {
 	client.CreateCyclist(year, 212, "CURVERS Roy", "ARG")
 	client.CreateCyclist(year, 211, "KITTEL Marcel", "ARG")
 
-	client.CreateGambler("marc", "Marc Grol", "marc.grol@gmail.com")
 	client.CreateGamblerTeam(year, "marc", []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 11})
-
-	client.CreateGambler("eva", "Eva Berkhout", "eva.marc@hetnet.com")
 	client.CreateGamblerTeam(year, "eva", []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 21})
-
-	client.CreateGambler("pien", "Pien Grol", "pien.grol@gmail.com")
 	client.CreateGamblerTeam(year, "pien", []int{21, 22, 23, 24, 25, 26, 27, 28, 29, 31})
-
-	client.CreateGambler("tijl", "Tijl Grol", "tijl.grol@gmail.com")
 	client.CreateGamblerTeam(year, "tijl", []int{31, 32, 33, 34, 35, 36, 37, 38, 39, 41})
-
-	client.CreateGambler("freek", "Freek Grol", "freek.grol@gmail.com")
 	client.CreateGamblerTeam(year, "freek", []int{41, 42, 43, 44, 45, 46, 47, 48, 49, 51})
 
 	client.CreateNewsItem(year, date(year, time.July, 4), "Marcus", "De tour gaat weer beginnen")
