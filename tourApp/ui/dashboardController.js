@@ -8,4 +8,22 @@ angular.module('tourApp')
           
         console.log("dashboard");
 
+	   $resource('api/tour/:year', {year:$scope.year})
+	   		.get(function(data) {
+		        console.log("got tour-data:");
+            	$scope.tour = data;
+        });
+
+	   $resource('/api/gambler', {year:$scope.year})
+	   		.get(function(data) {
+		        console.log("got tour-gamblers:");
+	            $scope.gamblers = data;
+        });
+
+	   $resource('/api/news/:year/news',{year:$scope.year})
+	   		.get(function(data) {
+		        console.log("got tour-news:");
+		        $scope.news = data;
+        });
+
  }]);
