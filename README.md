@@ -19,6 +19,7 @@ Experiment with microservices using go. Truly understand how to balance scalabil
 Specification effort:
 * Define your screens 
 * Based on screens, determine your commands and queries
+* Cohesion and minimizing ripple effect upon change is the primary reason to devide.
 * Group related commands and queries in a service if this promotes cohesion. Typically commands and queries related to an specific "aggregate" are grouped together.
 * Define your events, that exchange information between services.
 * Specify which events a command emits
