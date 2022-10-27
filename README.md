@@ -28,7 +28,7 @@ Specification effort:
 Develop non-functional components:
 * append-only event-store
 * publish-subscribe bus
-* Scenario based testing: "given-when-expect"
+* Scenario based testing: "given-when-then"
 
 Develop functional services:
  * create unit tests
