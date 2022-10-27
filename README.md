@@ -43,8 +43,8 @@ Build screens from the provided services:
 A tour-de-france application:
 - Tour: 
     - As event-organiser: Create a tour for a particular year (1)
-    - As event-organiser: Add cyclists to a tour (2)
-    - As event-organiser: Add etappes to a tour (3)
+    - As event-organiser: Add etappes to a tour (2)
+    - As event-organiser: Add cyclists to a tour (3)
     - As event-organiser: Publish dayly result of etappes and calculate scores for cyclists and gamblers (4)
     - As event-organiser: Mark cyclist as "abandonnee" (5)
     - As anybody: View tours with their cyclists, etappes and results (6)
